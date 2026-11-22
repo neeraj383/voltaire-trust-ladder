@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Earned Trust: Trust Ladder prototype (Team Voltaire)</title>
+<style>
+  :root{--ink:#12302C;--ink2:#1E4A44;--saff:#E3A33B;--tint:#EEF4F2;--muted:#5E6E6B;--line:#D3DEDA;
+        --green:#2E7D5B;--orange:#C9772B;--red:#B5432F;--soft:#BFD3CE;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;font-size:14px}
+  header{background:var(--ink);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:28px;flex-wrap:wrap}
+  header h1{font-family:Cambria,Georgia,serif;font-size:24px;margin:0;font-weight:700}
+  header .sub{color:var(--soft);font-size:13px;margin-top:3px}
+  .controls{margin-left:auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  button{font:inherit;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:var(--tint);color:var(--ink);font-weight:600}
+  button.primary{background:var(--saff);color:var(--ink)}
+  button:disabled{opacity:.5;cursor:default}
+  header button{background:#2a524b;color:#fff}
+  header button.primary{background:var(--saff);color:var(--ink)}
+  input[type=range]{width:220px;accent-color:var(--saff)}
+  .wk{font-weight:700;min-width:150px;color:#fff}
+  label.tog{color:var(--soft);font-size:13px;display:flex;gap:6px;align-items:center}
+  .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 28px;background:var(--tint)}
+  .m b{display:block;font-family:Cambria,Georgia,serif;font-size:24px}
+  .m span{font-size:12px;color:var(--muted)}
+  main{display:grid;grid-template-columns:minmax(560px,1.25fr) 1fr;gap:18px;padding:18px 28px 28px}
+  .panel{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff}
+  .panel h2{font-family:Cambria,Georgia,serif;font-size:17px;margin:0 0 10px}
+  table{width:100%;border-collapse:collapse}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:6px 6px;border-bottom:1px solid var(--line)}
+  td{padding:7px 6px;border-bottom:1px solid #EEF2F0;vertical-align:middle}
+  tr.row{cursor:pointer} tr.row:hover{background:#F7FAF9} tr.sel{background:#FFF6E6 !important}
+  .name{font-weight:600} .meta{font-size:11.5px;color:var(--muted)}
+  .lvl{display:inline-flex;gap:2px;align-items:flex-end;height:16px}
+  .lvl i{display:block;width:6px;background:var(--line);border-radius:1px}
+  .lvl i.on{background:var(--ink2)} .lvl i.top{background:var(--saff)}
+  .t{display:inline-block;width:20px;height:20px;border-radius:50%;font-size:10.5px;font-weight:700;line-height:20px;text-align:center;margin-right:3px;background:#EEF2F0;color:#9AA9A6}
+  .t.on{background:var(--ink);color:#fff}
+  .pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+  .OK{background:#E3F1EA;color:var(--green)} .ASK{background:#FBEBCD;color:#8A5A12} .SLOW{background:#F6DCC6;color:#8E4A12}
+  .STOP{background:#F3D3CC;color:var(--red)} .CLOSED{background:var(--red);color:#fff} .BLOCKED{background:#3a1d18;color:#fff} .NEW{background:#EEF2F0;color:var(--muted)}
+  .truth{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px}
+  .tr-honest{background:#E3F1EA;color:var(--green)} .tr-renter{background:#FBEBCD;color:#8A5A12} .tr-mixer{background:#F6DCC6;color:#8E4A12} .tr-front{background:#F3D3CC;color:var(--red)}
+  .right{display:flex;flex-direction:column;gap:18px}
+  .why{font-size:13px;color:var(--ink2);line-height:1.45}
+  .why li{margin-bottom:4px}
+  .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
+  .kv div{background:var(--tint);border-radius:8px;padding:8px}
+  .kv b{display:block;font-size:15px} .kv span{font-size:11px;color:var(--muted)}
+  .log{max-height:260px;overflow:auto;font-size:12.5px;line-height:1.45}
+  .log p{margin:0 0 7px;padding-left:10px;border-left:3px solid var(--line)}
+  .log p.learn{border-color:var(--saff)} .log p.bad{border-color:var(--red)} .log p.good{border-color:var(--green)}
+  .legend{font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
+  .note{font-size:12px;color:var(--muted);padding:0 28px 24px}
+  @media(max-width:1100px){main{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Earned Trust · Trust Ladder console</h1>
+    <div class="sub">Team Voltaire · Follow the Money 2026 · prototype on <b>simulated</b> merchants (Hyderabad &amp; Mumbai, Jul–Oct)</div>
+  </div>
+  <div class="controls">
+    <button id="reset">⟲ Reset</button>
+    <button id="step">Next week ›</button>
+    <button id="play" class="primary">▶ Play the story</button>
+    <input type="range" id="week" min="1" max="18" value="1">
+    <span class="wk" id="wklabel"></span>
+    <label class="tog"><input type="checkbox" id="truth"> Show answer key</label>
+  </div>
+</header>
+
+<section class="metrics" id="metrics"></section>
+
+<main>
+  <div class="panel">
+    <h2>Merchants this week</h2>
+    <table>
+      <thead><tr><th>Merchant</th><th>Trust level</th><th>Tests</th><th>Vendor score</th><th>Paid now / held</th><th>Action</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="legend"><span><span class="t on">S</span>Shape</span><span><span class="t on">C</span>Control</span><span><span class="t on">N</span>Network</span><span>1 test → ASK · 2 → SLOW · 3 → STOP (human review)</span></div>
+  </div>
+  <div class="right">
+    <div class="panel" id="detail"></div>
+    <div class="panel">
+      <h2>Network: who shares customers with whom</h2>
+      <svg id="net" viewBox="0 0 520 300" width="100%"></svg>
+      <div class="legend"><span>Hyderabad on the left, Mumbai on the right. A line means the two merchants shared 8+ payers this week. Real shops' customers are local; fronts share "teleporting" gamblers.</span></div>
+    </div>
+    <div class="panel">
+      <h2>What the system learned</h2>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</main>
+<p class="note">All merchants, payers and amounts are simulated to show how the system behaves. Nothing here is real data. Rules are deliberately simple; the production version learns its baselines from verified merchants every week.</p>
+
+<script>
+// ---------- seeded random
+function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const WEEKS=18, START=new Date(2026,6,1);
+const wkLabel=w=>{const d=new Date(START);d.setDate(d.getDate()+(w-1)*7);return "Week "+w+" · "+d.toLocaleDateString("en-IN",{day:"numeric",month:"short"})};
+const FESTIVE=w=>w>=15&&w<=17;
+const CAT={bakery:{sales:60000,ticket:140,input:0.45},kirana:{sales:90000,ticket:260,input:0.75},mobile:{sales:70000,ticket:420,input:0.70}};
+// type: honest | renter (rented at `at`) | mixer (betting from `at`) | front (onboarded at `at`)
+const M=[
+ ["Sri Sai Bakery","Hyderabad","bakery","honest",1],
+ ["Ameerpet Oven House","Hyderabad","bakery","honest",1,{festive:true}],
+ ["Golden Crust Bakers","Hyderabad","bakery","honest",1],
+ ["Banjara Bun Co.","Hyderabad","bakery","honest",1,{catering:10}],
+ ["Moonlight Cake Studio","Hyderabad","bakery","front",6,{device:"D-7731"}],
+ ["Charminar Sweet Bakes","Hyderabad","bakery","mixer",9],
+ ["Lakshmi Kirana","Hyderabad","kirana","honest",1],
+ ["Sai Ram General Stores","Hyderabad","kirana","honest",1],
+ ["Venkat Provisions","Hyderabad","kirana","renter",7],
+ ["New Balaji Kirana","Hyderabad","kirana","front",8],
+ ["Hi-Tech Mobiles","Hyderabad","mobile","honest",1],
+ ["Cellpoint Accessories","Hyderabad","mobile","renter",5],
+ ["Bandra Pav House","Mumbai","bakery","honest",1,{festive:true}],
+ ["Dadar Bake Shop","Mumbai","bakery","honest",1],
+ ["Andheri Fresh Breads","Mumbai","bakery","front",9],
+ ["Patel Kirana Stores","Mumbai","kirana","honest",1],
+ ["Shree Ganesh Provisions","Mumbai","kirana","honest",1],
+ ["Malad Daily Needs","Mumbai","kirana","renter",6],
+ ["Kurla Super Mart","Mumbai","kirana","mixer",10],
+ ["Mobile Junction Andheri","Mumbai","mobile","honest",1],
+ ["Ghatkopar Phone Care","Mumbai","mobile","honest",1],
+ ["Link Road Accessories","Mumbai","mobile","front",13,{device:"D-7731"}]
+].map((a,i)=>({id:i,name:a[0],city:a[1],cat:a[2],type:a[3],at:a[4],opt:a[5]||{}}));
+
+// ---------- generate raw weekly data (what the provider would observe)
+function generate(){
+  const r=rng(42);
+  const BET_POOL=420;           // gamblers spread across India
+  return M.map(m=>{
+    const c=CAT[m.cat], weeks=[];
+    const baseScale=0.8+r()*0.4, localPool=(m.city=="Hyderabad"?100000:200000)+m.id*1000;
+    for(let w=1;w<=WEEKS;w++){
+      const onboarded = m.type!="front" || w>=m.at;
+      if(!onboarded){weeks.push(null);continue}
+      const noise=0.9+r()*0.2;
+      let shop = (m.type=="front")?0:c.sales*baseScale*noise*(m.type=="renter"?0.45:1);
+      let fest=1; if(FESTIVE(w)) fest = m.opt.festive?1.6:1.2;
+      shop*=fest;
+      // inputs (stock bought) rise a week BEFORE festive sales for real shops
+      let inputFactor = (FESTIVE(w+1)&&!FESTIVE(w))? (m.opt.festive?1.5:1.15) : fest;
+      if(w==17) inputFactor=fest*0.9;
+      let proof = (m.type=="front")?0: c.sales*baseScale*noise*(m.type=="renter"?0.45:1)*c.input*inputFactor*(0.95+r()*0.1);
+      let catering=0;
+      if(m.opt.catering && (w==m.opt.catering||w==m.opt.catering+1)){catering=45000;proof+=45000*c.input*0.9}
+      // betting money
+      let bet=0;
+      const betting = (m.type=="front") || ((m.type=="renter"||m.type=="mixer") && w>=m.at);
+      if(betting){bet = (m.type=="mixer"? c.sales*0.8 : c.sales*(1.3+r()*0.5)) * (0.9+r()*0.2)}
+      const sales=shop+catering+bet;
+      // features
+      const shopTicket=c.ticket*(0.9+r()*0.2);
+      const count = shop/shopTicket + bet/520 + (catering?1:0);
+      const ticket = sales/Math.max(1,count);
+      const tShare=(x)=>x/Math.max(1,sales);
+      const outState = tShare(bet)*0.62 + tShare(shop)*0.02 + tShare(catering)*0.0;
+      const night = tShare(bet)*0.45 + tShare(shop)*0.03;
+      // payers: local shop customers + national gamblers
+      const payers=new Set();
+      const nShop=Math.round(shop/shopTicket/3);
+      for(let k=0;k<nShop;k++) payers.add(localPool+Math.floor(r()*600));
+      if(bet>0){const nb=110+Math.floor(r()*40); for(let k=0;k<nb;k++) payers.add(Math.floor(r()*BET_POOL))}
+      if(catering) payers.add(localPool+999);
+      // control signals
+      let control=[];
+      if(m.type=="renter" && w>=m.at && w<m.at+5){ if(w==m.at) control=["new device & SIM","payout account changed"]; else control=["logins from Delhi, shop in "+m.city]}
+      if(m.type=="front"){control=["logins from a different city than the shop"]}
+      weeks.push({w,sales,shop,bet,catering,proof,ticket,outState,night,payers,control});
+    }
+    return weeks;
+  });
+}
+function ticketBump(t){return t*1.9}
+
+// ---------- the system (sees only observations, never the type)
+function run(upto){
+  const raw=generate();
+  const st=M.map(m=>({level:m.type=="front"?1:2,good:4,strikes:0,status:"",tol:{},closed:false,blocked:false,reviewAt:null,score:null,hist:[]}));
+  const memory={payers:new Set(),devices:new Set()}; const log=[];
+  const met={betTotal:0,betHeld:0,honestDelayed:0,honestAsked:new Set(),frontsStopped:0};
+  for(let w=1;w<=upto;w++){
+    // adaptive peer baseline: only merchants at level >= 2 that are not flagged (verified "normal")
+    const base={};
+    for(const cat in CAT){
+      const ws=M.filter(m=>m.cat==cat).map(m=>({m,o:raw[m.id][w-1]})).filter(x=>x.o&&st[x.m.id].level>=2&&!st[x.m.id].closed&&!st[x.m.id].flagged);
+      const med=(f)=>{const v=ws.map(x=>f(x.o)).sort((a,b)=>a-b);return v.length?v[Math.floor(v.length/2)]:0};
+      base[cat]={sales:med(o=>o.sales),ticket:med(o=>o.ticket),outState:med(o=>o.outState),night:med(o=>o.night)};
+    }
+    // network: merchants in different cities sharing 8+ payers
+    const live=M.filter(m=>raw[m.id][w-1]&&!st[m.id].closed&&!st[m.id].blocked);
+    const links=[];
+    for(let i=0;i<live.length;i++)for(let j=i+1;j<live.length;j++){
+      const a=raw[live[i].id][w-1].payers,b=raw[live[j].id][w-1].payers; let n=0; for(const p of a) if(b.has(p)) n++;
+      if(n>=8) links.push([live[i].id,live[j].id,n]);
+    }
+    for(const m of M){
+      const o=raw[m.id][w-1], s=st[m.id];
+      if(!o){s.hist.push(null);continue}
+      if(s.closed){s.hist.push({w,sales:o.sales,proofSales:0,paid:0,held:o.sales,action:"CLOSED",tests:[],why:["Account closed after review"]});if(m.type!="honest")met.betTotal+=o.bet,met.betHeld+=o.bet;continue}
+      // fingerprint memory at onboarding
+      if(m.type=="front"&&w==m.at&&m.opt.device&&memory.devices.has(m.opt.device)){
+        s.blocked=true; s.closed=true; met.betTotal+=o.bet; met.betHeld+=o.bet; met.frontsStopped++;
+        log.push({w,c:"learn",t:`<b>${m.name}</b> tried to sign up with device ${m.opt.device}, a fingerprint remembered from a confirmed front. Blocked before its first payout.`});
+        s.hist.push({w,sales:o.sales,proofSales:0,paid:0,held:o.sales,action:"BLOCKED",tests:[],why:["Device fingerprint matches a confirmed front"]});continue;
+      }
+      const b=base[m.cat], c=CAT[m.cat];
+      const why=[]; const tests=[];
+      // SHAPE: drift from verified peers, or money growing faster than proof
+      const dev = Math.abs(o.ticket-b.ticket)/b.ticket*0.8 + Math.max(0,o.sales/b.sales-1.5) + Math.max(0,o.outState-b.outState)*3 + Math.max(0,o.night-b.night)*3;
+      const proofSales=o.proof/c.input; const gap=Math.max(0,o.sales-proofSales); const gapShare=gap/o.sales;
+      const tolerated = s.tol.catering && o.catering>0;
+      if((dev>0.6 && !tolerated) || gapShare>0.35){tests.push("S");
+        if(dev>0.6&&!tolerated) why.push(`Money doesn't look like a ${m.cat}: avg ticket ₹${Math.round(o.ticket)} vs peers ₹${Math.round(b.ticket)}, ${Math.round(o.outState*100)}% of payers from other states, ${Math.round(o.night*100)}% of payments at night`);
+        if(gapShare>0.35) why.push(`Money is growing faster than proof: ${Math.round(gapShare*100)}% of sales have no stock purchases behind them`);
+      }
+      // CONTROL
+      if(o.control.length){tests.push("C");why.push("Control changed: "+o.control.join(", "))}
+      // NETWORK
+      const mine=links.filter(l=>l[0]==m.id||l[1]==m.id);
+      const other=mine.map(l=>l[0]==m.id?l[1]:l[0]);
+      const far=other.filter(id=>M[id].city!=m.city);
+      let memHits=0; for(const p of o.payers) if(memory.payers.has(p)) memHits++;
+      if(far.length>=1||memHits>=10){tests.push("N");
+        why.push(`Shares customers with ${other.length} other merchant(s), ${far.length} in another city`+(memHits>=10?`; ${memHits} payers previously paid confirmed fronts`:""));}
+      // ACTION
+      let action=["OK","ASK","SLOW","STOP"][tests.length];
+      s.flagged=tests.length>=1;
+      // honest merchants answer an ASK the next week with evidence; system learns tolerance
+      if(action=="ASK"&&m.type=="honest"){met.honestAsked.add(m.id);
+        if(o.catering && !s.tol.catering){log.push({w,c:"good",t:`<b>${m.name}</b> got one friendly prompt about an unusually large order. Reply: "office catering order" plus the invoice. Cleared the same day, nothing held, and catering is now part of its normal pattern, so it won't be asked again.`}); s.tol.catering=true; why.push("Merchant replied: office catering order, invoice attached. Cleared."); s.flagged=false;}
+      }
+      // payouts
+      const cap=base[m.cat].sales*[0,1.2,1.6,2.2,3.0][s.level];
+      let held=0;
+      if(action=="SLOW") held=Math.max(gap, o.sales-cap);
+      if(action=="STOP") held=o.sales;
+      if(action=="OK"||action=="ASK") held=Math.max(0,o.sales-cap);
+      held=Math.min(o.sales,held);
+      const paid=o.sales-held;
+      if(m.type=="honest") met.honestDelayed+=held;
+      met.betTotal+=o.bet; met.betHeld+=Math.min(o.bet,held);
+      // ladder
+      if(action=="OK"&&gapShare<0.2){s.good++; const lv=s.good>=14?4:s.good>=10?3:s.good>=6?2:1; if(lv>s.level){s.level=lv; if(w>1&&m.type=="honest"&&lv>=3) log.push({w,c:"good",t:`<b>${m.name}</b> climbed to Level ${lv} (${["","Starter","Proven","Verified","Trusted"][lv]}). Unlocked: ${lv==4?"instant payouts and a working-capital loan offer":"the Verified Shop badge"}.`});}}
+      if(action=="SLOW"){ if(s.level>1){s.level--;} s.good=0; s.strikes++;
+        if(s.strikes==1) log.push({w,c:"bad",t:`<b>${m.name}</b>: two tests agree. Only the unexplained ₹${fmt(held)} waits; normal sales keep flowing. Strike 1: warning + amnesty offer sent in Telugu/Hindi/Marathi.`});
+        if(s.strikes==3) log.push({w,c:"bad",t:`<b>${m.name}</b>: third strike. Loan offer and badge withdrawn on all sales; sent for human review.`});
+        if(s.strikes>=3 && !s.reviewAt) s.reviewAt=w;
+      }
+      if(action=="STOP"){s.level=1;s.good=0;}
+      if(action=="STOP"&&!s.reviewAt){s.reviewAt=w;log.push({w,c:"bad",t:`<b>${m.name}</b>: all three tests agree. Payouts paused, case sent to an analyst for review.`});}
+      // human review (one week later) -> confirm, learn, remember
+      if(s.reviewAt && w>=s.reviewAt+1 && !s.closed){
+        s.closed=true; met.frontsStopped++;
+        for(const p of o.payers) if(p<420) memory.payers.add(p);
+        if(m.opt.device) memory.devices.add(m.opt.device);
+        const linked=other.map(id=>M[id].name);
+        log.push({w,c:"learn",t:`Analyst confirmed <b>${m.name}</b>. Account closed, STR filed with FIU-IND. Learned: its ${[...o.payers].filter(p=>p<420).length} gambler payers${m.opt.device?", device "+m.opt.device:""}${linked.length?", and raised risk on linked accounts: "+linked.slice(0,3).join(", "):""}.`});
+        action="CLOSED";
+      }
+      const score=Math.max(3,Math.min(98,Math.round(40+s.level*14-tests.length*22-gapShare*20)));
+      s.hist.push({w,sales:o.sales,proofSales,paid,held,action,tests,why,score,level:s.level,peer:b.sales});
+    }
+    const shown=new Set(); M.forEach(m=>{});
+    if(w==1) log.push({w,c:"good",t:"Baseline learned from verified shops in each category. No fixed rules about round numbers or night-time payments."});
+    if(w==15) log.push({w,c:"good",t:"Festive season: verified bakeries spike together, so the peer baseline rises with them. Ameerpet Oven House and Bandra Pav House bought extra stock a week earlier, so their spikes are already proven. No prompts sent."});
+    st.links=links; st.week=w;
+  }
+  return {raw,st,log,met,memory};
+}
+const fmt=n=>{n=Math.round(n);if(n>=100000)return(n/100000).toFixed(1)+"L";if(n>=1000)return Math.round(n/1000)+"k";return n};
+
+// ---------- UI
+let WEEK=1, SEL=1, timer=null;
+const $=id=>document.getElementById(id);
+function render(){
+  const R=run(WEEK), showTruth=$("truth").checked;
+  $("week").value=WEEK; $("wklabel").textContent=wkLabel(WEEK);
+  const met=R.met;
+  $("metrics").innerHTML=[
+    [`₹${fmt(met.betHeld)}`,`of ₹${fmt(met.betTotal)} betting money held or stopped`],
+    [met.frontsStopped,`fronts stopped (of ${M.filter(m=>m.type!="honest").length} bad accounts)`],
+    [met.honestAsked.size,`honest shops asked a question`],
+    [`₹${fmt(met.honestDelayed)}`,`honest money delayed (never frozen)`],
+    [R.memory.devices.size+" · "+R.memory.payers.size,`fingerprints · gambler IDs remembered`]
+  ].map(x=>`<div class="m"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("");
+  const rows=M.map(m=>{const h=R.st[m.id].hist[WEEK-1];
+    if(!h) return `<tr class="row${m.id==SEL?" sel":""}" data-id="${m.id}"><td><div class="name">${m.name}${showTruth?truth(m):""}</div><div class="meta">${m.cat} · ${m.city}</div></td><td colspan="4" class="meta">Not yet onboarded</td><td><span class="pill NEW">—</span></td></tr>`;
+    const lv=h.level||0;
+    const ladder=`<span class="lvl">${[1,2,3,4].map(i=>`<i class="${i<=lv?(i==4?"on top":"on"):""}" style="height:${4+i*3}px"></i>`).join("")}</span> <span class="meta">${lv?"L"+lv:""}</span>`;
+    const tests=["S","C","N"].map(t=>`<span class="t ${h.tests.includes(t)?"on":""}">${t}</span>`).join("");
+    return `<tr class="row${m.id==SEL?" sel":""}" data-id="${m.id}"><td><div class="name">${m.name}${showTruth?truth(m):""}</div><div class="meta">${m.cat} · ${m.city}</div></td>
+      <td>${h.action=="CLOSED"||h.action=="BLOCKED"?"<span class='meta'>removed</span>":ladder}</td><td>${tests}</td><td>${h.score!=null?h.score:"—"}</td>
+      <td class="meta">₹${fmt(h.paid)} / <b style="color:${h.held>0?"#8E4A12":"inherit"}">₹${fmt(h.held)}</b></td><td><span class="pill ${h.action}">${h.action}</span></td></tr>`}).join("");
+  $("rows").innerHTML=rows;
+  document.querySelectorAll("tr.row").forEach(tr=>tr.onclick=()=>{SEL=+tr.dataset.id;render()});
+  detail(R,showTruth); network(R);
+  $("log").innerHTML=R.log.slice().reverse().map(l=>`<p class="${l.c}"><span class="meta">W${l.w}</span> ${l.t}</p>`).join("");
+}
+function truth(m){return `<span class="truth tr-${m.type}">${{honest:"honest",renter:"renter",mixer:"mixer",front:"front"}[m.type]}</span>`}
+function detail(R,showTruth){
+  const m=M[SEL], H=R.st[m.id].hist.slice(0,WEEK), h=H[WEEK-1];
+  let html=`<h2>${m.name} <span class="meta" style="font-family:Inter,sans-serif;font-weight:400">· ${m.cat} · ${m.city}</span>${showTruth?truth(m):""}</h2>`;
+  if(!h){$("detail").innerHTML=html+`<p class="meta">Not onboarded yet. Move forward in time.</p>`;return}
+  html+=`<div class="kv"><div><b>₹${fmt(h.sales)}</b><span>sales this week</span></div><div><b>₹${fmt(h.proofSales||0)}</b><span>backed by stock bought</span></div><div><b>₹${fmt(h.held)}</b><span>waiting / held</span></div><div><b><span class="pill ${h.action}">${h.action}</span></b><span>action</span></div></div>`;
+  html+=chart(H);
+  html+=`<div class="legend"><span><i style="background:#12302C"></i>Sales</span><span><i style="background:#2E7D5B"></i>Sales backed by stock purchases (proof)</span><span><i style="background:#BFD3CE"></i>Verified peer median</span><span><i style="background:#C9772B;height:8px"></i>Held</span></div>`;
+  html+=`<ul class="why">${(h.why&&h.why.length?h.why:["Money, proof and behaviour match a real "+m.cat+". Nothing to do."]).map(x=>"<li>"+x+"</li>").join("")}</ul>`;
+  $("detail").innerHTML=html;
+}
+function chart(H){
+  const W=520,Ht=170,p=28; const vals=H.filter(Boolean); const max=Math.max(...vals.map(h=>Math.max(h.sales,h.peer||0,h.proofSales||0)),1)*1.1;
+  const x=i=>p+i*(W-p-8)/(WEEKS-1), y=v=>Ht-20-(v/max)*(Ht-34);
+  const line=(f,col,dash)=>{let d="";H.forEach((h,i)=>{if(!h||f(h)==null)return;d+=(d?"L":"M")+x(i)+","+y(f(h))});return `<path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" ${dash?'stroke-dasharray="5 4"':""}/>`};
+  let bars=H.map((h,i)=>h&&h.held>0?`<rect x="${x(i)-5}" y="${y(h.held)}" width="10" height="${Ht-20-y(h.held)}" fill="#C9772B" opacity=".75"/>`:"").join("");
+  let ticks=[1,5,9,13,17].map(w=>`<text x="${x(w-1)}" y="${Ht-4}" font-size="10" fill="#5E6E6B" text-anchor="middle">W${w}</text>`).join("");
+  const fest=`<rect x="${x(14)-6}" y="6" width="${x(16)-x(14)+12}" height="${Ht-26}" fill="#FBEBCD" opacity=".5"/><text x="${x(15)}" y="16" font-size="10" fill="#8A5A12" text-anchor="middle">festive</text>`;
+  return `<svg viewBox="0 0 ${W} ${Ht}" width="100%">${fest}<text x="2" y="${y(max/1.1)+4}" font-size="10" fill="#5E6E6B">₹${fmt(max/1.1)}</text>${bars}${line(h=>h.peer,"#BFD3CE",true)}${line(h=>h.proofSales,"#2E7D5B")}${line(h=>h.sales,"#12302C")}${ticks}</svg>`;
+}
+function network(R){
+  const W=520,Ht=300; const pos={};
+  const hy=M.filter(m=>m.city=="Hyderabad"), mu=M.filter(m=>m.city=="Mumbai");
+  hy.forEach((m,i)=>pos[m.id]=[110+Math.cos(i/hy.length*Math.PI*2)*80,150+Math.sin(i/hy.length*Math.PI*2)*115]);
+  mu.forEach((m,i)=>pos[m.id]=[410+Math.cos(i/mu.length*Math.PI*2)*80,150+Math.sin(i/mu.length*Math.PI*2)*115]);
+  const col={OK:"#2E7D5B",ASK:"#E3A33B",SLOW:"#C9772B",STOP:"#B5432F",CLOSED:"#5a2a22",BLOCKED:"#3a1d18"};
+  let s=`<text x="110" y="14" font-size="11" text-anchor="middle" fill="#5E6E6B" font-weight="700">HYDERABAD</text><text x="410" y="14" font-size="11" text-anchor="middle" fill="#5E6E6B" font-weight="700">MUMBAI</text>`;
+  (R.st.links||[]).forEach(l=>{const a=pos[l[0]],b=pos[l[1]];s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#B5432F" stroke-width="${Math.min(4,1+l[2]/15)}" opacity=".45"/>`});
+  M.forEach(m=>{const h=R.st[m.id].hist[WEEK-1];const p=pos[m.id];
+    const c=h?col[h.action]:"#D3DEDA";
+    s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${m.id==SEL?10:7}" fill="${c}" stroke="${m.id==SEL?"#12302C":"#fff"}" stroke-width="2"><title>${m.name}</title></circle>`;});
+  $("net").innerHTML=s;
+}
+$("week").oninput=e=>{WEEK=+e.target.value;render()};
+$("step").onclick=()=>{if(WEEK<WEEKS){WEEK++;render()}};
+$("reset").onclick=()=>{stop();WEEK=1;render()};
+$("truth").onchange=render;
+function stop(){clearInterval(timer);timer=null;$("play").textContent="▶ Play the story"}
+$("play").onclick=()=>{if(timer){stop();return}
+  if(WEEK>=WEEKS)WEEK=1; $("play").textContent="❚❚ Pause";
+  timer=setInterval(()=>{if(WEEK>=WEEKS){stop();return}WEEK++;
+    const R=run(WEEK); const flagged=M.filter(m=>{const h=R.st[m.id].hist[WEEK-1];return h&&["STOP","SLOW","BLOCKED"].includes(h.action)}); if(flagged.length) SEL=flagged[0].id; render()},2200)};
+render();
+</script>
+</body>
+</html>
