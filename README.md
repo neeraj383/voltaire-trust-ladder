@@ -20,6 +20,10 @@ Don't police merchants into proving they're innocent. **Make being real worth pr
 - **Graduated response:** 1 yes → **ASK**, 2 → **SLOW** (only the unexplained extra waits), 3 → **STOP** (human review, report to FIU-IND). A question left unanswered counts as a yes and keeps counting.
 - **Immune-system learning:** "normal" is relearned every week. Every confirmed front is remembered (device, gamblers). A confirmed case of a new trick can add a brand-new check.
 
+## Story mode
+
+A full-screen, self-playing presentation (about 2.5 minutes, 19 scenes) told from PayU's side: PayU's problem and problem statement, how betting rings operate (panels, rented accounts, layering, scale, why rules fail, with sourced facts from ED filings and reporting), the critical-thinking approach (claim, premises, principle; five whys), and our system. Space pauses, arrow keys move, Esc closes.
+
 ## Explain like I'm 5
 
 The **Explain like I'm 5** button (top right, and offered on first visit) opens a 13-step illustrated explainer in two chapters:
@@ -34,8 +38,9 @@ Most steps have a **See it in the demo** button that jumps to the exact week and
 | Tab | What it shows |
 |---|---|
 | PayU monitoring | Every shop, every week: trust level, the three questions, money paid or held, the action, why, and who shares customers |
-| Merchant app | The shop's point of view: onboarding on Level 1, progress up the ladder, payouts, friendly questions, warnings, badge and loan offer |
+| Merchant app | Three phone modes: shops in the simulation; **Try the sign-up** (OTP, email, Aadhaar e-KYC, PAN, selfie, bank check, GST/Udyam, 3-year sales, suppliers, interstate orders, consent, then matching to the database); and **First weeks and rewards** (level-ups, badge, loan offer, friendly question). Two samples: an honest bakery and a front posing as one. A "What PayU sees" panel shows the other side |
 | Immune system | A new trick nobody had seen, how one confirmed case teaches a new check, and the list of checks growing over time |
+| Database | 352 benchmark rows (11 business types, 4 sizes, 8 cities, about 4.3 lakh simulated shops) with a 3-year normal range; compare any shop with its row |
 | Explained | Two simple step-by-step chapters (how we figured it out, how it works), the idea in four cards, and the tour |
 
 ## The story in the simulation (25 shops, 18 weeks)
@@ -65,6 +70,7 @@ Tick **Show answer key** to reveal which shops were honest, renters, mixers, fro
 - The explainer works with the arrow keys and closes with Esc.
 
 ## Changelog
+- **v4 (26 Nov 2026):** Story mode; phone sign-up with KYC and business data, matched to the database; rewards and pop-ups in the phone; benchmark database tab with 3-year growth ranges; welcome screen offers Story mode first.
 - **v3 (26 Nov 2026):** redesigned interface; Explain like I'm 5 explainer; first-visit welcome; timeline with event markers and a narrated line for each week; numbers and progress bars animate between weeks; click a dot in the network to open a shop; works on phones.
 - **v2 (26 Nov 2026):**
   - Everyone starts on Level 1.

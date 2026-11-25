@@ -235,7 +235,7 @@
   .eli-stage{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;padding:24px 32px 10px;align-items:center;overflow:auto;flex:1}
   .eli-art{background:var(--paper);border-radius:22px;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden}
   .eli-art svg{width:100%;height:100%}
-  .eli-art text{font-family:var(--body)}
+  :is(.eli-art,.thart) text{font-family:var(--body)}
   .eli-n{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:600}
   .eli-text h2{font-size:clamp(26px,3.2vw,38px);font-weight:800;line-height:1.08;margin:0 0 12px;letter-spacing:-.02em}
   .eli-b{font-size:16.5px;line-height:1.6;margin:0 0 14px;max-width:46ch}
@@ -250,12 +250,12 @@
   @keyframes slidein{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
   @keyframes slideback{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
   /* illustration motion: one orchestrated build per step */
-  .eli-art .a{animation:rise .55s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:center}
-  .eli-art .p{animation:popin .45s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:center}
-  .eli-art .f{animation:fly .7s var(--ease) both;animation-delay:var(--d,0s)}
-  .eli-art .g{animation:glow 1.8s ease-in-out infinite;animation-delay:var(--d,0s)}
-  .eli-art .grow{animation:growx .6s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:left center}
-  .eli-art .climb{animation:climb 3.2s var(--ease) both;animation-delay:.3s}
+  :is(.eli-art,.thart) .a{animation:rise .55s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:center}
+  :is(.eli-art,.thart) .p{animation:popin .45s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:center}
+  :is(.eli-art,.thart) .f{animation:fly .7s var(--ease) both;animation-delay:var(--d,0s)}
+  :is(.eli-art,.thart) .g{animation:glow 1.8s ease-in-out infinite;animation-delay:var(--d,0s)}
+  :is(.eli-art,.thart) .grow{animation:growx .6s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:left center}
+  :is(.eli-art,.thart) .climb{animation:climb 3.2s var(--ease) both;animation-delay:.3s}
   @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
   @keyframes popin{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
   @keyframes fly{from{opacity:0;transform:translate(90px,-20px)}to{opacity:1;transform:none}}
@@ -263,9 +263,230 @@
   @keyframes growx{from{transform:scaleX(0)}to{transform:none}}
   @keyframes climb{0%{transform:translateY(0)}25%{transform:translateY(0)}40%{transform:translateY(-60px)}55%{transform:translateY(-60px)}70%{transform:translateY(-120px)}82%{transform:translateY(-120px)}100%{transform:translateY(-180px)}}
 
+
+  /* ---------- story button */
+  .storybtn{display:flex;align-items:center;gap:7px;background:#fff;color:var(--ink);padding:9px 14px;border-radius:12px}
+  .storybtn svg{width:14px;height:14px}
+  .storybtn:hover{background:var(--tint)}
+
+  /* ---------- phone modes, sign-up, rewards */
+  .modes{display:flex;gap:4px;background:#fff;border:1px solid var(--line);padding:4px;border-radius:14px;margin-bottom:10px;flex-wrap:wrap}
+  .modes button{background:transparent;padding:7px 11px;font-size:13px;color:var(--muted)}
+  .modes button.on{background:var(--ink);color:#fff}
+  .samp{display:flex;gap:6px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+  .samp button{font-size:12.5px;padding:6px 10px;background:#fff;box-shadow:inset 0 0 0 1.5px var(--line)}
+  .samp button.on{box-shadow:inset 0 0 0 2px var(--saff);background:#FDF4E3}
+  .two.flow{grid-template-columns:minmax(300px,400px) minmax(0,1fr)}
+  .phone.fixed{height:clamp(560px,calc(100vh - 230px),720px);min-height:0;display:flex;flex-direction:column;overflow:hidden;padding-bottom:14px}
+  .phone .scr{flex:1;overflow:auto;padding:2px 2px 8px;scrollbar-width:thin}
+  .scr.slide{animation:scrin .4s var(--ease)}
+  @keyframes scrin{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+  .scr h3{font-size:20px;margin:6px 0 10px}
+  .su-top{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;color:var(--muted)}
+  .su-back{width:28px;height:28px;padding:0;border-radius:50%;font-size:18px;line-height:1}
+  .su-prog{flex:1;height:6px;background:var(--tint);border-radius:6px;overflow:hidden}
+  .su-prog i{display:block;height:100%;background:var(--saff);border-radius:6px;transition:width .5s var(--ease)}
+  .su-foot{padding-top:8px}
+  .su-foot button{width:100%;padding:13px;border-radius:14px;font-size:15px}
+  .su-hero{text-align:left;padding-top:10px}
+  .su-hero .logo{font-family:var(--disp);font-weight:800;font-size:30px;color:var(--ink);margin:10px 0 26px}
+  .su-hero .logo span{display:block;font-family:var(--body);font-weight:500;font-size:13px;color:var(--muted)}
+  .su-hero h3{font-size:26px!important}
+  .ben{display:flex;gap:10px;align-items:center;padding:12px;border-radius:14px;background:var(--paper);margin-bottom:8px;font-weight:600;animation:pop .4s var(--ease) both}
+  .ben:nth-of-type(2){animation-delay:.1s}.ben:nth-of-type(3){animation-delay:.2s}
+  .ben b{width:28px;height:28px;border-radius:50%;background:var(--saff);display:grid;place-items:center;font-family:var(--disp)}
+  .fld{margin-bottom:10px}
+  .fld label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  .fld .inp{border:1.5px solid var(--line);border-radius:12px;padding:9px 12px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff}
+  .two-f{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .opt{display:inline-block;font-size:10.5px;background:#FDF4E3;color:#7A4E0E;padding:1px 7px;border-radius:6px;margin-left:4px;font-weight:600}
+  .calc{margin:-4px 0 10px;font-size:13px}
+  .vfy{display:flex;align-items:center;gap:8px;font-size:12.5px;margin:6px 0;min-height:20px;position:relative}
+  .vfy .spin{width:16px;height:16px;border-radius:50%;border:2.5px solid var(--line);border-top-color:var(--saff);animation:spin .7s linear infinite,gone 0s linear var(--d) forwards}
+  .vfy .ok{color:var(--green);font-weight:600;opacity:0;animation:okin .35s var(--ease) var(--d) forwards}
+  .vfy .ok::before{content:"✓ ";font-weight:800}
+  .vfy.vskip .ok{color:var(--muted);opacity:1;animation:none;font-weight:500}
+  .vfy.vskip .ok::before{content:"– "}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes gone{to{opacity:0;width:0;border-width:0;margin-right:-8px}}
+  @keyframes okin{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:none}}
+  .otp{display:flex;gap:6px;margin:6px 0 8px}
+  .otp i{flex:1;height:42px;border:1.5px solid var(--line);border-radius:10px;display:grid;place-items:center;font-style:normal;font-family:var(--disp);font-size:20px;font-weight:700;color:transparent;animation:typed .2s var(--d) forwards}
+  @keyframes typed{to{color:var(--ink);border-color:var(--saff);background:#FDF4E3}}
+  .selfie{display:flex;gap:12px;align-items:center;margin:8px 0}
+  .face{width:64px;height:64px;border-radius:50%;background:radial-gradient(circle at 50% 38%,#E9C9A5 0 18px,transparent 19px),radial-gradient(ellipse at 50% 110%,#1E4A44 0 30px,transparent 31px),var(--tint);position:relative;overflow:hidden;flex:none;box-shadow:inset 0 0 0 3px var(--saff)}
+  .face i{position:absolute;left:0;right:0;height:3px;background:var(--saff);box-shadow:0 0 8px var(--saff);animation:scan 1.3s ease-in-out 2 alternate}
+  @keyframes scan{from{top:4px}to{top:58px}}
+  .chips{display:flex;gap:5px;flex-wrap:wrap}
+  .chips span{padding:5px 10px;border-radius:999px;background:var(--paper);font-size:12.5px;font-weight:600}
+  .chips span.on{background:var(--ink);color:#fff}
+  .thumbs{display:flex;gap:6px}
+  .thumbs span{width:64px;height:46px;border-radius:8px;background:linear-gradient(135deg,#E3A33B 0 30%,#F4D08F 30% 60%,#1E4A44 60%);display:grid;place-items:center;color:#fff;font-size:14px}
+  .thumbs .th2{background:#1E4A44}
+  .fy{display:flex;gap:10px;align-items:flex-end;height:110px;padding:6px 4px;border:1.5px solid var(--line);border-radius:12px}
+  .fy div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;font-size:11px;height:100%}
+  .fy i{display:block;width:70%;background:var(--saff);border-radius:6px 6px 2px 2px;transform-origin:bottom;animation:growy .6s var(--ease) var(--d) both}
+  .fy b{font-size:12px;margin-top:3px}.fy span{color:var(--muted)}
+  @keyframes growy{from{transform:scaleY(0)}}
+  .sup{padding:8px 10px;border-radius:10px;background:var(--paper);margin-bottom:5px;animation:rise .4s var(--ease) var(--d) both}
+  .sup b{display:block;font-size:13px}.sup span{font-size:12px;color:var(--muted)}
+  .consent div{display:grid;grid-template-columns:auto 1fr;gap:0 10px;padding:9px 0;border-bottom:1px solid #EEF3F1;align-items:center}
+  .consent b{font-size:13.5px}.consent span{grid-column:2;font-size:12px;color:var(--muted)}
+  .tog{grid-row:1/3;width:34px;height:20px;border-radius:20px;background:var(--green);position:relative}
+  .tog::after{content:"";position:absolute;right:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff}
+  .scan{position:relative;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:10px}
+  .scan div{display:flex;justify-content:space-between;padding:7px 10px;font-size:12px;border-bottom:1px solid #EEF3F1}
+  .scan div.hit{animation:hit .4s ease 1.3s forwards}
+  @keyframes hit{to{background:#FDF4E3;box-shadow:inset 4px 0 0 var(--saff);font-weight:700}}
+  .scan .beam{position:absolute;left:0;right:0;height:30px;top:0;background:linear-gradient(180deg,transparent,rgba(227,163,59,.35),transparent);animation:beam 1.3s ease-in-out forwards}
+  @keyframes beam{from{top:-30px}to{top:100%}}
+  .mband{width:100%;margin:2px 0 4px}
+  .mband .pin{transform:translateX(var(--x));animation:pinin 1s var(--ease) 1.4s both}
+  @keyframes pinin{from{transform:translateX(10px);opacity:0}to{transform:translateX(var(--x));opacity:1}}
+  .live{text-align:center;padding:10px 0 6px}
+  .big-ok{width:72px;height:72px;border-radius:50%;background:var(--green);color:#fff;font-size:38px;display:grid;place-items:center;margin:0 auto 8px;animation:popin2 .5s var(--ease) both}
+  @keyframes popin2{0%{transform:scale(0)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .live p{margin:0;color:var(--muted)}
+  .pmodal{position:absolute;inset:0;background:rgba(18,48,44,.45);display:flex;align-items:flex-end;z-index:5;border-radius:26px;overflow:hidden;animation:fade .25s ease}
+  .pmodal .sheet{background:#fff;width:100%;border-radius:22px 22px 0 0;padding:20px 18px 18px;text-align:center;animation:sheet .45s var(--ease) both;position:relative;z-index:2}
+  @keyframes sheet{from{transform:translateY(100%)}to{transform:none}}
+  .pmodal .ic{font-size:40px;line-height:1;margin-bottom:6px;animation:popin2 .6s var(--ease) .2s both}
+  .pmodal h3{font-size:21px;margin-bottom:6px}
+  .pmodal p{margin:0 0 14px;font-size:14px;color:var(--ink2)}
+  .pmodal .sheet>button{width:100%;padding:12px;border-radius:14px}
+  .reply{display:grid;gap:6px}
+  .reply button{width:100%;padding:11px;border-radius:12px}
+  .confetti{position:absolute;inset:0;pointer-events:none;z-index:3}
+  .confetti i{position:absolute;top:-12px;height:10px;border-radius:2px;animation:fall 1.8s cubic-bezier(.3,.6,.4,1) var(--d) both}
+  @keyframes fall{from{transform:translateY(0) rotate(0);opacity:1}to{transform:translateY(520px) rotate(var(--r));opacity:0}}
+  .feed{padding:10px 12px;border-radius:12px;background:var(--paper);margin-bottom:6px;animation:rise .35s var(--ease) both}
+  .feed:first-of-type{box-shadow:inset 3px 0 0 var(--saff)}
+  .feed b{display:block;font-size:14px}.feed span{font-size:12px;color:var(--muted)}
+  .feed.warn{background:#FBEACB}.feed.bad{background:#F3D3CC}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .badge-strip{background:linear-gradient(90deg,#FDF4E3,#fff);border:1.5px solid var(--saff2);border-radius:12px;padding:8px 12px;font-weight:700;margin-bottom:8px;animation:pop .4s var(--ease)}
+  .rwc{display:flex;gap:8px;margin-top:12px}
+  .payu .pl{margin:0 0 7px;padding:6px 10px 6px 12px;border-radius:0 10px 10px 0;border-left:3px solid var(--line);font-size:13px;background:var(--paper)}
+  .payu .pl.s-ok{border-color:var(--green)}.payu .pl.s-watch{border-color:var(--saff);background:#FDF4E3}.payu .pl.s-info{border-color:var(--soft)}
+  .payu .pl.fresh{animation:rise .45s var(--ease) both}
+  .dva{font-size:13px;margin-bottom:10px}
+  .dva td,.dva th{padding:6px 8px}
+  .dva td:first-child{font-weight:600}
+  .dva .badv{color:var(--red);font-weight:700}
+  .qrow{display:flex;gap:4px;align-items:center}
+  .qrow .pill{margin-left:8px}
+
+  /* ---------- database */
+  .dbwrap{padding:18px 28px 28px}
+  .dbhead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start;margin-bottom:14px}
+  .dbhead h2{font-size:26px;margin-bottom:6px}
+  .facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .facts div{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px 14px}
+  .facts b{font-family:var(--disp);font-size:26px;display:block}
+  .facts span{font-size:12.5px;color:var(--muted)}
+  .dbgrid{display:grid;grid-template-columns:1fr;gap:14px;align-items:start}
+  .dbd{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,1fr);gap:18px;align-items:start}
+  .kv2{grid-template-columns:1fr 1fr;margin-top:0}
+  @media(max-width:900px){.dbd{grid-template-columns:1fr}}
+  .dbf{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .dbf label{font-size:12.5px;color:var(--muted);display:flex;gap:6px;align-items:center}
+  .dbf select,.dbf input,.cmpl select{font:inherit;padding:7px 10px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink)}
+  .dbf input{flex:1;min-width:120px}
+  .chipsel{display:flex;gap:3px;background:var(--paper);padding:3px;border-radius:12px}
+  .chipsel button{background:transparent;padding:6px 10px;font-size:12.5px;color:var(--muted)}
+  .chipsel button.on{background:#fff;color:var(--ink);box-shadow:0 1px 0 var(--line)}
+  .dbtable{max-height:520px;overflow:auto;margin:0 -6px;border-top:1px solid var(--line)}
+  .dbtable th{position:sticky;top:0;background:#fff;z-index:1}
+  .dbtable td{font-size:13px;white-space:nowrap}
+  .sortb{background:none;padding:0;font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+  .sortb:hover{color:var(--ink)}
+  .cmpl{display:flex;gap:8px;align-items:center;margin:4px 0 8px}
+  .bandin{animation:fade .8s ease}
+  .drawl{stroke-dasharray:2000;stroke-dashoffset:2000;animation:draw 1.4s var(--ease) forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+
+  /* ---------- story mode (theatre) */
+  .theatre{position:fixed;inset:0;z-index:60;background:radial-gradient(ellipse at 50% 0%,#1E4A44 0%,#12302C 55%,#0C2421 100%);color:#fff;display:flex;flex-direction:column;animation:fade .4s ease}
+  .th-top{display:flex;align-items:center;gap:10px;padding:16px 24px}
+  .th-acts{display:flex;gap:4px;flex-wrap:wrap}
+  .theatre .th-acts button{background:transparent;color:var(--soft);padding:7px 12px;font-size:13px;box-shadow:inset 0 0 0 1px #2A5A53}
+  .theatre .th-acts button.on{background:var(--saff);color:var(--ink);box-shadow:none}
+  .th-x{margin-left:auto;width:42px;height:42px;border-radius:50%;padding:0;font-size:24px;background:#1E4A44;color:#fff}
+  .th-stage{flex:1;display:flex;align-items:center;justify-content:center;padding:10px 6vw;overflow:auto;position:relative}
+  .theatre .ti{animation:thin .8s var(--ease) var(--d,0s) both}
+  .theatre.paused .ti{animation-play-state:paused}
+  @keyframes thin{from{opacity:0;transform:translateY(22px);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+  .th-full{text-align:center;max-width:980px}
+  .th-full h1{font-size:clamp(44px,7vw,96px);font-weight:800;line-height:1;letter-spacing:-.03em;margin:10px 0 18px}
+  .th-full h1.ps{font-size:clamp(30px,4.2vw,58px);line-height:1.12;letter-spacing:-.02em}
+  .th-full .sub{font-size:clamp(18px,2vw,26px);color:var(--saff);margin:0 0 20px;font-family:var(--disp)}
+  .th-full .kick,.th-text .kick{font-size:14px;color:var(--soft);margin:0;font-weight:600}
+  .th-full .srcs{font-size:12px;color:#8FB1A9;max-width:760px;margin:26px auto 0;line-height:1.6}
+  .th-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:5vw;align-items:center;width:100%;max-width:1280px}
+  .th-text h2{font-size:clamp(32px,3.8vw,56px);font-weight:800;line-height:1.05;letter-spacing:-.02em;margin:8px 0 16px}
+  .th-text .tb{font-size:clamp(16px,1.4vw,20px);line-height:1.55;color:#DCE8E5;max-width:42ch;margin:0 0 18px}
+  .fact{border-left:3px solid var(--saff);padding:6px 0 6px 14px;margin-bottom:10px;max-width:46ch;animation-delay:calc(var(--d,0s) + .9s)!important}
+  .fact p{margin:0;font-size:15px;color:#fff}
+  .fact span{font-size:12px;color:#8FB1A9}
+  .th-vis{min-width:0}
+  .thv{width:100%;max-height:52vh}
+  .thv .gd{animation:dotin .5s ease var(--d) both}
+  @keyframes dotin{from{opacity:0;r:0}}
+  .thv .badot{animation:dotin .5s ease 1.6s both,blink 1.2s ease-in-out 2.2s infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .thv .draw{stroke-dasharray:400;stroke-dashoffset:400;animation:draw 1s ease var(--d) forwards}
+  .thart{background:var(--paper);border-radius:28px;padding:10px;max-width:620px;margin:0 auto}
+  .thart svg{width:100%;display:block}
+  .tcards{display:grid;gap:12px}
+  .tcard{background:#1E4A44;border:1px solid #2A5A53;border-radius:20px;padding:16px 20px;display:grid;grid-template-columns:auto 1fr;gap:2px 14px;align-items:center}
+  .tcard span{grid-row:1/3;font-size:30px}
+  .tcard h3{font-size:20px;color:var(--saff)}
+  .tcard p{margin:0;color:#DCE8E5;font-size:14.5px;line-height:1.5}
+  .bignums{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .bn{background:#1E4A44;border-radius:20px;padding:16px 18px;border:1px solid #2A5A53}
+  .bn b{font-family:var(--disp);font-size:clamp(28px,3vw,44px);color:var(--saff);display:block;line-height:1.05;font-variant-numeric:tabular-nums}
+  .bn small{font-size:15px;color:#fff;font-weight:600}
+  .bn p{margin:8px 0 4px;font-size:13.5px;color:#DCE8E5;line-height:1.45}
+  .bn em{font-style:normal;font-size:11.5px;color:#8FB1A9}
+  .rules{display:grid;gap:10px}
+  .rule{background:#1E4A44;border-radius:16px;padding:12px 18px;border:1px solid #2A5A53}
+  .rule s{display:inline-block;font-size:19px;font-weight:700;text-decoration:none;position:relative;font-family:var(--disp)}
+  .rule s::after{content:"";position:absolute;left:-4px;right:-4px;top:52%;height:3px;background:var(--red);transform:scaleX(0);transform-origin:left;animation:strike .5s var(--ease) var(--d) forwards}
+  @keyframes strike{to{transform:scaleX(1)}}
+  .rule span{display:block;color:var(--saff);font-size:14px;margin-top:2px}
+  .cpa{display:grid;gap:8px}
+  .cp{border-radius:16px;padding:11px 16px;background:#1E4A44;border:1px solid #2A5A53;display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:center}
+  .cp b{font-family:var(--disp);color:var(--soft);font-size:15px}
+  .cp p{margin:0;font-size:15px}
+  .cp.claim{border-color:var(--saff)} .cp.claim b{color:var(--saff)}
+  .cp.principle{background:var(--saff);color:var(--ink);border:0} .cp.principle b{color:var(--ink)} .cp.principle p{font-weight:700}
+  .whys{display:grid;gap:10px}
+  .why1{display:flex;gap:12px;align-items:center;background:#1E4A44;border:1px solid #2A5A53;border-radius:16px;padding:12px 16px;max-width:80%}
+  .why1 b{flex:none;width:32px;height:32px;border-radius:50%;background:var(--saff);color:var(--ink);display:grid;place-items:center;font-family:var(--disp)}
+  .why1 p{margin:0;font-size:15.5px}
+  .why1:last-child{background:var(--saff);color:var(--ink);border:0;font-weight:700}
+  .why1:last-child b{background:var(--ink);color:var(--saff)}
+  .curtain{position:fixed;inset:0;pointer-events:none;display:flex;z-index:2}
+  .curtain i{flex:1;background:repeating-linear-gradient(90deg,#7a1e16 0 22px,#8f261c 22px 44px);animation:open 1.4s cubic-bezier(.7,0,.3,1) .2s forwards;box-shadow:inset 0 -40px 60px rgba(0,0,0,.35)}
+  .curtain i:first-child{transform-origin:left}.curtain i:last-child{transform-origin:right}
+  @keyframes open{to{transform:scaleX(0)}}
+  .th-bar{display:flex;align-items:center;gap:10px;padding:14px 24px 20px}
+  .th-bar button{background:#1E4A44;color:#fff;width:42px;height:42px;border-radius:50%;padding:0;font-size:22px;display:grid;place-items:center}
+  .th-bar .th-pp{width:52px;height:52px;background:var(--saff);color:var(--ink)}
+  .th-pp svg{width:18px;height:18px}
+  .th-dots{flex:1;display:flex;gap:4px;align-items:center}
+  .th-dots button{flex:1;height:6px;min-width:0;border-radius:4px;background:#2A5A53;padding:0;overflow:hidden;width:auto}
+  .th-dots button.done{background:var(--soft)}
+  .th-dots button.on{background:#2A5A53}
+  .th-dots i{display:block;height:100%;background:var(--saff);animation:thprog linear forwards}
+  @keyframes thprog{from{width:0}to{width:100%}}
+  .th-n{font-size:13px;color:var(--soft);min-width:56px;text-align:right}
+  @media(max-width:700px){.th-stage{padding:10px 18px}.bignums{grid-template-columns:1fr}.theatre .th-acts{display:none}.dbhead{grid-template-columns:1fr}.facts{grid-template-columns:1fr}.dbwrap{padding:14px 16px}.th-dots{display:none}}
+
   .note{font-size:12.5px;color:var(--muted);padding:0 28px 28px;max-width:100ch}
 
-  @media(max-width:1180px){.tabs{order:3;margin:0;width:100%;overflow-x:auto}.acts{margin-left:auto}main.dash,.two{grid-template-columns:1fr}ol.four{grid-template-columns:1fr 1fr}}
+  @media(max-width:1340px){.tabs{order:3;margin:0;width:100%;overflow-x:auto}.acts{margin-left:auto}}
+  @media(max-width:1180px){main.dash,.two,.dbgrid{grid-template-columns:1fr!important}ol.four{grid-template-columns:1fr 1fr}.th-split{grid-template-columns:1fr!important}}
   @media(max-width:860px){.score{grid-template-columns:1fr}.chapcards{grid-template-columns:1fr}.eli-stage{grid-template-columns:1fr;padding:16px 18px 6px;gap:16px}.eli-art{aspect-ratio:16/10}.mark span{display:none}.mark:first-child,.mark:last-child{transform:translateX(-50%);left:calc(var(--f)*100%)}}
   @media(max-width:700px){.chrome{position:static}.top,.timebar{padding-left:16px;padding-right:16px}.score,main.dash,.two,.exp{padding-left:16px;padding-right:16px}.note{padding:0 16px 20px}.ms{grid-auto-flow:row}.kv{grid-template-columns:1fr 1fr}ol.four{grid-template-columns:1fr}.eli5btn .lbl-long{display:none}.brand p{display:none}}
   @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
@@ -283,10 +504,12 @@
       <button role="tab" id="tab-dash" aria-controls="view">PayU monitoring</button>
       <button role="tab" id="tab-app" aria-controls="view">Merchant app</button>
       <button role="tab" id="tab-immune" aria-controls="view">Immune system</button>
+      <button role="tab" id="tab-db" aria-controls="view">Database</button>
       <button role="tab" id="tab-how" aria-controls="view">Explained</button>
     </nav>
     <div class="acts">
       <button id="tour" class="ghost sm">Tour</button>
+      <button id="story" class="storybtn"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 4v12l10-6z" fill="currentColor"/></svg>Story mode</button>
       <button id="eli5" class="eli5btn"><svg class="bulb" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2Z" fill="#12302C"/><rect x="9" y="19.5" width="6" height="2.5" rx="1" fill="#12302C"/></svg><span><span class="lbl-long">Explain like I'm 5</span><span class="lbl-short" hidden>ELI5</span></span></button>
     </div>
   </header>
@@ -523,6 +746,7 @@ function run(upto){
 const fmt=n=>{n=Math.round(n);if(n>=100000)return(n/100000).toFixed(1)+"L";if(n>=1000)return Math.round(n/1000)+"k";return String(n)};
 
 // ================= UI =================
+const TABS=["dash","app","immune","db","how"];
 let WEEK=1, SEL=1, TAB="dash", timer=null, TOUR=-1, LASTTAB=null;
 const RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
 const PREV={};
@@ -539,9 +763,9 @@ function render(){
   const w=$("week"); w.value=WEEK; w.style.setProperty("--p",((WEEK-1)/(WEEKS-1)*100)+"%");
   $("wknum").textContent="Week "+WEEK; $("wkdate").textContent=wkLabel(WEEK)+" 2026";
   document.querySelectorAll(".mark").forEach(b=>b.classList.toggle("on",+b.dataset.w<=WEEK));
-  ["dash","app","immune","how"].forEach(t=>{const b=$("tab-"+t);b.setAttribute("aria-selected",String(t===TAB));b.tabIndex=t===TAB?0:-1});
+  TABS.forEach(t=>{const b=$("tab-"+t);b.setAttribute("aria-selected",String(t===TAB));b.tabIndex=t===TAB?0:-1});
   const enter=LASTTAB!==TAB; LASTTAB=TAB;
-  $("view").innerHTML=`<div class="view${enter?" enter":""}">${{dash,app,immune,how}[TAB](R)}</div>`;
+  $("view").innerHTML=`<div class="view${enter?" enter":""}">${{dash,app,immune,how,db:database}[TAB](R)}</div>`;
   narrate(R); bindView(); animateNums(); animateBars();
 }
 // ---------- narration line under the time bar
@@ -650,6 +874,7 @@ function network(R){
 }
 // ---------- merchant app (the shop's point of view)
 function app(R){
+  if(APPMODE!=="sim") return appFlow();
   const m=M[SEL], s=R.st[m.id], h=s.hist[WEEK-1];
   const picker=`<div class="pick"><label class="meta" for="pick">Shop</label><select id="pick">${M.map(x=>`<option value="${x.id}" ${x.id==SEL?"selected":""}>${x.name}</option>`).join("")}</select></div>`;
   let body="";
@@ -670,7 +895,7 @@ function app(R){
     if(lv>=4) body+=`<div class="card dark"><h3>You're pre-approved</h3><p style="margin:0">A ₹50,000 working-capital loan, based on your payment history. No paperwork.</p></div>`;
   }
   return `<div class="two">
-    <div>${picker}<div class="phone" aria-label="Merchant app for ${m.name}"><div class="bar"><span>PayU for Business</span><span>${wkLabel(WEEK)}</span></div><div class="shopname">${m.name}</div>${body}</div></div>
+    <div>${appModes()}${picker}<div class="phone" aria-label="Merchant app for ${m.name}"><div class="bar"><span>PayU for Business</span><span>${wkLabel(WEEK)}</span></div><div class="shopname">${m.name}</div>${body}</div></div>
     <div class="explain"><h2>What the shop sees</h2>
       <p>The merchant never sees a "fraud score". It sees a level, its money and its offers. Checks arrive as questions, or as ways to unlock more.</p>
       <div class="tl">
@@ -860,15 +1085,17 @@ function bindView(){
     p.style.right="10px";p.style.top="48px";b.after(p);p.querySelector("button").onclick=()=>{p.remove();b.focus()};p.querySelector("button").focus()});
   const pick=$("pick"); if(pick) pick.onchange=()=>{SEL=+pick.value;render();$("pick").focus()};
   const st=$("startTour"); if(st) st.onclick=()=>startTour();
+  bindExt();
   document.querySelectorAll("[data-eli]").forEach(b=>b.onclick=()=>openELI(+b.dataset.eli,0));
   document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const [t,w,s]=b.dataset.go.split(",");goTo(t,+w,s!=null?+s:null)});
 }
 document.addEventListener("click",e=>{if(!e.target.closest(".pop")&&!e.target.classList.contains("info")) closePops()});
 document.addEventListener("keydown",e=>{
+  if(TH.open){if(e.key==="Escape") closeTheatre(); else if(e.key===" "&&e.target.tagName!=="BUTTON"){e.preventDefault();$("th-pp").click()} else if(e.key==="ArrowRight") thGo(1); else if(e.key==="ArrowLeft") thGo(-1); return}
   if(ELI.open){if(e.key==="Escape") closeELI(); else if(e.key==="ArrowRight"&&!e.target.closest(".chaps")) eliGo(1); else if(e.key==="ArrowLeft"&&!e.target.closest(".chaps")) eliGo(-1); return}
   if(e.key==="Escape"){closePops();if(TOUR>=0) endTour();const wel=$("welcome");if(wel) closeWelcome()}
 });
-["dash","app","immune","how"].forEach((t,i,arr)=>{const b=$("tab-"+t);b.onclick=()=>{TAB=t;render()};
+TABS.forEach((t,i,arr)=>{const b=$("tab-"+t);b.onclick=()=>{TAB=t;render()};
   b.onkeydown=e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=arr[(i+(e.key==="ArrowRight"?1:arr.length-1))%arr.length];TAB=n;render();$("tab-"+n).focus()}}});
 $("marks").innerHTML=EVENTS.map(([w,l])=>`<button class="mark" data-w="${w}" style="--f:${(w-1)/(WEEKS-1)}" title="Jump to week ${w}: ${l}"><span>${l}</span></button>`).join("");
 document.querySelectorAll(".mark").forEach(b=>{b.setAttribute("aria-label",`Jump to week ${b.dataset.w}: ${b.textContent}`);b.onclick=()=>{stop();WEEK=+b.dataset.w;render()}});
@@ -877,6 +1104,7 @@ $("step").onclick=()=>{if(WEEK<WEEKS){WEEK++;render()}};
 $("reset").onclick=()=>{stop();WEEK=1;render()};
 $("truth").onchange=render;
 $("eli5").onclick=()=>openELI(ELI.open?ELI.ch:0,0);
+$("story").onclick=()=>openTheatre(0);
 function setPlay(on){const p=$("play");p.innerHTML=on?ICON.pause:ICON.play;p.setAttribute("aria-label",on?"Pause":"Play the story")}
 function stop(){clearInterval(timer);timer=null;setPlay(false)}
 $("play").onclick=()=>{if(timer){stop();return}
@@ -889,11 +1117,14 @@ setPlay(false);
 const TOUR_STEPS=[
   {tab:"dash",el:null,t:"Welcome to Earned Trust",b:"This console shows how PayU could spot betting fronts hiding as bakeries and kiranas, without hurting honest shops. Everything here is simulated: 25 shops over 18 weeks."},
   {tab:"dash",el:"eli5",t:"New to the idea?",b:"Press Explain like I'm 5 any time for a simple, step-by-step story: how we found the problem, and how the system works."},
+  {tab:"dash",el:"story",t:"Story mode",b:"A full-screen, self-playing story from PayU's side: the problem, how betting rings move money, our critical thinking, and the system. Good for opening a pitch."},
   {tab:"dash",el:"metrics",t:"The scoreboard",b:"On the left, how much betting money is caught. On the right, the cost to honest shops. The goal is to push the left up and keep the right near zero."},
   {tab:"dash",el:"p-table",t:"Every shop, every week",b:"Each shop starts on Level 1. S, C and N are the three questions. 1 yes = ask, 2 = slow the extra money, 3 = stop for review. Click any shop to see why."},
   {tab:"dash",el:"p-detail",t:"Why this decision",b:"Sales against proof (stock bought) and against similar shops, plus the plain-language reasons for this week's action."},
   {tab:"dash",el:"p-net",t:"Who shares customers",b:"Honest shops sit alone with local customers. Betting fronts share the same gamblers, so they light up as a web of lines."},
   {tab:"app",el:null,t:"The shop's point of view",b:"The merchant app: a level, its money, a progress bar and offers. Checks arrive as friendly questions or ways to unlock more."},
+  {tab:"app",el:null,t:"Try the sign-up",b:"Switch the phone to 'Try the sign-up' to onboard a shop: OTP, Aadhaar e-KYC, bank check, business numbers, then matching to the database. Try both samples, then 'First weeks and rewards'."},
+  {tab:"db",el:null,t:"The benchmark database",b:"352 kinds of shop by type, size and city. Each has a normal range over 3 years. Compare any shop with its row to see whether it stays in the band."},
   {tab:"immune",el:null,t:"It learns like an immune system",b:"In week 10 a new trick fools all three questions. In week 13 one case is confirmed, the system learns a new check from it, and catches the look-alikes."},
   {tab:"dash",el:"play",t:"Now press Play",b:"Watch the whole story run. The line under the timeline tells you what's happening each week."}];
 function startTour(){closeWelcome();TOUR=0;showTour()}
@@ -914,18 +1145,368 @@ function welcome(){
   const sc=document.createElement("div");sc.className="scrim";sc.id="welcome";
   sc.innerHTML=`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="wel-t"><h2 id="wel-t">Welcome to Earned Trust</h2><p>How PayU could catch betting money hiding in ordinary shops, without hurting honest ones. Team Voltaire's prototype, on 25 simulated shops over 18 weeks.</p>
    <div class="choices">
-    <button class="primary" id="w-eli">Explain like I'm 5<small>The simple story, step by step: how we figured it out and how it works</small></button>
+    <button class="primary" id="w-story">Watch Story mode<small>Two and a half minutes, from PayU's side: the problem, how betting rings work, and our system</small></button>
+    <button class="ghost" id="w-eli">Explain like I'm 5<small>The simple story, step by step: how we figured it out and how it works</small></button>
     <button class="ghost" id="w-tour">Take the 1-minute tour<small>A quick walk around this console</small></button>
     <button class="ghost" id="w-skip">Go straight to the demo<small>Press play and watch 18 weeks run</small></button>
    </div></div>`;
   document.body.appendChild(sc);
   const seen=()=>{try{localStorage.setItem("et-tour","seen")}catch(e){}};
+  $("w-story").onclick=()=>{seen();closeWelcome();openTheatre(0)};
   $("w-eli").onclick=()=>{seen();closeWelcome();openELI(0,0)};
   $("w-tour").onclick=()=>{seen();startTour()};
   $("w-skip").onclick=()=>{seen();closeWelcome();$("play").focus()};
-  $("w-eli").focus();
+  $("w-story").focus();
 }
 function closeWelcome(){const w=$("welcome");if(w) w.remove()}
+
+// ================= EXTENSIONS: sign-up, rewards, database, story mode =================
+const fmtR=n=>{n=Math.round(n);if(n>=1e7)return"₹"+(n/1e7).toFixed(1)+" Cr";return "₹"+fmt(n)};
+const det=(i,k=1)=>{const x=Math.sin(i*12.9898+k*78.233)*43758.5453;return x-Math.floor(x)};
+
+// ---------- benchmark database (synthetic)
+const DBT=[
+ // key,label,ticket,cust/day (small),supplier share,other-state payers,night share,festive uplift,growth/yr,repeat,season note
+ ["bakery","Bakery",140,60,.45,.02,.03,.25,.09,.62,"Diwali, Christmas, New Year"],
+ ["kirana","Kirana",260,50,.75,.015,.04,.15,.07,.78,"Diwali, Ugadi, Ramzan"],
+ ["sweets","Sweet shop",320,40,.50,.03,.03,.60,.08,.55,"Raksha Bandhan, Diwali"],
+ ["mobile","Mobile accessories",420,24,.70,.04,.04,.30,.06,.30,"Diwali sales"],
+ ["pharmacy","Pharmacy",380,45,.72,.02,.06,.05,.10,.80,"Monsoon"],
+ ["restaurant","Restaurant",450,70,.38,.06,.25,.20,.11,.45,"Weekends, festivals"],
+ ["tea","Tea and snacks stall",35,220,.50,.03,.08,.10,.06,.85,"Winter"],
+ ["apparel","Clothing store",900,12,.60,.05,.02,.80,.07,.35,"Diwali, weddings"],
+ ["hardware","Hardware store",700,15,.70,.03,.01,.10,.06,.60,"After monsoon"],
+ ["salon","Salon",300,14,.15,.02,.02,.35,.08,.70,"Weddings, festivals"],
+ ["d2c","Online seller (D2C)",650,20,.55,.70,.15,.45,.18,.25,"Sale days"]
+].map(a=>({pl:{bakery:"bakeries",kirana:"kiranas",sweets:"sweet shops",mobile:"mobile accessory shops",pharmacy:"pharmacies",restaurant:"restaurants",tea:"tea and snack stalls",apparel:"clothing stores",hardware:"hardware stores",salon:"salons",d2c:"online sellers (D2C)"}[a[0]],key:a[0],label:a[1],ticket:a[2],cust:a[3],sup:a[4],oos:a[5],night:a[6],fest:a[7],g:a[8],rep:a[9],season:a[10]}));
+const SIZES=[["Micro",.45,.9],["Small",1,1],["Medium",2.4,1.1],["Large",5.5,1.2]];
+const CITIES=[["Hyderabad",1],["Mumbai",1.2],["Bengaluru",1.15],["Delhi",1.1],["Chennai",1],["Pune",1.05],["Lucknow",.85],["Jaipur",.9]];
+const DB=[];
+DBT.forEach((t,ti)=>SIZES.forEach(([sz,cm,tm],si)=>CITIES.forEach(([city,cf],ci)=>{
+  const i=DB.length, j=det(i,3);
+  const cust=Math.round(t.cust*cm*(.92+det(i,1)*.16)), ticket=Math.round(t.ticket*tm*cf*(.95+det(i,2)*.1));
+  const wk=cust*ticket*7;
+  DB.push({id:i,type:t.key,label:t.label,size:sz,si,city,cust,ticket,wk,p25:wk*.78,p75:wk*1.27,
+    n:Math.round([2600,1400,520,120][si]*(.5+j)*(ci<4?1.4:.8)*(t.key=="d2c"?.6:1)),
+    sup:t.sup*(.95+det(i,4)*.1),oos:t.oos*(.85+det(i,5)*.3),night:t.night*(.85+det(i,6)*.3),hop:.004+det(i,7)*.012,
+    g:t.g*(.8+det(i,8)*.4),pl:t.pl,rep:t.rep,fest:t.fest,season:t.season,t});
+})));
+const DB_SHOPS=DB.reduce((a,b)=>a+b.n,0);
+const MONTHS=Array.from({length:36},(_,k)=>{const d=new Date(2023,10+k,1);return d});
+function seasonF(seg,m){const f=seg.fest,k=seg.type;let s=1;
+  if(m==9||m==10) s+=f*.7; if(m==11&&(k=="bakery"||k=="apparel"||k=="d2c")) s+=f*.5; if(m==7&&k=="sweets") s+=f*.6;
+  if(m==0&&k=="tea") s+=.15; if((m==5||m==6)&&k!="pharmacy") s-=.05; if((m==6||m==7)&&k=="pharmacy") s+=.12; return s}
+function segMonthly(seg){return MONTHS.map((d,k)=>{const base=seg.wk*4.33*Math.pow(1+seg.g,(k-35)/12)*seasonF(seg,d.getMonth());return {k,med:base,lo:base*.62,hi:base*1.5}})}
+let DBF={type:"bakery",size:"Small",city:"all",q:"",sort:"n",dir:-1,sel:null,cmp:"sim0"};
+DBF.sel=DB.find(d=>d.type=="bakery"&&d.size=="Small"&&d.city=="Hyderabad").id;
+
+// ---------- sign-up samples
+const SAMPLES={
+ honest:{label:"Honest bakery",owner:"Ravi Kumar",phone:"+91 98490 •••10",email:"freshbake.ameerpet@gmail.com",aadhaar:"XXXX XXXX 4821",pan:"ABCPK••••F",bank:"SBI •••• 3317",bankName:"RAVI KUMAR",shop:"Fresh Bake House",area:"Ameerpet, Hyderabad",years:6,gst:"36ABCPK1234F1Z5",udyam:"UDYAM-TS-02-0045123",media:true,loginCity:"Hyderabad",device:"D-4410",cust:65,bill:150,fy:[24.5,27.1,30.2],aa:true,
+   suppliers:[["Modern Flour Mills","Flour and maida","₹38k a month"],["Vijaya Dairy","Milk and butter","₹22k a month"],["Sri Packaging","Boxes and bags","₹6k a month"]],ship:"No",hours:"7 to 10 am, 5 to 9 pm",mix:"UPI 68%, cash 27%, card 5%",head:2},
+ front:{label:"Front posing as a bakery",owner:"Vikram S.",phone:"+91 70113 •••82",email:"sweetbites.hyd2026@gmail.com",aadhaar:"XXXX XXXX 9036",pan:"BQJPS••••K",bank:"Small finance bank •••• 0921",bankName:"VIKRAM S",shop:"Sweet Bites Bakery",area:"Tolichowki, Hyderabad",years:1,gst:null,udyam:null,media:false,loginCity:"Delhi",device:"D-9152",cust:40,bill:200,fy:null,aa:false,
+   suppliers:[],ship:"No",hours:"Not given",mix:"UPI 100%",head:0}
+};
+let APPMODE="sim";
+const SU={step:0,sample:"honest"};
+const RW={w:0,timer:null,modal:null,replied:false,loan:false,queue:[]};
+const SEG_SU=()=>DB.find(d=>d.type=="bakery"&&d.size=="Small"&&d.city=="Hyderabad");
+const SU_STEPS=["Welcome","Mobile","Email","Identity","Bank","Business","Numbers","Operations","Consent","Matching","Live"];
+const PAYU_SU={
+ honest:[[],
+  [["ok","Phone verified by OTP; SIM bound to this device"],["info","Device D-4410 is new and not in the memory of confirmed fronts"]],
+  [["ok","Business email verified"]],
+  [["ok","Aadhaar e-KYC passed; PAN name matches; live selfie matches"]],
+  [["ok","Bank account verified by a ₹1 deposit; name matches KYC"]],
+  [["ok","GST active since 2020; Udyam registered; shop photo and video added"],["info","Login city Hyderabad matches the shop"]],
+  [["ok","Declares about ₹68k a week; 3 years of bank history shared and 96% consistent"]],
+  [["ok","3 suppliers paid from the bank: input costs about 45% of sales, normal for bakeries"],["info","No orders to other states: this becomes part of its baseline"]],
+  [["info","Consent recorded under the DPDP Act: purpose is risk checks and credit offers"]],
+  [["ok","Matched to small bakeries in Hyderabad; declared sales sit near the middle"]],
+  [["ok","Level 1. Head start: 2 of 6 steady weeks counted from verified bank history"]]],
+ front:[[],
+  [["ok","Phone verified by OTP; SIM bound to this device"],["info","Device D-9152 is new"]],
+  [["watch","Email created 2 days ago: a weak signal, never a reason on its own"]],
+  [["ok","Aadhaar e-KYC passed; PAN name matches; live selfie matches"],["info","Paper checks pass: rented accounts use real people's real KYC"]],
+  [["ok","Bank account verified; name matches"]],
+  [["watch","Logins from Delhi, shop in Tolichowki, Hyderabad: the Control question will watch this"],["info","No GST, Udyam, photo or video: fine, simply no head start"]],
+  [["info","Declares about ₹56k a week; no history shared"]],
+  [["info","No suppliers and no orders to other states declared: this becomes its baseline"]],
+  [["info","Consent recorded under the DPDP Act"]],
+  [["ok","Matched to small bakeries in Hyderabad"]],
+  [["info","Level 1 with normal limits. One signal never punishes anyone; the system watches what happens next"]]]
+};
+const fld=(l,v,o="")=>`<div class="fld ${o}"><label>${l}</label><div class="inp">${v}</div></div>`;
+const vfy=(t,d)=>`<div class="vfy" style="--d:${d}s"><span class="spin" aria-hidden="true"></span><span class="ok">${t}</span></div>`;
+const skipped=t=>`<div class="vfy vskip"><span class="ok">${t}</span></div>`;
+const opt=t=>`<span class="opt">Optional: ${t}</span>`;
+function suScreen(){
+  const s=SAMPLES[SU.sample], st=SU.step, seg=SEG_SU();
+  const wkDecl=s.cust*s.bill*7;
+  const B=[
+   ()=>`<div class="su-hero"><div class="logo">PayU<span>for Business</span></div><h3>Grow with PayU</h3>
+      <div class="ben"><b>1</b>Take payments from today</div><div class="ben"><b>2</b>Climb levels for faster payouts</div><div class="ben"><b>3</b>Unlock a working-capital loan</div>
+      <p class="meta">About 10 minutes. Keep your Aadhaar, PAN and bank details handy.</p></div>`,
+   ()=>`<h3>Your mobile number</h3>${fld("Mobile",s.phone)}<p class="meta">We sent a 6-digit code.</p>
+      <div class="otp">${[4,8,2,9,1,6].map((n,i)=>`<i style="--d:${.25+i*.18}s">${n}</i>`).join("")}</div>${vfy("Number verified",1.6)}${vfy("The SIM in this phone matches the number",2.2)}`,
+   ()=>`<h3>Business email</h3>${fld("Email",s.email)}${vfy("Verification link opened",1.2)}<p class="meta">We'll send payout statements here.</p>`,
+   ()=>`<h3>Who you are</h3><p class="meta">Required by law for every merchant.</p>${fld("Aadhaar e-KYC",s.aadhaar)}${vfy("Code sent to your Aadhaar-linked mobile: verified",1)}
+      ${fld("PAN",s.pan)}${vfy("PAN name matches Aadhaar",1.6)}
+      <div class="selfie"><div class="face"><i></i></div><div>${vfy("Live selfie matches your Aadhaar photo",2.6)}</div></div>
+      <p class="meta">Your Aadhaar number stays masked. We keep only what the law asks for.</p>`,
+   ()=>`<h3>Where should we pay you?</h3>${fld("Bank account",s.bank)}${vfy("₹1 test deposit received",1)}${vfy(`Name on account: ${s.bankName}, matches your KYC`,1.8)}<p class="meta">Payouts go only to this account. Changing it later needs a fresh selfie.</p>`,
+   ()=>`<h3>Your business</h3>${fld("Shop name",s.shop)}<div class="fld"><label>Type</label><div class="chips">${["Bakery","Kirana","Sweets","Mobile","Other"].map((c,i)=>`<span class="${i==0?"on":""}">${c}</span>`).join("")}</div></div>
+      ${fld("Address",s.area+` <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7Z" fill="#E3A33B"/><circle cx="12" cy="9" r="2.5" fill="#fff"/></svg>`)}${fld("Years trading",s.years)}
+      <div class="fld"><label>GSTIN ${opt("unlocks Level 3")}</label>${s.gst?`<div class="inp">${s.gst}</div>${vfy("GST active, registered 2020",1)}`:skipped("Skipped. That's fine.")}</div>
+      <div class="fld"><label>Udyam ${opt("unlocks Level 3")}</label>${s.udyam?`<div class="inp">${s.udyam}</div>${vfy("Udyam registration found",1.4)}`:skipped("Skipped")}</div>
+      <div class="fld"><label>Shop photo and 20-second video ${opt("unlocks the badge")}</label>${s.media?`<div class="thumbs"><span class="th1"></span><span class="th2">▶</span></div>${vfy("Shop front and counter match the address",1.8)}`:skipped("Skipped")}</div>`,
+   ()=>`<h3>Your business in numbers</h3><p class="meta">${opt("each answer gives you a better starting point")}</p>
+      <div class="two-f">${fld("Customers a day",s.cust)}${fld("Average bill","₹"+s.bill)}</div><p class="calc">That's about <b>₹${fmt(wkDecl)}</b> a week</p>
+      <div class="fld"><label>Yearly sales, last 3 years</label>${s.fy?`<div class="fy">${s.fy.map((v,i)=>`<div><i style="height:${v*2.2}px;--d:${.15*i}s"></i><b>₹${v}L</b><span>FY${24+i}</span></div>`).join("")}</div>`:skipped("Skipped")}</div>
+      <div class="fld"><label>Check with your bank (Account Aggregator) ${opt("head start on the ladder")}</label>${s.aa?vfy("36 months of statements shared with your consent",1.2)+vfy("Bank deposits match what you told us (96%)",2):skipped("Not shared")}</div>`,
+   ()=>`<h3>How your shop runs</h3><div class="fld"><label>Main suppliers ${opt("shows your stock is real")}</label>${s.suppliers.length?s.suppliers.map((x,i)=>`<div class="sup" style="--d:${.1+i*.15}s"><b>${x[0]}</b><span>${x[1]}, ${x[2]}</span></div>`).join("")+vfy("Paid from your bank account: matched",1.2):skipped("None listed")}</div>
+      ${fld("Do you send orders to other states?",s.ship)}${fld("Busiest hours",s.hours)}${fld("How customers pay",s.mix)}`,
+   ()=>`<h3>Your data, your choice</h3><div class="consent">${[["Identity and bank details","Required by law"],["Your payments with PayU","To pay you and keep payments safe"],["What you told us about your shop","To compare you with shops like yours"],["Bank statements (if shared)","For a head start and loan offers"]].map((c,i)=>`<div><span class="tog on" aria-hidden="true"></span><b>${c[0]}</b><span>${c[1]}</span></div>`).join("")}</div>
+      <p class="meta">You can withdraw consent at any time. Sharing more never makes you a suspect, and sharing less never does either.</p>`,
+   ()=>{const near=DB.filter(d=>d.type=="bakery"&&d.city=="Hyderabad");return `<h3>Finding shops like yours</h3><p class="meta">Comparing with ${DB.filter(d=>d.type=="bakery").reduce((a,b)=>a+b.n,0).toLocaleString("en-IN")} bakeries in the database</p>
+      <div class="scan">${near.map(d=>`<div class="${d.size=="Small"?"hit":""}"><span>${d.size} bakeries, ${d.city}</span><b>₹${fmt(d.p25)} to ₹${fmt(d.p75)}/wk</b></div>`).join("")}<i class="beam"></i></div>
+      ${miniBand(seg,wkDecl)}
+      ${vfy(`Matched: small bakeries in Hyderabad (${seg.n.toLocaleString("en-IN")} shops)`,1.6)}${vfy(`Your ₹${fmt(wkDecl)} a week sits inside the normal range`,2.1)}${s.fy?vfy("Your 3-year growth (11% a year) is normal for bakeries",2.6):""}`},
+   ()=>`<div class="live"><div class="big-ok">✓</div><h3>You're live!</h3><p>${s.shop} can take payments now.</p></div>
+      <div class="card" style="animation-delay:.2s"><div class="meta">Your trust level</div><h3>Level 1: Starter</h3><div class="steps">${[1,2,3,4].map(i=>`<span class="${i==1?"cur":""}">${LEVELS[i]}</span>`).join("")}</div><div class="prog"><i style="width:${s.head/6*100}%"></i></div><div class="meta">${s.head?`Head start: ${s.head} of 6 steady weeks already counted`:"0 of 6 steady weeks to reach Proven"}</div></div>
+      <div class="card" style="animation-delay:.3s"><div class="meta">Starting payout limit</div><h3>₹${fmt(seg.wk*CAPS[1])} a week</h3><p class="meta" style="margin:0">Sized to shops like yours. Climbing a level raises it.</p></div>`
+  ];
+  const last=st==SU_STEPS.length-1;
+  const btn=st==0?"Get started":st==8?"I agree":last?"See your first weeks":"Continue";
+  let modal="";
+  if(last&&s.head) modal=pmodal("🎁","Head start unlocked","Because you verified 3 years of bank history, 2 steady weeks already count towards Level 2.","Great",true);
+  return `<div class="su-top">${st>0?`<button class="su-back" data-su="-1" aria-label="Back">‹</button>`:""}<div class="su-prog"><i style="width:${st/(SU_STEPS.length-1)*100}%"></i></div><span>${st}/${SU_STEPS.length-1}</span></div>
+    <div class="scr slide" key="${st}">${B[st]()}</div>
+    <div class="su-foot"><button class="primary" data-su="1">${btn}</button></div>${modal}`;
+}
+function miniBand(seg,v){const W=280,H=70,max=seg.p75*1.6,x=val=>10+(val/max)*(W-20);
+  return `<svg viewBox="0 0 ${W} ${H}" class="mband" aria-label="Where your sales sit"><rect x="10" y="26" width="${W-20}" height="12" rx="6" fill="#E8F0EE"/><rect x="${x(seg.p25)}" y="26" width="${x(seg.p75)-x(seg.p25)}" height="12" rx="6" fill="#B9CFC9"/><text x="${x(seg.p25)}" y="56" font-size="10" fill="#596966" text-anchor="middle">₹${fmt(seg.p25)}</text><text x="${x(seg.p75)}" y="56" font-size="10" fill="#596966" text-anchor="middle">₹${fmt(seg.p75)}</text><g class="pin" style="--x:${x(v)}px"><circle cx="0" cy="32" r="8" fill="#E3A33B" stroke="#fff" stroke-width="2"/><text x="0" y="16" font-size="10.5" font-weight="700" fill="#12302C" text-anchor="middle">You</text></g></svg>`}
+function pmodal(icon,title,body,cta,confetti,extra=""){
+  return `<div class="pmodal">${confetti?confettiHTML():""}<div class="sheet"><div class="ic">${icon}</div><h3>${title}</h3><p>${body}</p>${extra}<button class="primary" data-pm="close">${cta}</button></div></div>`}
+function confettiHTML(){const c=["#E3A33B","#2E7D5B","#B5432F","#B9CFC9","#12302C"];return `<div class="confetti" aria-hidden="true">${Array.from({length:28},(_,i)=>`<i style="left:${(det(i,9)*100).toFixed(1)}%;--d:${(det(i,10)*.5).toFixed(2)}s;--r:${Math.round(det(i,11)*720-360)}deg;background:${c[i%5]};width:${6+Math.round(det(i,12)*5)}px"></i>`).join("")}</div>`}
+
+// ---------- rewards demo (first weeks after sign-up)
+function rwWeeks(){const s=SU.sample,seg=SEG_SU(),lim=seg.wk*CAPS[1];
+  if(s=="honest") return Array.from({length:12},(_,i)=>{const w=i+1,lv=w>=12?4:w>=8?3:w>=4?2:1,sales=seg.wk*(1.02+.012*w)*(.94+det(w,5)*.12);
+    return {w,lv,sales,paid:sales,held:0,oos:.012+det(w,6)*.01,night:.015+det(w,7)*.01,payers:Math.round(sales/150*.6),tests:w==6?["S"]:[],action:w==6?"ASK":"OK",good:2+w}});
+  return [{w:1,lv:1,sales:390000,paid:lim,held:390000-lim,oos:.58,night:.41,payers:412,tests:["S","C"],action:"SLOW"},{w:2,lv:1,sales:410000,paid:0,held:410000,oos:.61,night:.44,payers:436,tests:["S","C"],extra:1,action:"STOP"},{w:3,lv:0,sales:0,paid:0,held:0,oos:0,night:0,payers:0,tests:[],action:"CLOSED"},{w:4,lv:0,sales:0,paid:0,held:0,tests:[],action:"BLOCKED"}];
+}
+const RW_EVENTS={
+ honest:{1:{m:["🎉","First week done!","₹{paid} was paid to your bank. Every steady week moves you up the ladder.","Nice"],log:[["ok","Week 1: 0 of 3 questions say yes. Paid in full."]]},
+   4:{m:["⭐","Level 2: Proven","Your payout limit rises from ₹{l1} to ₹{l2} a week.","Keep going",1],log:[["ok","6 steady weeks (2 from the head start). Level 2."]]},
+   6:{q:1,log:[["watch","Shape: one ₹45,000 payment, far above this shop's usual bill. 1 yes: ASK."]]},
+   8:{m:["🏅","Verified Shop badge","Customers now see a Verified badge when they scan your QR.","Show me",1],log:[["ok","10 steady weeks. Level 3: Verified."]]},
+   12:{m:["🚀","Level 4: Trusted","Instant payouts and the lowest fees are now on.","Next",1],loan:1,log:[["ok","14 steady weeks. Level 4: Trusted. Loan offer unlocked."]]}},
+ front:{1:{q:2,log:[["watch","Shape: ₹3.9L this week vs about ₹56k declared; 58% of payers from other states; 41% after midnight"],["watch","Control: logins from Delhi"],["bad","2 yes: SLOW. Normal-sized sales paid; the unexplained ₹3L waits."]]},
+   2:{m:["⏸","Payouts paused for review","Our team is reviewing recent payments on your account. Renting out your account is a crime; if someone else is using it, tell us.","OK"],log:[["bad","Question unanswered (+1). 3 yes: STOP. An analyst reviews."]]},
+   3:{m:["⛔","Account closed","After review, this account was closed for collecting illegal betting payments. A report has been filed as the law requires.","OK"],log:[["bad","Analyst confirms. Closed; suspicious transaction report filed with FIU-IND."],["learn","Remembered: device D-9152 and 380 gamblers' UPI IDs"]]},
+   4:{m:["🚫","Sign-up couldn't be completed","This phone is linked to an account closed for illegal betting collections.","OK"],log:[["learn","A new sign-up, 'Rose Sweets', from device D-9152: blocked at step 1."]]}}
+};
+function rwStep(){const W=rwWeeks();if(RW.w>=W.length){rwStop();return}RW.w++;const ev=RW_EVENTS[SU.sample][RW.w];RW.modal=null;RW.queue=[];
+  if(ev&&ev.m) RW.modal=ev.m; if(ev&&ev.q) RW.modal=["❓","Quick question",SU.sample=="honest"?"One customer paid ₹45,000 this week, much more than usual. What was it?":"This week was 7 times your usual business, mostly from other states after midnight. What changed?","",0,"q"];
+  if(ev&&ev.loan) RW.queue.push(["💰","You're pre-approved","A ₹50,000 working-capital loan, based on your payment history. No paperwork.","View offer",0,"loan"]);
+  render()}
+function rwStop(){clearInterval(RW.timer);RW.timer=null;const b=$("rw-play");if(b) b.textContent="Play"}
+function rwReset(){rwStop();RW.w=0;RW.modal=null;RW.replied=false;RW.loan=false;RW.queue=[]}
+function rwPhone(){
+  const s=SAMPLES[SU.sample],W=rwWeeks(),seg=SEG_SU(),h=W[RW.w-1];
+  const lv=h?h.lv:1, gone=h&&(h.action=="CLOSED"||h.action=="BLOCKED");
+  let feed=W.slice(0,RW.w).map(x=>{
+    if(x.action=="BLOCKED") return `<div class="feed bad"><b>Sign-up blocked</b><span>New account from a remembered phone</span></div>`;
+    if(x.action=="CLOSED") return `<div class="feed bad"><b>Account closed</b><span>Week ${x.w}</span></div>`;
+    if(x.action=="STOP") return `<div class="feed bad"><b>Payouts paused</b><span>Week ${x.w}: ₹${fmt(x.held)} under review</span></div>`;
+    return `<div class="feed ${x.held?"warn":""}"><b>₹${fmt(x.paid)} paid${x.lv==4?" instantly":""}</b><span>Week ${x.w}${x.held?`: ₹${fmt(x.held)} waits for checks`:""}${x.w==6&&RW.replied?": catering order cleared":""}</span></div>`}).reverse().join("");
+  if(!RW.w) feed=`<div class="feed"><b>Waiting for your first payment</b><span>Press Play or Next week</span></div>`;
+  const head=gone?`<div class="card bad"><h3>${h.action=="BLOCKED"?"Sign-up couldn't be completed":"Account closed"}</h3></div>`:
+   `<div class="card"><div class="meta">Level ${lv}: ${LEVELS[lv]}</div><div class="steps">${[1,2,3,4].map(i=>`<span class="${i<lv?"on":i==lv?"cur":""}">${LEVELS[i]}</span>`).join("")}</div>${lv<4?`<div class="prog"><i data-bar="rw" data-to="${h&&h.good?Math.min(100,Math.round((h.good-(lv==1?0:NEXT[lv-1]))/(NEXT[lv]-(lv==1?0:NEXT[lv-1]))*100)):Math.round(s.head/6*100)}"></i></div>`:""}</div>`;
+  let modal="";
+  const M=RW.modal;
+  if(M){const l1=fmt(seg.wk*CAPS[1]),l2=fmt(seg.wk*CAPS[2]);const body=M[2].replace("{paid}",h?fmt(h.paid):"").replace("{l1}",l1).replace("{l2}",l2);
+    if(M[5]=="q") modal=pmodal(M[0],M[1],body,"",0,SU.sample=="honest"?`<div class="reply"><button class="primary" data-rw="reply">Catering order, invoice attached</button><button class="ghost" data-rw="reply">Something else</button></div>`:`<div class="reply"><button class="ghost" data-pm="close">Reply later</button></div>`).replace('<button class="primary" data-pm="close"></button>',"");
+    else if(M[5]=="loan") modal=pmodal(M[0],M[1],body,RW.loan?"Saved":M[3],0,RW.loan?`<p class="meta">Offer saved. Funds arrive within a day of accepting.</p>`:"").replace('data-pm="close">View offer','data-rw="loan">View offer');
+    else modal=pmodal(M[0],M[1],body,M[3],M[4]);}
+  return `<div class="su-top"><span class="meta">${s.shop}</span><span class="meta" style="margin-left:auto">Week ${RW.w}</span></div>
+   <div class="scr">${head}${lv>=3&&!gone?`<div class="badge-strip">🏅 Verified Shop</div>`:""}${lv>=4&&!gone&&RW.loan?`<div class="card dark"><b>Loan offer saved</b><p class="meta" style="margin:4px 0 0;color:var(--soft)">₹50,000, no paperwork</p></div>`:""}<div class="meta" style="margin:8px 0 4px">Activity</div>${feed}</div>${modal}`;
+}
+function payuPanel(){
+  if(APPMODE=="signup"){const L=PAYU_SU[SU.sample].slice(1,SU.step+1).flat();
+    return `<div class="panel payu"><h2>What PayU sees ${info("The merchant sees a friendly sign-up. Behind it, PayU records each check. Everything the shop declares becomes its baseline: later, its real payments are compared with what it said.")}</h2>
+      ${L.length?L.map((l,i)=>`<p class="pl s-${l[0]}${i>=L.length-PAYU_SU[SU.sample][SU.step].length?" fresh":""}">${l[1]}</p>`).join(""):`<p class="meta">Checks appear here as the shop signs up.</p>`}</div>`}
+  const W=rwWeeks(), h=W[RW.w-1], s=SAMPLES[SU.sample], seg=SEG_SU();
+  const logs=[];for(let w=1;w<=RW.w;w++){const e=RW_EVENTS[SU.sample][w];if(e&&e.log) e.log.forEach(l=>logs.push([w,...l]))}
+  if(SU.sample=="honest"&&RW.replied) logs.push([6,"ok","Shop replied: catering order with invoice. Cleared the same day; catering added to its normal pattern."]);
+  const row=(k,d,a,bad)=>`<tr><td>${k}</td><td>${d}</td><td class="${bad?"badv":""}">${a}</td></tr>`;
+  return `<div class="panel payu"><h2>What PayU sees ${info("PayU compares each week's real payments with what the shop declared at sign-up and with similar shops in the database. The three questions and the action follow from that.")}</h2>
+   ${h&&h.sales?`<table class="dva"><thead><tr><th></th><th>Declared at sign-up</th><th>Week ${RW.w} actual</th></tr></thead><tbody>
+    ${row("Sales a week","₹"+fmt(s.cust*s.bill*7),"₹"+fmt(h.sales),h.sales>seg.p75*1.6)}
+    ${row("Payers from other states",s.ship=="No"?"No orders to other states":"Some",Math.round(h.oos*100)+"%",h.oos>.2)}
+    ${row("Payments after midnight",s.hours,Math.round(h.night*100)+"%",h.night>.2)}
+    ${row("Logins from","Shop city",s.loginCity,s.loginCity!="Hyderabad")}
+   </tbody></table>
+   <div class="qrow">${["S","C","N"].map(t=>`<span class="t ${h.tests.includes(t)?"on":""}">${t}</span>`).join("")}${h.extra?`<span class="t r">+${h.extra}</span>`:""}<span class="pill ${h.action}">${h.action}</span></div>`:h?`<div class="qrow"><span class="pill ${h.action}">${h.action}</span></div>`:`<p class="meta">Press Play to run the first weeks.</p>`}
+   <div class="log" style="max-height:220px;margin-top:10px">${logs.reverse().map(l=>`<p class="${l[1]=="watch"?"learn":l[1]=="ok"?"good":l[1]=="bad"?"bad":"learn"}"><span class="meta">W${l[0]}</span> ${l[2]}</p>`).join("")}</div></div>`;
+}
+function appModes(){return `<div class="modes" role="group" aria-label="Phone mode">${[["sim","Shops in the simulation"],["signup","Try the sign-up"],["rewards","First weeks and rewards"]].map(([k,l])=>`<button class="${APPMODE==k?"on":""}" data-mode="${k}" aria-pressed="${APPMODE==k}">${l}</button>`).join("")}</div>`}
+function sampleSel(){return `<div class="samp"><span class="meta">Sample</span>${Object.entries(SAMPLES).map(([k,v])=>`<button class="${SU.sample==k?"on":""}" data-samp="${k}">${v.label}</button>`).join("")}</div>`}
+function appFlow(){
+  const phone=APPMODE=="signup"?suScreen():rwPhone();
+  const ctr=APPMODE=="rewards"?`<div class="rwc"><button class="primary" id="rw-play">${RW.timer?"Pause":"Play"}</button><button class="ghost" id="rw-next">Next week</button><button class="ghost" id="rw-reset">Restart</button></div>`:"";
+  const expl=APPMODE=="signup"?`<div class="explain"><h2>Signing up, from both sides</h2><p>The shop sees a normal, friendly sign-up. Only identity and bank details are required, because the law requires them. Everything else is optional, and each extra thing shared unlocks something: a head start, a badge, a higher limit.</p><p><b>The twist:</b> whatever a shop declares becomes its promise. Real shops keep their promise without trying. A front that says "40 customers a day, no orders to other states" and then takes ₹3.9 lakh from strangers in other states at midnight has contradicted itself.</p><p class="meta">Try both samples. The rented account passes every paper check, because its KYC is real.</p></div>`
+   :`<div class="explain"><h2>The first weeks</h2><p>${SU.sample=="honest"?"An honest shop collects rewards: payouts, levels, a badge and a loan offer. When something looks unusual, it gets one friendly question and answers it.":"The front passed every check at sign-up. In week 1 its payments contradict what it declared, so the system asks, slows only the extra money, then stops it, and remembers its phone."}</p></div>`;
+  return `<div class="two flow"><div>${appModes()}${sampleSel()}<div class="phone fixed" aria-label="Merchant app">${phone}</div>${ctr}</div><div class="side">${expl}${payuPanel()}</div></div>`;
+}
+
+// ---------- Database tab
+function dbRows(){let r=DB.filter(d=>(DBF.type=="all"||d.type==DBF.type)&&(DBF.size=="all"||d.size==DBF.size)&&(DBF.city=="all"||d.city==DBF.city)&&(!DBF.q||(d.label+" "+d.city).toLowerCase().includes(DBF.q.toLowerCase())));
+  const k=DBF.sort;r.sort((a,b)=>(typeof a[k]=="string"?a[k].localeCompare(b[k]):a[k]-b[k])*DBF.dir);return r}
+function cmpSeries(seg){
+  const c=DBF.cmp;if(c=="none") return null;
+  if(c=="su-honest"){const s=SAMPLES.honest;return {name:"Fresh Bake House (declared at sign-up)",col:"#2E7D5B",pts:MONTHS.map((d,k)=>{const fy=d.getMonth()<3?d.getFullYear():d.getFullYear()+1;const i=fy-2024;return i>=0&&i<3?{k,v:s.fy[i]*1e5/12}:null}).filter(Boolean)}}
+  if(c=="su-front") return {name:"Sweet Bites Bakery (week 1 pace)",col:"#B5432F",pts:[{k:35,v:390000*4.33}]};
+  const m=M[+c.slice(3)];if(!m) return null;
+  const byM={};RAW[m.id].forEach((o,i)=>{if(!o) return;const d=new Date(START);d.setDate(d.getDate()+i*7);const k=(d.getFullYear()-2023)*12+d.getMonth()-10;(byM[k]=byM[k]||[]).push(o.sales)});
+  return {name:m.name+(showTruth()?` (${{honest:"honest",renter:"rented out",mixer:"mixing bets",front:"betting front",stealth:"new trick"}[m.type]})`:""),col:isBad(m)&&showTruth()?"#B5432F":"#E3A33B",pts:Object.entries(byM).filter(([k])=>k<36).map(([k,v])=>({k:+k,v:v.reduce((a,b)=>a+b,0)/v.length*4.33}))};
+}
+function dbChart(seg){
+  const S=segMonthly(seg), C=cmpSeries(seg), W=640,H=250,p=48;
+  const max=Math.max(...S.map(x=>x.hi),...(C?C.pts.map(x=>x.v):[0]))*1.08;
+  const x=k=>p+k*(W-p-14)/35, y=v=>H-26-(v/max)*(H-46);
+  const band=`M${S.map(s=>x(s.k)+","+y(s.hi)).join("L")}L${S.slice().reverse().map(s=>x(s.k)+","+y(s.lo)).join("L")}Z`;
+  const med="M"+S.map(s=>x(s.k).toFixed(1)+","+y(s.med).toFixed(1)).join("L");
+  const ticks=[0,6,12,18,24,30,35].map(k=>`<text x="${x(k)}" y="${H-8}" font-size="10" fill="#596966" text-anchor="middle">${MONTHS[k].toLocaleDateString("en-IN",{month:"short",year:"2-digit"})}</text>`).join("");
+  const yt=[0,.5,1].map(f=>`<text x="${p-6}" y="${y(max*f/1.08)+3}" font-size="10" fill="#596966" text-anchor="end">${fmtR(max*f/1.08)}</text><line x1="${p}" x2="${W-14}" y1="${y(max*f/1.08)}" y2="${y(max*f/1.08)}" stroke="#EEF3F1"/>`).join("");
+  let cmp="";
+  if(C){cmp=C.pts.length>1?`<path class="drawl" d="M${C.pts.map(q=>x(q.k).toFixed(1)+","+y(q.v).toFixed(1)).join("L")}" fill="none" stroke="${C.col}" stroke-width="3" stroke-linejoin="round"/>`:"";cmp+=C.pts.map(q=>`<circle cx="${x(q.k)}" cy="${y(q.v)}" r="${C.pts.length>1?3.5:7}" fill="${C.col}" stroke="#fff" stroke-width="1.5"/>`).join("");
+    const out=C.pts.some(q=>q.v>S[q.k].hi);cmp+=out?`<text x="${x(C.pts[C.pts.length-1].k)-10}" y="${y(C.pts[C.pts.length-1].v)+4}" font-size="11.5" font-weight="700" fill="#B5432F" text-anchor="end">Outside the normal range</text>`:""}
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="36-month sales range for this segment">${yt}<path class="bandin" d="${band}" fill="#B9CFC9" opacity=".45"/><path class="drawl" d="${med}" fill="none" stroke="#12302C" stroke-width="2.4"/>${cmp}${ticks}</svg>
+   <div class="legend"><span><i style="background:#B9CFC9;height:10px"></i>Normal range (10th to 90th percentile)</span><span><i style="background:#12302C"></i>Typical shop</span>${C?`<span><i style="background:${C.col}"></i>${C.name}</span>`:""}</div>`;
+}
+function database(){
+  const rows=dbRows(); if(DBF.sel==null||!DB[DBF.sel]) DBF.sel=(rows[0]||DB[0]).id;
+  const seg=DB[DBF.sel];
+  const simOpts=M.filter(m=>m.cat==seg.type).map(m=>`<option value="sim${m.id}" ${DBF.cmp=="sim"+m.id?"selected":""}>${m.name} (simulation)</option>`).join("");
+  const th=(k,l)=>`<th><button class="sortb" data-sort="${k}" aria-label="Sort by ${l}">${l}${DBF.sort==k?(DBF.dir<0?" ▾":" ▴"):""}</button></th>`;
+  return `<div class="dbwrap">
+  <section class="dbhead"><div><h2>Benchmark database</h2><p class="meta">What "normal" looks like for ${DB.length} kinds of shop: ${DBT.length} business types, 4 sizes, ${CITIES.length} cities, about ${(DB_SHOPS/1e5).toFixed(1)} lakh shops. The Shape question compares every shop with its own row, and new shops are matched to a row at sign-up. All figures are simulated.</p></div>
+   <div class="facts"><div><b>25%</b><span>night payments are normal for restaurants, so "flag night payments" can't be one rule</span></div><div><b>70%</b><span>payers from other states are normal for online sellers, but not for a bakery</span></div><div><b>₹35</b><span>average bill at a tea stall, against ₹900 at a clothing store</span></div></div></section>
+  <div class="dbgrid">
+   <div class="panel" id="dbdetail"><h2>${seg.size} ${seg.pl}, ${seg.city} ${info("The shaded band is where 80% of shops in this row sit each month over 3 years, including festive peaks. A shop whose sales leave the band, without proof like supplier bills, gets a yes on the Shape question.")}</h2>
+    <p class="meta" style="margin-top:-4px">${seg.n.toLocaleString("en-IN")} shops. Busy seasons: ${seg.season}.</p>
+    <label class="meta cmpl">Compare with <select id="dbcmp"><option value="none">Nothing</option>${simOpts}<option value="su-honest" ${DBF.cmp=="su-honest"?"selected":""}>Sign-up sample: honest bakery</option><option value="su-front" ${DBF.cmp=="su-front"?"selected":""}>Sign-up sample: front posing as a bakery</option></select></label>
+    <div class="dbd"><div>${dbChart(seg)}</div><div><div class="kv kv2"><div><b>${seg.cust}</b><span>customers a day</span></div><div><b>₹${seg.ticket}</b><span>average bill</span></div><div><b>${Math.round(seg.rep*100)}%</b><span>repeat customers</span></div><div><b>${(seg.hop*100).toFixed(1)}%</b><span>payers who hop between shops</span></div><div><b>${Math.round(seg.sup*100)}%</b><span>of sales spent on suppliers</span></div><div><b>${(seg.oos*100).toFixed(1)}%</b><span>payers from other states</span></div><div><b>${Math.round(seg.night*100)}%</b><span>payments at night</span></div><div><b>${(seg.g*100).toFixed(1)}%</b><span>growth a year</span></div></div>
+    <p class="meta">In a real system, PayU would build these rows from its own verified Level 3 and 4 merchants, refreshed every week, plus public figures such as GST data. Here they are generated for the demo.</p></div></div>
+   </div>
+   <div class="panel"><div class="dbf">
+     <label>Type <select id="dbt"><option value="all">All types</option>${DBT.map(t=>`<option value="${t.key}" ${DBF.type==t.key?"selected":""}>${t.label}</option>`).join("")}</select></label>
+     <div class="chipsel" role="group" aria-label="Size">${["all",...SIZES.map(s=>s[0])].map(s=>`<button class="${DBF.size==s?"on":""}" data-size="${s}">${s=="all"?"All sizes":s}</button>`).join("")}</div>
+     <label>City <select id="dbc"><option value="all">All cities</option>${CITIES.map(c=>`<option ${DBF.city==c[0]?"selected":""}>${c[0]}</option>`).join("")}</select></label>
+     <input id="dbq" type="search" placeholder="Search" value="${DBF.q}" aria-label="Search the database">
+   </div>
+   <p class="meta" style="margin:6px 0">${rows.length} matching rows, ${rows.reduce((a,b)=>a+b.n,0).toLocaleString("en-IN")} shops</p>
+   <div class="dbtable"><table><thead><tr>${th("label","Segment")}${th("city","City")}${th("n","Shops")}${th("cust","Customers a day")}${th("ticket","Avg bill")}${th("wk","Weekly sales")}${th("sup","Supplier spend")}${th("oos","Other-state payers")}${th("night","Night")}${th("g","Growth a year")}</tr></thead>
+   <tbody>${rows.slice(0,160).map(d=>`<tr class="row${d.id==DBF.sel?" sel":""}" data-db="${d.id}" tabindex="0"><td><b>${d.size} ${d.label.toLowerCase().replace("(d2c)","(D2C)")}</b></td><td>${d.city}</td><td class="num">${d.n.toLocaleString("en-IN")}</td><td class="num">${d.cust}</td><td class="num">₹${d.ticket}</td><td class="num">₹${fmt(d.p25)} to ₹${fmt(d.p75)}</td><td class="num">${Math.round(d.sup*100)}%</td><td class="num">${(d.oos*100).toFixed(1)}%</td><td class="num">${Math.round(d.night*100)}%</td><td class="num">${(d.g*100).toFixed(1)}%</td></tr>`).join("")}</tbody></table>${rows.length>160?`<p class="meta">Showing the first 160. Narrow the filters to see the rest.</p>`:""}</div></div>
+  </div></div>`;
+}
+
+// ---------- Story mode (theatre)
+const SRC={theprint:"ThePrint, ED sources",week:"The Week",ed:"ED press release, via Taxguru",sb:"Storyboard18",ht:"Hindustan Times, via Gambling.com",mf:"mFilterIt, via CXO Today",pg:"Act text, via PwC and Bar & Bench",payu:"payu.in",ys:"YourStory",siasat:"ED in court, via Siasat",gi:"Gambling Insider",fpj:"Free Press Journal",scroll:"Scroll",inc:"Inc42"};
+const chip=(t,s)=>`<div class="fact ti"><p>${t}</p><span>${SRC[s]}</span></div>`;
+const V={
+ curtain:()=>`<div class="curtain"><i></i><i></i></div>`,
+ dots:()=>{let s="";for(let i=0;i<240;i++){const r=Math.floor(i/20),c=i%20,bad=i==137;s+=`<circle cx="${20+c*19}" cy="${20+r*19}" r="${bad?8:5}" fill="${bad?"#E0553F":"#B9CFC9"}" class="${bad?"badot":"gd"}" style="--d:${(det(i,4)*1.2).toFixed(2)}s"/>`}return `<svg viewBox="0 0 400 250" class="thv">${s}</svg>`},
+ three:()=>`<div class="tcards">${[["⚖","The law","The Online Gaming Act 2025 bans online money games and bars banks and payment firms from moving money for them."],["🏛","The regulator","RBI's embargo on PayU onboarding new merchants was lifted only in April 2024. Trust with the regulator is the licence to grow."],["🏪","The business","Freeze honest shops and they leave. PayU's payments growth comes from deeper business with existing merchants."]].map((c,i)=>`<div class="tcard ti" style="--d:${.3+i*.35}s"><span>${c[0]}</span><h3>${c[1]}</h3><p>${c[2]}</p></div>`).join("")}</div>`,
+ tree:()=>{const P=[60,150,250,340];return `<svg viewBox="0 0 400 260" class="thv"><g class="ti" style="--d:.2s"><rect x="130" y="10" width="140" height="44" rx="12" fill="#E3A33B"/><text x="200" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#12302C">Head office</text><text x="200" y="46" text-anchor="middle" font-size="11" fill="#12302C">abroad</text></g>
+  ${P.map((x,i)=>`<path class="draw" style="--d:${.6+i*.1}s" d="M200 54 L${x} 110" stroke="#B9CFC9" stroke-width="2" fill="none"/><g class="ti" style="--d:${.8+i*.15}s"><rect x="${x-40}" y="110" width="80" height="34" rx="10" fill="#1E4A44" stroke="#B9CFC9"/><text x="${x}" y="131" text-anchor="middle" font-size="12" fill="#fff">Panel ${i+1}</text></g>${[0,1,2,3,4].map(j=>`<circle class="ti" style="--d:${1.4+i*.1+j*.06}s" cx="${x-32+j*16}" cy="${190+(j%2)*18}" r="6" fill="#B9CFC9"/>`).join("")}`).join("")}
+  <text x="200" y="250" text-anchor="middle" font-size="12" fill="#B9CFC9" class="ti" style="--d:2s">Players get IDs from a panel</text></svg>`},
+ flowIn:()=>{const L=[["Bakery QR",50],["Kirana QR",95],["Student's account",140],["Villager's account",185],["Vendor's UPI",230]];
+  return `<svg viewBox="0 0 420 270" class="thv">${[40,100,160,220].map((y,i)=>`<g class="ti" style="--d:${.1+i*.1}s"><rect x="12" y="${y-14}" width="22" height="34" rx="5" fill="none" stroke="#B9CFC9" stroke-width="2"/><circle cx="23" cy="${y+14}" r="2" fill="#B9CFC9"/></g>`).join("")}<text x="23" y="262" font-size="11" fill="#B9CFC9" text-anchor="middle">Players</text>
+   ${L.map(([t,y],i)=>{const a=`M34 ${[40,100,160,220][i%4]} C90 ${[40,100,160,220][i%4]} 100 ${y} 140 ${y}`,b=`M280 ${y} C300 ${y} 300 140 320 140`;return `<path d="${a}" stroke="#2A5A53" fill="none"/><path d="${b}" stroke="#2A5A53" fill="none"/>${[0,1,2].map(k=>`<circle r="4" fill="#E3A33B" opacity="0"><set attributeName="opacity" to="1" begin="${(1.6+i*.3+k*.8).toFixed(1)}s"/><animateMotion dur="2.4s" begin="${(1.6+i*.3+k*.8).toFixed(1)}s" repeatCount="indefinite" path="${a} ${b.replace("M","L")}"/></circle>`).join("")}`}).join("")}
+   ${L.map(([t,y],i)=>`<g class="ti" style="--d:${.5+i*.15}s"><rect x="140" y="${y-15}" width="140" height="30" rx="8" fill="#1E4A44" stroke="#E3A33B" stroke-width="1.5"/><text x="210" y="${y+4}" font-size="11.5" fill="#fff" text-anchor="middle">${t}</text></g>`).join("")}
+   <g class="ti" style="--d:1.4s"><rect x="320" y="110" width="90" height="60" rx="12" fill="#B5432F"/><text x="365" y="136" font-size="11.5" fill="#fff" text-anchor="middle" font-weight="700">Panel's</text><text x="365" y="152" font-size="11.5" fill="#fff" text-anchor="middle" font-weight="700">account</text></g></svg>`},
+ flowOut:()=>{const pts=[[40,130],[110,80],[170,170],[230,90],[290,150]];const path="M"+pts.map(p=>p.join(" ")).join(" L");
+  const ex=[["Cash, hawala",50],["Crypto, USDT",130],["Shell firms",210]];
+  return `<svg viewBox="0 0 420 260" class="thv"><path class="draw" style="--d:.2s" d="${path}" stroke="#B9CFC9" stroke-width="2" fill="none" stroke-dasharray="4 5"/>
+   ${pts.map((p,i)=>`<g class="ti" style="--d:${.2+i*.2}s"><circle cx="${p[0]}" cy="${p[1]}" r="15" fill="#1E4A44" stroke="#E3A33B" stroke-width="2"/><text x="${p[0]}" y="${p[1]+4}" font-size="10" fill="#fff" text-anchor="middle">${i?"hop "+i:"in"}</text></g>`).join("")}
+   ${ex.map(([t,y],i)=>`<path d="M305 150 C330 150 330 ${y} 345 ${y}" stroke="#2A5A53" fill="none"/><g class="ti" style="--d:${1.4+i*.2}s"><rect x="345" y="${y-15}" width="70" height="30" rx="8" fill="#B5432F"/><text x="380" y="${y+4}" font-size="10.5" fill="#fff" text-anchor="middle" font-weight="600">${t}</text></g>`).join("")}
+   ${[0,1,2,3].map(k=>`<circle r="5" fill="#E3A33B" opacity="0"><set attributeName="opacity" to="1" begin="${(1+k*.65).toFixed(2)}s"/><animateMotion dur="2.6s" begin="${(1+k*.65).toFixed(2)}s" repeatCount="indefinite" path="${path} L345 ${ex[k%3][1]}"/></circle>`).join("")}
+   <text x="210" y="250" text-anchor="middle" font-size="12" fill="#B9CFC9" class="ti" style="--d:2.2s">Each hop makes the trail harder to follow</text></svg>`},
+ scale:()=>`<div class="bignums">${[["92000","₹","crore+","Mahadev betting proceeds, ED's estimate in court (an allegation, not yet proven)","siasat"],["2000","~","panels","each earning about ₹10 lakh a week, says the ED","week"],["524000","","mule accounts","found in one 2025 study; 11% of mule activity ran through UPI merchants","mf"],["110","₹","crore frozen","in mule accounts linked to the Parimatch app","gi"]].map((n,i)=>`<div class="bn ti" style="--d:${.2+i*.3}s"><b><span>${n[1]}</span><span data-th="${n[0]}">0</span> <small>${n[2]}</small></b><p>${n[3]}</p><em>${SRC[n[4]]}</em></div>`).join("")}</div>`,
+ rules:()=>`<div class="rules">${[["Flag round amounts","They send ₹1,437 instead"],["Flag payments after midnight","Restaurants take 25% of payments at night"],["Check KYC documents","The KYC is real. The account is rented"],["Block brand-new accounts","Every honest shop was new once"],["Blacklist known accounts","Accounts are used for a few months, then dropped"]].map((r,i)=>`<div class="rule ti" style="--d:${.2+i*.35}s"><s style="--d:${.6+i*.35}s">${r[0]}</s><span>${r[1]}</span></div>`).join("")}</div>`,
+ cpa:()=>`<div class="cpa">${[["Claim","The weak point isn't fake documents. It's that trust is checked once."],["Premise","Rented accounts carry real people's real KYC, so paper checks pass."],["Premise","Behaviour changes after onboarding: an account is rented or bets are mixed in later."],["Premise","Fixed rules are public knowledge within weeks, so fraudsters copy around them."],["Principle","Trust must be earned continuously: money can't grow faster than proof."]].map((c,i)=>`<div class="cp ti ${c[0].toLowerCase()}" style="--d:${.2+i*.45}s"><b>${c[0]}</b><p>${c[1]}</p></div>`).join("")}</div>`,
+ whys:()=>`<div class="whys">${["Bets reached a betting panel through a bakery's QR code. Why?","The bakery's account was rented out after it was approved. Why wasn't it noticed?","Nobody looks again after day one. Why?","Trust is a one-time gate, not something earned. That's the root."].map((t,i)=>`<div class="why1 ti" style="--d:${.2+i*.5}s;margin-left:${i*7}%"><b>${i+1}</b><p>${t}</p></div>`).join("")}</div>`,
+ art:k=>`<div class="thart ti" style="--d:.2s">${ART[k]()}</div>`,
+ gains:()=>`<div class="tcards">${[["🛡","Less risk","Betting money stopped early, with evidence ready for FIU-IND reports and the regulator."],["🤝","Happier merchants","Honest shops are never frozen; they get faster payouts and a badge."],["📈","New revenue","Trusted levels feed credit: PayU's loan book grew to $558M by March 2025."]].map((c,i)=>`<div class="tcard ti" style="--d:${.3+i*.35}s"><span>${c[0]}</span><h3>${c[1]}</h3><p>${c[2]}</p></div>`).join("")}</div>`
+};
+const SCENES=[
+ {act:"PayU's problem",dur:7,full:1,h:`<p class="ti kick" style="--d:.8s">Follow the Money 2026, IIM Bangalore and PayU</p><h1 class="ti" style="--d:1.1s">The bakery that takes bets</h1><p class="ti sub" style="--d:1.6s">A story told from PayU's side</p>${V.curtain()}`},
+ {act:"PayU's problem",dur:9,t:"PayU moves money for more than 5 lakh merchants",b:"Almost all of them are exactly who they say they are: bakeries, kiranas, pharmacies, online sellers. A few are not.",f:chip("PayU serves over 5,00,000 merchants in India","payu"),v:V.dots},
+ {act:"PayU's problem",dur:9,t:"Some shops are fronts for illegal betting",b:"Their QR codes and accounts collect money for betting apps. On paper they're a bakery. In reality they're a collection point.",f:chip("Betting platforms take UPI through proxy accounts belonging to small shop owners, vendors and labourers","sb"),v:()=>V.art("bakery")},
+ {act:"PayU's problem",dur:11,t:"Why this is PayU's problem",b:"Three pressures at once, and they pull in different directions.",v:V.three,f:chip("The Act bars banks, financial institutions and any other person from facilitating payments for online money games","pg")},
+ {act:"PayU's problem",dur:8,full:1,h:`<p class="ti kick" style="--d:.2s">Problem statement</p><h1 class="ti ps" style="--d:.5s">How can PayU tell a bakery selling cake from a bakery collecting bets, every week, without freezing honest shops?</h1>`},
+ {act:"How betting rings work",dur:10,t:"A franchise, run from abroad",b:"In the Mahadev case, the ED says a head office in Dubai sold 'panels' to associates and split profits 70:30. Each panel hands out player IDs and runs its own deposits and payouts.",v:V.tree,f:chip("Head office franchises panels to associates, sharing profit 70:30","ed")},
+ {act:"How betting rings work",dur:11,t:"Money in: rented accounts",b:"Players are told to pay into ordinary-looking accounts: shop QR codes, students, villagers paid to open accounts. Each is used for a few months, then dropped.",v:V.flowIn,f:chip("Over 2,000 accounts opened on bogus KYC, operated only for a few months","theprint")+chip("About 500 mule accounts, many onboarded as merchant accounts","ht")},
+ {act:"How betting rings work",dur:10,t:"Money out: hop, hide, leave",b:"Money is moved fast through account after account, then out as cash and hawala, crypto, or through shell companies and investments.",v:V.flowOut,f:chip("Laundered through benami accounts, cryptocurrency and hawala","scroll")},
+ {act:"How betting rings work",dur:11,t:"The scale",b:"These are estimates and allegations from investigations, but the order of magnitude is the point.",v:V.scale},
+ {act:"How betting rings work",dur:11,t:"Why simple rules fail",b:"Every fixed rule has a cheap workaround, or hurts honest shops.",v:V.rules,f:chip("When a panel operator was caught, head office logged out of its WhatsApp remotely","fpj")},
+ {act:"Critical thinking",dur:12,t:"Claim, premises, principle",b:"We broke the problem down before designing anything.",v:V.cpa},
+ {act:"Critical thinking",dur:10,t:"Symptoms or root cause?",b:"We kept asking why until the answer stopped being about one shop.",v:V.whys},
+ {act:"Our system",dur:8,t:"Everyone starts on Level 1",b:"Sign-up checks identity, as the law requires. Everything else is optional, and what a shop declares becomes its baseline.",v:()=>V.art("start")},
+ {act:"Our system",dur:8,t:"Real shops climb the Trust Ladder",b:"Steady weeks and light proof unlock higher limits, a badge, instant payouts and a loan offer. Fronts can't fake months of real business.",v:()=>V.art("climb")},
+ {act:"Our system",dur:9,t:"Three questions, counted like traffic lights",b:"Shape, Control, Network. One yes asks, two slow only the extra money, three stop it for a person to review.",v:()=>V.art("lights")},
+ {act:"Our system",dur:9,t:"It learns like an immune system",b:"Every caught front is remembered. A trick nobody had seen becomes a new check once one case is confirmed.",v:()=>V.art("immune")},
+ {act:"Our system",dur:8,t:"18 simulated weeks, 25 shops",b:"Every bad account stopped, nothing held at honest shops, one honest question asked and answered.",v:()=>V.art("result")},
+ {act:"Our system",dur:9,t:"What PayU gets",b:"Fewer fronts, happier honest merchants, and trust data that powers lending.",v:V.gains},
+ {act:"Our system",dur:9,full:1,h:`<h1 class="ti" style="--d:.3s">Earned Trust</h1><p class="ti sub" style="--d:.8s">Money can't grow faster than proof.</p><p class="ti kick" style="--d:1.3s">Team Voltaire: Neeraj Preenand, Achintya Iyer, Viyaan Prakash</p><p class="ti srcs" style="--d:1.8s">Sources: ED press release (Sept 2023); ThePrint; The Week; Scroll; Free Press Journal; Siasat; Storyboard18; Hindustan Times via Gambling.com; Gambling Insider; mFilterIt via CXO Today; the Online Gaming Act 2025 via PwC and Bar & Bench; payu.in; YourStory; Inc42.</p>`}
+];
+const TH={i:0,play:true,open:false};
+function openTheatre(i=0){stop();closeWelcome();TH.i=i;TH.play=true;TH.open=true;let el=$("theatre");if(!el){el=document.createElement("div");el.id="theatre";el.className="theatre";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Story mode");document.body.appendChild(el)}drawTheatre();}
+function closeTheatre(){TH.open=false;const el=$("theatre");if(el) el.remove();$("story").focus()}
+function thGo(d){const n=TH.i+d;if(n<0) return;if(n>=SCENES.length){TH.play=false;drawTheatre();return}TH.i=n;drawTheatre()}
+function drawTheatre(){
+  const s=SCENES[TH.i], el=$("theatre"), acts=[...new Set(SCENES.map(x=>x.act))];
+  const body=s.full?`<div class="th-full">${s.h}</div>`:`<div class="th-split"><div class="th-text"><p class="ti kick" style="--d:.1s">${s.act}</p><h2 class="ti" style="--d:.25s">${s.t}</h2><p class="ti tb" style="--d:.45s">${s.b}</p><div class="facts-in" style="--d:.9s">${s.f||""}</div></div><div class="th-vis">${s.v()}</div></div>`;
+  el.innerHTML=`<div class="th-top"><div class="th-acts">${acts.map(a=>`<button class="${a==s.act?"on":""}" data-act="${a}">${a}</button>`).join("")}</div><button class="th-x" id="th-x" aria-label="Close story mode">×</button></div>
+   <div class="th-stage" key="${TH.i}">${body}</div>
+   <div class="th-bar"><button id="th-prev" aria-label="Previous scene">‹</button><button id="th-pp" class="th-pp" aria-label="${TH.play?"Pause":"Play"}">${TH.play?ICON.pause:ICON.play}</button><button id="th-next" aria-label="Next scene">›</button>
+    <div class="th-dots">${SCENES.map((x,i)=>`<button class="${i<TH.i?"done":i==TH.i?"on":""}" data-sc="${i}" aria-label="Scene ${i+1}">${i==TH.i?`<i style="animation-duration:${x.dur}s;animation-play-state:${TH.play?"running":"paused"}"></i>`:""}</button>`).join("")}</div>
+    <span class="th-n">${TH.i+1} of ${SCENES.length}</span></div>`;
+  const bar=el.querySelector(".th-dots .on i"); if(bar) bar.addEventListener("animationend",()=>{if(TH.play&&TH.open) thGo(1)});
+  if(RM&&bar) bar.style.animation="none";
+  $("th-x").onclick=closeTheatre; $("th-prev").onclick=()=>thGo(-1); $("th-next").onclick=()=>thGo(1);
+  $("th-pp").onclick=()=>{TH.play=!TH.play;const b=el.querySelector(".th-dots .on i");if(b) b.style.animationPlayState=TH.play?"running":"paused";el.classList.toggle("paused",!TH.play);$("th-pp").innerHTML=TH.play?ICON.pause:ICON.play;$("th-pp").setAttribute("aria-label",TH.play?"Pause":"Play")};
+  el.classList.toggle("paused",!TH.play);
+  el.querySelectorAll("[data-sc]").forEach(b=>b.onclick=()=>{TH.i=+b.dataset.sc;drawTheatre()});
+  el.querySelectorAll("[data-act]").forEach(b=>b.onclick=()=>{TH.i=SCENES.findIndex(x=>x.act==b.dataset.act);drawTheatre()});
+  el.querySelectorAll("[data-th]").forEach(n=>{const to=+n.dataset.th,t0=performance.now(),D=1600;const f=v=>Math.round(v).toLocaleString("en-IN");if(RM){n.textContent=f(to);return}const tick=t=>{if(!n.isConnected)return;const p=Math.min(1,(t-t0)/D);n.textContent=f(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick)};requestAnimationFrame(tick)});
+  if(RM) el.querySelectorAll("animateMotion").forEach(a=>a.remove());
+  $("th-pp").focus({preventScroll:true});
+}
+
+// ---------- wiring for the new pieces
+function bindExt(){
+  document.querySelectorAll("[data-mode]").forEach(b=>b.onclick=()=>{APPMODE=b.dataset.mode;if(APPMODE=="signup") SU.step=0;if(APPMODE=="rewards") rwReset();render()});
+  document.querySelectorAll("[data-samp]").forEach(b=>b.onclick=()=>{SU.sample=b.dataset.samp;SU.step=APPMODE=="signup"?0:SU.step;rwReset();render()});
+  document.querySelectorAll("[data-su]").forEach(b=>b.onclick=()=>{const d=+b.dataset.su;if(d>0&&SU.step==SU_STEPS.length-1){APPMODE="rewards";rwReset();render();return}SU.step=Math.max(0,Math.min(SU_STEPS.length-1,SU.step+d));render();const n=document.querySelector('[data-su="1"]');if(n) n.focus({preventScroll:true})});
+  document.querySelectorAll("[data-pm]").forEach(b=>b.onclick=()=>{const p=b.closest(".pmodal");if(APPMODE=="signup"){p.remove();return}RW.modal=RW.queue.length?RW.queue.shift():null;render()});
+  document.querySelectorAll('[data-rw="reply"]').forEach(b=>b.onclick=()=>{RW.replied=true;RW.modal=["✅","Thanks, all clear","Catering noted. Large orders like this won't need a question next time.","Done"];render()});
+  document.querySelectorAll('[data-rw="loan"]').forEach(b=>b.onclick=()=>{RW.loan=true;RW.modal=null;render()});
+  const rp=$("rw-play");if(rp) rp.onclick=()=>{if(RW.timer){rwStop();return}if(RW.w>=rwWeeks().length) rwReset();rp.textContent="Pause";RW.modal=null;rwStep();if(!RW.modal&&RW.w<rwWeeks().length) RW.timer=setInterval(()=>{if(RW.modal) return;rwStep()},1500);const nb=$("rw-play");if(nb&&RW.timer) nb.textContent="Pause"};
+  const rn=$("rw-next");if(rn) rn.onclick=()=>{rwStop();rwStep()};
+  const rr=$("rw-reset");if(rr) rr.onclick=()=>{rwReset();render()};
+  // database
+  const t=$("dbt");if(t) t.onchange=()=>{DBF.type=t.value;DBF.sel=null;if(!DBF.cmp.startsWith("su")) DBF.cmp="none";render()};
+  const c=$("dbc");if(c) c.onchange=()=>{DBF.city=c.value;DBF.sel=null;render()};
+  const q=$("dbq");if(q) q.oninput=()=>{DBF.q=q.value;DBF.sel=null;clearTimeout(q._t);q._t=setTimeout(()=>{render();const n=$("dbq");n.focus();n.setSelectionRange(n.value.length,n.value.length)},250)};
+  document.querySelectorAll("[data-size]").forEach(b=>b.onclick=()=>{DBF.size=b.dataset.size;DBF.sel=null;render()});
+  document.querySelectorAll("[data-sort]").forEach(b=>b.onclick=()=>{const k=b.dataset.sort;DBF.dir=DBF.sort==k?-DBF.dir:-1;DBF.sort=k;render()});
+  document.querySelectorAll("[data-db]").forEach(r=>{const go=()=>{DBF.sel=+r.dataset.db;const seg=DB[DBF.sel];if(DBF.cmp.startsWith("sim")&&M[+DBF.cmp.slice(3)].cat!=seg.type) DBF.cmp="none";render();const n=document.querySelector(`[data-db="${DBF.sel}"]`);if(n) n.focus({preventScroll:true});const d=$("dbdetail");if(d&&d.getBoundingClientRect().top<150) d.scrollIntoView({behavior:RM?"auto":"smooth",block:"center"})};r.onclick=go;r.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}});
+  const cm=$("dbcmp");if(cm) cm.onchange=()=>{DBF.cmp=cm.value;render()};
+}
 render();
 try{if(!localStorage.getItem("et-tour")) welcome()}catch(e){}
 </script>
