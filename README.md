@@ -17,6 +17,7 @@ Don't police merchants into proving they're innocent. **Make being real worth pr
   - **Control:** is the real owner running it?
   - **Network:** does it share customers with shops it shouldn't?
 - **Missing proof never counts as suspicion.** Proof only helps a shop climb.
+- **A fourth check, Reports:** outside intelligence (cyber-crime complaints and flagged transactions from NCRP and helpline 1930, the I4C suspect registry, police busts and interrogations, ED and court filings, news). It counts as a yes only when an official source names the shop's exact UPI ID, account, phone or device; a name in the news or a social post is only a lead for an analyst. Police seizures of players' UPI IDs also feed the memory.
 - **Graduated response:** 1 yes → **ASK**, 2 → **SLOW** (only the unexplained extra waits), 3 → **STOP** (human review, report to FIU-IND). A question left unanswered counts as a yes and keeps counting.
 - **Immune-system learning:** "normal" is relearned every week. Every confirmed front is remembered (device, gamblers). A confirmed case of a new trick can add a brand-new check.
 
@@ -70,6 +71,7 @@ Tick **Show answer key** to reveal which shops were honest, renters, mixers, fro
 - The explainer works with the arrow keys and closes with Esc.
 
 ## Changelog
+- **v5 (26 Nov 2026):** Reports check (outside reports, police busts, flagged transactions, news) with an Outside reports panel, explainer step and Story mode scene.
 - **v4 (26 Nov 2026):** Story mode; phone sign-up with KYC and business data, matched to the database; rewards and pop-ups in the phone; benchmark database tab with 3-year growth ranges; welcome screen offers Story mode first.
 - **v3 (26 Nov 2026):** redesigned interface; Explain like I'm 5 explainer; first-visit welcome; timeline with event markers and a narrated line for each week; numbers and progress bars animate between weeks; click a dot in the network to open a shop; works on phones.
 - **v2 (26 Nov 2026):**

@@ -128,7 +128,7 @@
   .lvl i{display:block;width:6px;background:var(--line);border-radius:2px}
   .lvl i.on{background:var(--ink2)} .lvl i.top{background:var(--saff)}
   .t{display:inline-block;min-width:22px;height:22px;border-radius:11px;font-size:11px;font-weight:700;line-height:22px;text-align:center;margin-right:3px;background:#EEF3F1;color:#8A9895;padding:0 5px;transition:background .25s,color .25s}
-  .t.on{background:var(--ink);color:#fff} .t.r{background:var(--orange);color:#fff}
+  .t.on{background:var(--ink);color:#fff} .t.r{background:var(--orange);color:#fff} .t.on.rp{background:var(--saff);color:var(--ink)}
   .num{font-variant-numeric:tabular-nums;white-space:nowrap}
   .legend{font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;align-items:center}
   .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
@@ -140,6 +140,14 @@
   .kv span{font-size:11.5px;color:var(--muted)}
   .why{font-size:13.5px;color:var(--ink2);line-height:1.5;padding-left:18px;margin:10px 0 0}
   .why li{margin-bottom:4px}
+  .repf{max-height:260px;overflow:auto;display:grid;gap:8px;padding-right:4px}
+  .rep{border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:13px}
+  .rep.now{border-color:var(--saff);background:#FDF4E3;animation:pop .4s var(--ease)}
+  .rep .rh{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+  .rep .rk{font-weight:700;font-size:12px;background:var(--tint);padding:1px 8px;border-radius:6px}
+  .rep p{margin:5px 0}
+  .rep .ro{font-size:12.5px;color:var(--ink2)}
+  .rep .ro .pill{margin-right:6px}
   .log{max-height:290px;overflow:auto;font-size:13px;line-height:1.5;padding-right:4px}
   .log p{margin:0 0 8px;padding:2px 0 2px 12px;border-left:3px solid var(--line)}
   .log p.learn{border-color:var(--saff)} .log p.bad{border-color:var(--red)} .log p.good{border-color:var(--green)}
@@ -569,6 +577,20 @@ const M=[
  ["Link Road Accessories","Mumbai","mobile","front",13,{device:"D-7731"}]
 ].map((a,i)=>({id:i,name:a[0],city:a[1],cat:a[2],type:a[3],at:a[4],opt:a[5]||{}}));
 const isBad=m=>m.type!=="honest";
+// ---------- outside reports: complaints, registries, police, filings, news
+// A report counts as a "yes" only when an official source names an exact identifier (UPI ID, account, phone, device) of the shop.
+// Names alone, news stories and social posts are leads for an analyst, never a yes.
+const REPORT_WEEKS=4;
+const INTEL=[
+ {w:4,kind:"News",src:"Local news report",t:"Police bust a betting ring in Hyderabad; the story mentions a \"Sai Bakery\"",match:null,res:"Name only, no UPI ID or account. Sri Sai Bakery's identifiers appear nowhere in it. No action: a name is never enough."},
+ {w:7,kind:"Flagged transactions",src:"Cyber-crime complaints (NCRP, helpline 1930)",t:"3 people report paying a bakery's UPI ID as an \"IPL betting deposit\"",match:4},
+ {w:9,kind:"Suspect registry",src:"I4C suspect registry",t:"A payout account is listed as a suspected mule account",match:17},
+ {w:10,kind:"Flagged transactions",src:"Cyber-crime complaints (NCRP, helpline 1930)",t:"5 people say a betting app took deposits through a bakery's UPI ID, then blocked their withdrawals",match:5},
+ {w:11,kind:"Police bust",src:"Mumbai police seizure",t:"An arrested panel operator's phone lists 260 players' UPI IDs and the shop QR codes he used",match:21,payers:260},
+ {w:13,kind:"Public report",src:"I4C cyber-crime report",t:"A betting complaint names Rose Cake Corner's UPI ID; an analyst confirms it",match:12,index:true},
+ {w:14,kind:"Police interrogation",src:"Hyderabad police",t:"An arrested collection agent names a UPI handle he was paid to share",match:14},
+ {w:16,kind:"Social media",src:"Viral post",t:"A post accuses \"a Bandra bakery\" of fronting for betting",match:null,res:"No identifier, no official source. Logged as a lead for an analyst; no shop is touched."}
+];
 const isNew=m=>m.type==="front"||m.type==="stealth";
 const BET_POOL=420, STEALTH_BASE=5000, STEALTH_POOL=260;
 const isGambler=p=>p<BET_POOL||(p>=STEALTH_BASE&&p<STEALTH_BASE+STEALTH_POOL);
@@ -629,6 +651,7 @@ function run(upto){
     {w:1,q:"Shape",t:"Sales compared with similar shops this week"},
     {w:1,q:"Control",t:"Phone, SIM, payout account and login city vs signup"},
     {w:1,q:"Network",t:"Customers shared with shops in other cities"},
+    {w:1,q:"Reports",t:"Outside reports: cyber-crime complaints (NCRP, 1930), the I4C suspect registry, police busts and interrogations, ED and court filings, news. Counts only when an exact UPI ID, account, phone or device matches"},
     {w:1,q:"Rule",t:"A question left unanswered counts as a yes, and keeps counting"}
   ];
   const log=[]; const met={betTotal:0,betHeld:0,honestDelayed:0,mixedShopHeld:0,honestAsked:new Set(),stopped:0,missedWeeks:0};
@@ -651,10 +674,19 @@ function run(upto){
     const paid=new Map();
     for(const m of live) for(const p of raw[m.id][w-1].payers){paid.set(p,(paid.get(p)||0)+1)}
     // the index case of the new trick: a cyber-crime tip names one shop
+    // outside reports arriving this week
+    for(const ev of INTEL.filter(e=>e.w==w)){
+      const m=ev.match!=null?M[ev.match]:null;
+      let res=ev.res;
+      if(m&&!ev.index){res=`Exact UPI ID match: <b>${m.name}</b>. Reports says yes for ${REPORT_WEEKS} weeks.`;}
+      if(ev.payers){let k=0;for(let p=0;p<BET_POOL&&k<ev.payers;p+=1){if(!memory.payers.has(p)){memory.payers.add(p);k++}}res+=` ${ev.payers} players' UPI IDs added to memory.`}
+      if(!ev.index) log.push({w,c:m?"learn":"good",t:`<b>Outside report (${ev.kind.toLowerCase()}).</b> ${ev.src}: ${ev.t}. ${res}`});
+      ev._res=res;
+    }
     if(w==LEARN_WEEK){
       const idx=M.find(m=>m.opt.index), s=st[idx.id], o=raw[idx.id][w-1];
       const hop=[...o.payers].filter(p=>paid.get(p)>=2).length/o.payers.size;
-      log.push({w,c:"bad",t:`A cyber-crime report (I4C) names <b>${idx.name}</b>. None of the three questions had flagged it: normal amounts, daytime, local payers, owner still in control. An analyst confirms it is a betting front.`});
+      log.push({w,c:"bad",t:`<b>Outside report (public report).</b> An I4C cyber-crime report names <b>${idx.name}</b>'s UPI ID. None of the other checks had flagged it: normal amounts, daytime, local payers, owner still in control. An analyst confirms it is a betting front.`});
       log.push({w,c:"learn",t:`<b>New check learned.</b> Comparing it with honest bakeries, one thing stands out: ${Math.round(hop*100)}% of its payers also paid another shop this week (honest shops: 0%). "Payer hopping" is added to the Network question for every shop from now on.`});
       learned.hop=true;
       checks.push({w,q:"Network",t:"Payer hopping: share of payers who also pay other shops in the same week",isNew:true});
@@ -690,6 +722,9 @@ function run(upto){
       if(memHits>=10) netWhy.push(`${memHits} payers previously paid confirmed fronts`);
       if(learned.hop&&hopShare>0.3) netWhy.push(`payer hopping (learned week ${LEARN_WEEK}): ${Math.round(hopShare*100)}% of its payers also paid another shop this week`);
       if(netWhy.length){tests.push("N");why.push("Network: "+netWhy.join("; "))}
+      // REPORTS: an official outside report names this shop's exact identifier
+      const rep=INTEL.find(e=>e.match==m.id&&!e.index&&w>=e.w&&w<e.w+REPORT_WEEKS);
+      if(rep){tests.push("R");why.push(`Reports: ${rep.src} names this shop's UPI ID (week ${rep.w})`)}
       // UNANSWERED QUESTIONS
       if((s.lastAsk||s.unanswered>0)&&m.type!=="honest") s.unanswered++;
       const extra=Math.min(2,s.unanswered);
@@ -827,19 +862,25 @@ function dash(R){
     const nameCell=`<button class="mbtn" data-sel="${m.id}" aria-pressed="${sel}">${m.name}</button>${truth(m)}<div class="meta">${CITY(m)}</div>`;
     if(!h) return `<tr class="row${sel?" sel":""}" data-id="${m.id}"><td>${nameCell}</td><td colspan="4" class="meta">Not signed up yet</td><td><span class="pill NEW">Not open</span></td></tr>`;
     const gone=h.action=="CLOSED"||h.action=="BLOCKED";
-    const tests=["S","C","N"].map(t=>`<span class="t ${h.tests.includes(t)?"on":""}" title="${{S:"Shape",C:"Control",N:"Network"}[t]}">${t}</span>`).join("")+(h.extra?`<span class="t r" title="Unanswered question">+${h.extra}</span>`:"");
+    const tests=["S","C","N","R"].map(t=>`<span class="t ${h.tests.includes(t)?"on":""}${t=="R"&&h.tests.includes(t)?" rp":""}" title="${{S:"Shape",C:"Control",N:"Network",R:"Reports"}[t]}">${t}</span>`).join("")+(h.extra?`<span class="t r" title="Unanswered question">+${h.extra}</span>`:"");
     return `<tr class="row${sel?" sel":""}" data-id="${m.id}"><td>${nameCell}</td><td>${gone?"<span class='meta'>Removed</span>":ladder(h.level)}</td><td>${gone?"":tests}</td><td class="num">${gone?"":h.score}</td>
       <td class="meta num">₹${fmt(h.paid)} / <b style="color:${h.held>0?"#8E4A12":"inherit"}">₹${fmt(h.held)}</b></td><td><span class="pill ${h.action}">${h.action}</span></td></tr>`}).join("");
   return metricsHTML(R)+`<main class="dash">
-  <div class="panel" id="p-table"><h2>Shops this week ${info("Every shop PayU serves, scored every week. S, C and N are the three questions: Shape (does the money look like this kind of shop?), Control (is the real owner running it?), Network (does it share customers with shops it shouldn't?). An orange +1 means a question went unanswered. 1 yes = ASK, 2 = SLOW, 3 = STOP.")}</h2>
+  <div class="panel" id="p-table"><h2>Shops this week ${info("Every shop PayU serves, scored every week. S, C and N are the three questions: Shape (does the money look like this kind of shop?), Control (is the real owner running it?), Network (does it share customers with shops it shouldn't?). R is Reports: does an official outside report (cyber-crime complaints, the I4C suspect registry, police busts and interrogations, court filings) name this shop's exact UPI ID, account or phone? An orange +1 means a question went unanswered. 1 yes = ASK, 2 = SLOW, 3 or more = STOP.")}</h2>
    <div class="tablebox"><table><thead><tr><th>Shop</th><th>Trust level</th><th>Questions</th><th>Score</th><th>Paid / held</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>
-   <div class="legend"><span><span class="t on">S</span>Shape</span><span><span class="t on">C</span>Control</span><span><span class="t on">N</span>Network</span><span><span class="t r">+1</span>Unanswered</span><span>1 yes: ASK, 2: SLOW, 3: STOP</span></div></div>
+   <div class="legend"><span><span class="t on">S</span>Shape</span><span><span class="t on">C</span>Control</span><span><span class="t on">N</span>Network</span><span><span class="t on rp">R</span>Reports</span><span><span class="t r">+1</span>Unanswered</span><span>1 yes: ASK, 2: SLOW, 3 or more: STOP</span></div></div>
   <div class="side">
    <div class="panel" id="p-detail">${detail(R)}</div>
    <div class="panel" id="p-net"><h2>Who shares customers ${info("Each dot is a shop. A line means two shops shared 8 or more payers this week. Real shops have local customers, so they sit alone. Betting fronts share the same gamblers.")}</h2><svg viewBox="0 0 520 300" width="100%" role="img" aria-label="Network of shops sharing customers">${network(R)}</svg>
     <div class="legend"><span><i style="background:#B5432F"></i>Shared across cities</span><span><i style="background:#E3A33B"></i>Shared in one city</span><span>Click a dot to open that shop</span></div></div>
+   <div class="panel" id="p-rep"><h2>Outside reports ${info("The fourth check. PayU reads what the outside world reports: cyber-crime complaints and flagged transactions (NCRP, helpline 1930), the I4C suspect registry, police busts and interrogations, ED and court filings, and news. A report counts as a yes only when an official source names a shop's exact UPI ID, account, phone or device. A name in the news or a social post is a lead for an analyst, never a yes.")}</h2>${repFeed()}</div>
    <div class="panel" id="p-log"><h2>What the system did and learned ${info("A running log of every decision: questions asked, money slowed, accounts stopped, and every new thing the system learned. This week's entries are shaded.")}</h2><div class="log">${R.log.slice().reverse().map(l=>`<p class="${l.c}${l.w==WEEK?" now":""}"><span class="meta">W${l.w}</span> ${l.t}</p>`).join("")}</div></div>
   </div></main>`;
+}
+function repFeed(){
+  const items=INTEL.filter(e=>e.w<=WEEK).slice().reverse();
+  if(!items.length) return `<p class="meta">No reports yet. The first arrives in week 4.</p>`;
+  return `<div class="repf">${items.map(e=>{const m=e.match!=null?M[e.match]:null;return `<div class="rep${e.w==WEEK?" now":""}"><div class="rh"><span class="rk">${e.kind}</span><span class="meta">W${e.w}, ${e.src}</span></div><p>${e.t}</p><div class="ro">${m?`<span class="pill ASK">Counts</span> Exact match: <b>${m.name}</b>${e.payers?`; ${e.payers} players' UPI IDs added to memory`:""}`:`<span class="pill NEW">Lead only</span> No exact identifier. No shop is touched.`}</div></div>`}).join("")}</div>`;
 }
 function detail(R){
   const m=M[SEL], H=R.st[m.id].hist.slice(0,WEEK), h=H[WEEK-1];
@@ -942,7 +983,7 @@ function immune(R){
 // ---------- explained tab
 function how(){
   const cards=[["The Trust Ladder","Every shop starts on Level 1 with normal limits. Real shops climb by showing light proof they already have, and get faster money, a badge and loans. Fake shops can't climb."],
-    ["Three questions","Shape: does the money look like similar shops? Control: is the real owner running it? Network: does it share customers with shops it shouldn't? All use data PayU already has."],
+    ["Three questions plus Reports","Shape: does the money look like similar shops? Control: is the real owner running it? Network: does it share customers with shops it shouldn't? Reports: do official outside reports (complaints, registries, police, courts) name its exact UPI ID?"],
     ["Ask, slow, stop","1 yes: a friendly question. 2: only the unexplained extra waits a few days. 3: a person reviews, then the account is closed and reported. One signal alone never punishes anyone."],
     ["It learns","Normal is relearned every week. Every confirmed fraud is remembered (phones, gamblers) and can teach a brand-new check, like an immune system."]];
   return `<div class="exp">
@@ -1005,8 +1046,8 @@ const ART={
   start:()=>`<svg viewBox="0 0 400 300">${ladderSVG()}${[0,1,2,3,4].map(i=>`<g class="p" style="--d:${.5+i*.12}s">${house(42+i*20-(i>2?0:0),246,.55,["#E3A33B","#2E7D5B","#B9CFC9","#E3A33B","#2E7D5B"][i])}</g>`).join("")}${S(84,282,"Every new shop",{s:12.5,w:600})}</svg>`,
   climb:()=>`<svg viewBox="0 0 400 300">${ladderSVG(["","Higher payout limit","Verified badge","Instant pay, loan offer"])}<g class="climb"><g transform="translate(180 238)"><circle r="20" fill="#E3A33B" stroke="#fff" stroke-width="3"/><path d="M-9 8V-3L0-10L9-3V8Z" fill="#12302C"/></g></g></svg>`,
   three:()=>`<svg viewBox="0 0 400 300">
-    ${[["S","Shape","Does the money look","like a bakery?"],["C","Control","Is the real owner","holding the phone?"],["N","Network","Does it share customers","with odd shops?"]].map(([k,t,a,b],i)=>{const x=16+i*128;return `<g class="a" style="--d:${.15+i*.25}s"><rect x="${x}" y="40" width="116" height="200" rx="18" fill="#fff" stroke="#D5E0DC" stroke-width="2"/><circle cx="${x+58}" cy="86" r="28" fill="#12302C"/>${S(x+58,94,k,{c:"#fff",w:800,s:22})}${S(x+58,142,t,{s:16,w:700})}${S(x+58,170,a,{s:11,c:"#596966"})}${S(x+58,186,b,{s:11,c:"#596966"})}</g>`}).join("")}
-    ${S(200,272,"Asked about every shop, every week",{s:13,w:600})}</svg>`,
+    ${[["S","Shape","Does the money","look right?"],["C","Control","Real owner","in control?"],["N","Network","Odd shared","customers?"],["R","Reports","Named in","official reports?"]].map(([k,t,a,b],i)=>{const x=8+i*98;return `<g class="a" style="--d:${.15+i*.25}s"><rect x="${x}" y="40" width="90" height="200" rx="16" fill="#fff" stroke="${k=="R"?"#E3A33B":"#D5E0DC"}" stroke-width="2"/><circle cx="${x+45}" cy="86" r="26" fill="${k=="R"?"#E3A33B":"#12302C"}"/>${S(x+45,94,k,{c:k=="R"?"#12302C":"#fff",w:800,s:21})}${S(x+45,142,t,{s:15,w:700})}${S(x+45,170,a,{s:10.5,c:"#596966"})}${S(x+45,186,b,{s:10.5,c:"#596966"})}</g>`}).join("")}
+    ${S(200,272,"Checked for every shop, every week",{s:13,w:600})}</svg>`,
   lights:()=>`<svg viewBox="0 0 400 300">
     ${[["0 yes","OK","Paid as normal","#2E7D5B","#E1F0E8"],["1 yes","ASK","A friendly question","#7A4E0E","#FBEACB"],["2 yes","SLOW","Only the extra waits","#8E4A12","#F6DCC6"],["3 yes","STOP","A person reviews it","#9A3A28","#F3D3CC"]].map(([n,a,t,c,bg],i)=>{const y=32+i*60;return `<g class="a" style="--d:${.15+i*.35}s"><rect x="30" y="${y}" width="340" height="50" rx="14" fill="${bg}"/><circle cx="60" cy="${y+25}" r="14" fill="${c}"/>${S(88,y+30,n,{a:"start",s:13,w:600,c})}<rect x="146" y="${y+12}" width="56" height="26" rx="13" fill="#fff"/>${S(174,y+30,a,{s:12.5,w:800,c})}${S(214,y+30,t,{a:"start",s:12.5,c:"#12302C"})}</g>`}).join("")}
     ${S(200,290,"A question left unanswered counts as a yes",{s:12,c:"#596966"})}</svg>`,
@@ -1037,7 +1078,7 @@ const CH=[
  {name:"How it works",steps:[
   {art:"start",t:"Everyone starts on Level 1",b:"Every new shop can take payments from day one, with payouts sized to what similar shops nearby earn. Nobody starts as a suspect.",like:"the first rung of a ladder: you're on it, you just can't reach the top shelf yet.",demo:{tab:"app",w:1,s:1}},
   {art:"climb",t:"Real shops climb",b:"Steady weeks and light proof move a shop up: Proven, Verified, Trusted. Each level unlocks something worth having: a higher limit, a badge customers can see, instant payouts and a loan offer.",like:"levels in a game: play fair and you unlock new powers.",demo:{tab:"app",w:15,s:1}},
-  {art:"three",t:"Three questions, every week",b:"Shape: does the money look like this kind of shop? Control: is the real owner running the account? Network: does it share customers with shops it shouldn't? All three use data PayU already has.",like:"checking three things: does it look right, is it really you, and who are you hanging out with?",demo:{tab:"dash",w:12,s:5}},
+  {art:"three",t:"Three questions and outside reports, every week",b:"Shape: does the money look like this kind of shop? Control: is the real owner running the account? Network: does it share customers with shops it shouldn't? Reports: has a cyber-crime complaint, police bust, official registry or court filing named this shop's exact UPI ID? A name in the news alone never counts.",like:"checking four things: does it look right, is it really you, who are you hanging out with, and has anyone official reported you?",demo:{tab:"dash",w:10,s:5}},
   {art:"lights",t:"Count the yeses",b:"No yes: pay as normal. One: ask a friendly question. Two: pay the normal part and hold only the unexplained extra for a few days. Three: pause, and a person reviews it. A question left unanswered counts as a yes.",like:"traffic lights: green, amber, red. Never straight to red.",demo:{tab:"dash",w:10,s:3}},
   {art:"memory",t:"Caught, reported, remembered",b:"When a person confirms a front, the account is closed and reported to FIU-IND. Its phone and its gamblers' payment IDs are remembered, so when the same phone tries to sign up as a new shop, it's blocked on day one.",like:"a shopkeeper who remembers a shoplifter's face.",demo:{tab:"dash",w:13,s:24}},
   {art:"immune",t:"A new trick? It learns a new check",b:"In week 10, three fronts copy real bakeries perfectly and pass all three questions. In week 13, one is confirmed through a cyber-crime report. The system compares it with honest bakeries, spots what's different (its payers hop between shops) and adds that as a check. The copies are caught within two weeks.",like:"a vaccine: one case teaches the body to catch all the copies.",demo:{tab:"immune",w:15}},
@@ -1119,7 +1160,7 @@ const TOUR_STEPS=[
   {tab:"dash",el:"eli5",t:"New to the idea?",b:"Press Explain like I'm 5 any time for a simple, step-by-step story: how we found the problem, and how the system works."},
   {tab:"dash",el:"story",t:"Story mode",b:"A full-screen, self-playing story from PayU's side: the problem, how betting rings move money, our critical thinking, and the system. Good for opening a pitch."},
   {tab:"dash",el:"metrics",t:"The scoreboard",b:"On the left, how much betting money is caught. On the right, the cost to honest shops. The goal is to push the left up and keep the right near zero."},
-  {tab:"dash",el:"p-table",t:"Every shop, every week",b:"Each shop starts on Level 1. S, C and N are the three questions. 1 yes = ask, 2 = slow the extra money, 3 = stop for review. Click any shop to see why."},
+  {tab:"dash",el:"p-table",t:"Every shop, every week",b:"Each shop starts on Level 1. S, C and N are the three questions; R is outside reports from complaints, registries and police. 1 yes = ask, 2 = slow the extra money, 3 or more = stop for review. Click any shop to see why."},
   {tab:"dash",el:"p-detail",t:"Why this decision",b:"Sales against proof (stock bought) and against similar shops, plus the plain-language reasons for this week's action."},
   {tab:"dash",el:"p-net",t:"Who shares customers",b:"Honest shops sit alone with local customers. Betting fronts share the same gamblers, so they light up as a web of lines."},
   {tab:"app",el:null,t:"The shop's point of view",b:"The merchant app: a level, its money, a progress bar and offers. Checks arrive as friendly questions or ways to unlock more."},
@@ -1348,7 +1389,7 @@ function payuPanel(){
     ${row("Payments after midnight",s.hours,Math.round(h.night*100)+"%",h.night>.2)}
     ${row("Logins from","Shop city",s.loginCity,s.loginCity!="Hyderabad")}
    </tbody></table>
-   <div class="qrow">${["S","C","N"].map(t=>`<span class="t ${h.tests.includes(t)?"on":""}">${t}</span>`).join("")}${h.extra?`<span class="t r">+${h.extra}</span>`:""}<span class="pill ${h.action}">${h.action}</span></div>`:h?`<div class="qrow"><span class="pill ${h.action}">${h.action}</span></div>`:`<p class="meta">Press Play to run the first weeks.</p>`}
+   <div class="qrow">${["S","C","N","R"].map(t=>`<span class="t ${h.tests.includes(t)?"on":""}">${t}</span>`).join("")}${h.extra?`<span class="t r">+${h.extra}</span>`:""}<span class="pill ${h.action}">${h.action}</span></div>`:h?`<div class="qrow"><span class="pill ${h.action}">${h.action}</span></div>`:`<p class="meta">Press Play to run the first weeks.</p>`}
    <div class="log" style="max-height:220px;margin-top:10px">${logs.reverse().map(l=>`<p class="${l[1]=="watch"?"learn":l[1]=="ok"?"good":l[1]=="bad"?"bad":"learn"}"><span class="meta">W${l[0]}</span> ${l[2]}</p>`).join("")}</div></div>`;
 }
 function appModes(){return `<div class="modes" role="group" aria-label="Phone mode">${[["sim","Shops in the simulation"],["signup","Try the sign-up"],["rewards","First weeks and rewards"]].map(([k,l])=>`<button class="${APPMODE==k?"on":""}" data-mode="${k}" aria-pressed="${APPMODE==k}">${l}</button>`).join("")}</div>`}
@@ -1414,7 +1455,7 @@ function database(){
 }
 
 // ---------- Story mode (theatre)
-const SRC={theprint:"ThePrint, ED sources",week:"The Week",ed:"ED press release, via Taxguru",sb:"Storyboard18",ht:"Hindustan Times, via Gambling.com",mf:"mFilterIt, via CXO Today",pg:"Act text, via PwC and Bar & Bench",payu:"payu.in",ys:"YourStory",siasat:"ED in court, via Siasat",gi:"Gambling Insider",fpj:"Free Press Journal",scroll:"Scroll",inc:"Inc42"};
+const SRC={mha:"Ministry of Home Affairs in Lok Sabha, via ThePrint",pti:"Government in Parliament, via PTI",theprint:"ThePrint, ED sources",week:"The Week",ed:"ED press release, via Taxguru",sb:"Storyboard18",ht:"Hindustan Times, via Gambling.com",mf:"mFilterIt, via CXO Today",pg:"Act text, via PwC and Bar & Bench",payu:"payu.in",ys:"YourStory",siasat:"ED in court, via Siasat",gi:"Gambling Insider",fpj:"Free Press Journal",scroll:"Scroll",inc:"Inc42"};
 const chip=(t,s)=>`<div class="fact ti"><p>${t}</p><span>${SRC[s]}</span></div>`;
 const V={
  curtain:()=>`<div class="curtain"><i></i><i></i></div>`,
@@ -1440,6 +1481,12 @@ const V={
  cpa:()=>`<div class="cpa">${[["Claim","The weak point isn't fake documents. It's that trust is checked once."],["Premise","Rented accounts carry real people's real KYC, so paper checks pass."],["Premise","Behaviour changes after onboarding: an account is rented or bets are mixed in later."],["Premise","Fixed rules are public knowledge within weeks, so fraudsters copy around them."],["Principle","Trust must be earned continuously: money can't grow faster than proof."]].map((c,i)=>`<div class="cp ti ${c[0].toLowerCase()}" style="--d:${.2+i*.45}s"><b>${c[0]}</b><p>${c[1]}</p></div>`).join("")}</div>`,
  whys:()=>`<div class="whys">${["Bets reached a betting panel through a bakery's QR code. Why?","The bakery's account was rented out after it was approved. Why wasn't it noticed?","Nobody looks again after day one. Why?","Trust is a one-time gate, not something earned. That's the root."].map((t,i)=>`<div class="why1 ti" style="--d:${.2+i*.5}s;margin-left:${i*7}%"><b>${i+1}</b><p>${t}</p></div>`).join("")}</div>`,
  art:k=>`<div class="thart ti" style="--d:.2s">${ART[k]()}</div>`,
+ reports:()=>{const src=[["Cyber-crime complaints (1930)",30],["I4C suspect registry",78],["Police busts and interrogations",126],["ED and court filings",174],["News and social posts",222]];
+  return `<svg viewBox="0 0 440 260" class="thv">${src.map(([t,y],i)=>{const p=`M180 ${y} C215 ${y} 215 130 238 130`;return `<path d="${p}" stroke="#2A5A53" fill="none"/>${[0,1].map(k=>`<circle r="4" fill="${i==4?"#B9CFC9":"#E3A33B"}" opacity="0"><set attributeName="opacity" to="1" begin="${(1.4+i*.25+k*1.1).toFixed(2)}s"/><animateMotion dur="1.6s" begin="${(1.4+i*.25+k*1.1).toFixed(2)}s" repeatCount="indefinite" path="${p}"/></circle>`).join("")}<g class="ti" style="--d:${.2+i*.15}s"><rect x="6" y="${y-17}" width="174" height="34" rx="10" fill="#1E4A44" stroke="${i==4?"#2A5A53":"#E3A33B"}" stroke-width="1.5"/><text x="93" y="${y+4}" font-size="11.5" fill="#fff" text-anchor="middle">${t}</text></g>`}).join("")}
+   <g class="ti" style="--d:1s"><path d="M290 82 L340 130 L290 178 L240 130Z" fill="#E3A33B"/><text x="290" y="122" font-size="10.5" font-weight="700" fill="#12302C" text-anchor="middle">Exact UPI ID,</text><text x="290" y="136" font-size="10.5" font-weight="700" fill="#12302C" text-anchor="middle">account or</text><text x="290" y="150" font-size="10.5" font-weight="700" fill="#12302C" text-anchor="middle">phone?</text></g>
+   <path class="draw" style="--d:1.6s" d="M330 110 L360 70" stroke="#E3A33B" stroke-width="2.5" fill="none"/><path class="draw" style="--d:1.8s" d="M330 150 L360 190" stroke="#B9CFC9" stroke-width="2.5" fill="none"/>
+   <g class="ti" style="--d:2s"><rect x="346" y="38" width="90" height="44" rx="10" fill="#E3A33B"/><text x="391" y="57" font-size="11" font-weight="700" fill="#12302C" text-anchor="middle">Yes: counts</text><text x="391" y="72" font-size="10" fill="#12302C" text-anchor="middle">as one yes</text></g>
+   <g class="ti" style="--d:2.3s"><rect x="346" y="178" width="90" height="44" rx="10" fill="#1E4A44" stroke="#B9CFC9"/><text x="391" y="197" font-size="11" font-weight="700" fill="#fff" text-anchor="middle">Name only:</text><text x="391" y="212" font-size="10" fill="#B9CFC9" text-anchor="middle">a lead, no action</text></g></svg>`},
  gains:()=>`<div class="tcards">${[["🛡","Less risk","Betting money stopped early, with evidence ready for FIU-IND reports and the regulator."],["🤝","Happier merchants","Honest shops are never frozen; they get faster payouts and a badge."],["📈","New revenue","Trusted levels feed credit: PayU's loan book grew to $558M by March 2025."]].map((c,i)=>`<div class="tcard ti" style="--d:${.3+i*.35}s"><span>${c[0]}</span><h3>${c[1]}</h3><p>${c[2]}</p></div>`).join("")}</div>`
 };
 const SCENES=[
@@ -1457,11 +1504,12 @@ const SCENES=[
  {act:"Critical thinking",dur:10,t:"Symptoms or root cause?",b:"We kept asking why until the answer stopped being about one shop.",v:V.whys},
  {act:"Our system",dur:8,t:"Everyone starts on Level 1",b:"Sign-up checks identity, as the law requires. Everything else is optional, and what a shop declares becomes its baseline.",v:()=>V.art("start")},
  {act:"Our system",dur:8,t:"Real shops climb the Trust Ladder",b:"Steady weeks and light proof unlock higher limits, a badge, instant payouts and a loan offer. Fronts can't fake months of real business.",v:()=>V.art("climb")},
- {act:"Our system",dur:9,t:"Three questions, counted like traffic lights",b:"Shape, Control, Network. One yes asks, two slow only the extra money, three stop it for a person to review.",v:()=>V.art("lights")},
+ {act:"Our system",dur:11,t:"Plus: what the outside world reports",b:"The fourth check reads cyber-crime complaints, the government's suspect registry, police busts and interrogations, court filings and news. It counts only when an official source names a shop's exact UPI ID, account or phone. A name in the news is a lead, never a verdict.",v:V.reports,f:chip("I4C launched a suspect registry of cyber criminals' identifiers with banks on 10 Sept 2024","mha")+chip("It has shared 24.67 lakh suspected mule accounts with participating banks","pti")},
+ {act:"Our system",dur:9,t:"Counted like traffic lights",b:"Shape, Control, Network and Reports. One yes asks, two slow only the extra money, three or more stop it for a person to review.",v:()=>V.art("lights")},
  {act:"Our system",dur:9,t:"It learns like an immune system",b:"Every caught front is remembered. A trick nobody had seen becomes a new check once one case is confirmed.",v:()=>V.art("immune")},
  {act:"Our system",dur:8,t:"18 simulated weeks, 25 shops",b:"Every bad account stopped, nothing held at honest shops, one honest question asked and answered.",v:()=>V.art("result")},
  {act:"Our system",dur:9,t:"What PayU gets",b:"Fewer fronts, happier honest merchants, and trust data that powers lending.",v:V.gains},
- {act:"Our system",dur:9,full:1,h:`<h1 class="ti" style="--d:.3s">Earned Trust</h1><p class="ti sub" style="--d:.8s">Money can't grow faster than proof.</p><p class="ti kick" style="--d:1.3s">Team Voltaire: Neeraj Preenand, Achintya Iyer, Viyaan Prakash</p><p class="ti srcs" style="--d:1.8s">Sources: ED press release (Sept 2023); ThePrint; The Week; Scroll; Free Press Journal; Siasat; Storyboard18; Hindustan Times via Gambling.com; Gambling Insider; mFilterIt via CXO Today; the Online Gaming Act 2025 via PwC and Bar & Bench; payu.in; YourStory; Inc42.</p>`}
+ {act:"Our system",dur:9,full:1,h:`<h1 class="ti" style="--d:.3s">Earned Trust</h1><p class="ti sub" style="--d:.8s">Money can't grow faster than proof.</p><p class="ti kick" style="--d:1.3s">Team Voltaire: Neeraj Preenand, Achintya Iyer, Viyaan Prakash</p><p class="ti srcs" style="--d:1.8s">Sources: ED press release (Sept 2023); Ministry of Home Affairs replies in Parliament on the I4C suspect registry; ThePrint; The Week; Scroll; Free Press Journal; Siasat; Storyboard18; Hindustan Times via Gambling.com; Gambling Insider; mFilterIt via CXO Today; the Online Gaming Act 2025 via PwC and Bar & Bench; payu.in; YourStory; Inc42.</p>`}
 ];
 const TH={i:0,play:true,open:false};
 function openTheatre(i=0){stop();closeWelcome();TH.i=i;TH.play=true;TH.open=true;let el=$("theatre");if(!el){el=document.createElement("div");el.id="theatre";el.className="theatre";el.setAttribute("role","dialog");el.setAttribute("aria-modal","true");el.setAttribute("aria-label","Story mode");document.body.appendChild(el)}drawTheatre();}
