@@ -4,138 +4,314 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Earned Trust: Trust Ladder prototype (Team Voltaire)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--ink:#12302C;--ink2:#1E4A44;--saff:#E3A33B;--tint:#EEF4F2;--muted:#5E6E6B;--line:#D3DEDA;
-        --green:#2E7D5B;--orange:#C9772B;--red:#B5432F;--soft:#BFD3CE;}
+  :root{
+    --ink:#12302C;--ink2:#1E4A44;--ink3:#2A5A53;--saff:#E3A33B;--saff2:#F4D08F;
+    --paper:#F3F7F6;--tint:#E8F0EE;--line:#D5E0DC;--muted:#596966;--soft:#B9CFC9;
+    --green:#2E7D5B;--orange:#C9772B;--red:#B5432F;
+    --disp:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+    --body:"Instrument Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --ease:cubic-bezier(.22,.8,.24,1);
+  }
   *{box-sizing:border-box}
-  body{margin:0;font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:#fff;font-size:14px}
-  h1,h2,h3{font-family:Cambria,Georgia,serif}
-  header{background:var(--ink);color:#fff;padding:16px 28px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-  header h1{font-size:23px;margin:0}
-  header .sub{color:var(--soft);font-size:13px;margin-top:3px}
-  .controls{margin-left:auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-  button{font:inherit;border:0;border-radius:8px;padding:8px 14px;cursor:pointer;background:var(--tint);color:var(--ink);font-weight:600}
-  button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--saff);outline-offset:2px}
-  header button{background:#2a524b;color:#fff}
-  header button.primary,button.primary{background:var(--saff);color:var(--ink)}
-  input[type=range]{width:200px;accent-color:var(--saff)}
-  .wk{font-weight:700;min-width:140px;color:#fff}
-  label.tog{color:var(--soft);font-size:13px;display:flex;gap:6px;align-items:center}
-  nav.tabs{display:flex;gap:4px;padding:0 28px;background:var(--ink);flex-wrap:wrap}
-  nav.tabs button{background:transparent;color:var(--soft);border-radius:10px 10px 0 0;padding:10px 16px}
-  nav.tabs button[aria-selected="true"]{background:#fff;color:var(--ink)}
-  .panel-wrap{animation:fadeup .35s ease}
-  @keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-  @keyframes pop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(227,163,59,.7)}100%{box-shadow:0 0 0 14px rgba(227,163,59,0)}}
-  .metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:16px 28px;background:var(--tint)}
-  .m b{display:block;font-family:Cambria,Georgia,serif;font-size:23px}
-  .m span{font-size:12px;color:var(--muted)}
-  main{display:grid;grid-template-columns:minmax(560px,1.25fr) 1fr;gap:18px;padding:18px 28px 28px}
-  .panel{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;position:relative}
-  .panel h2{font-size:17px;margin:0 0 10px;display:flex;align-items:center;gap:8px}
-  .info{margin-left:auto;width:26px;height:26px;padding:0;border-radius:50%;font-weight:700;font-size:13px}
-  .tablebox{overflow-x:auto}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--body);color:var(--ink);background:var(--paper);font-size:14.5px;line-height:1.45;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:var(--disp);letter-spacing:-.01em;margin:0;text-wrap:balance}
+  button{font:inherit;border:0;border-radius:10px;padding:8px 14px;cursor:pointer;background:var(--tint);color:var(--ink);font-weight:600;transition:background .18s,transform .12s,box-shadow .18s}
+  button:active{transform:scale(.97)}
+  button:disabled{opacity:.4;cursor:default}
+  button.primary{background:var(--saff);color:var(--ink)}
+  button.primary:hover{background:#ECB352}
+  button.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
+  button.ghost:hover{background:var(--tint)}
+  :focus-visible{outline:3px solid var(--saff);outline-offset:2px}
+  .skip{position:absolute;left:-999px;top:8px;background:var(--saff);color:var(--ink);padding:8px 12px;border-radius:8px;z-index:99}
+  .skip:focus{left:8px}
+
+  /* ---------- top bar */
+  .chrome{position:sticky;top:0;z-index:15}
+  .top{background:var(--ink);color:#fff;display:flex;align-items:center;gap:20px;padding:12px 28px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand svg{flex:none}
+  .brand h1{font-size:21px;font-weight:800;line-height:1.1}
+  .brand p{margin:2px 0 0;font-size:12.5px;color:var(--soft)}
+  .tabs{display:flex;gap:2px;background:var(--ink2);padding:4px;border-radius:14px;margin:0 auto}
+  .tabs button{background:transparent;color:var(--soft);padding:8px 14px;border-radius:10px;white-space:nowrap}
+  .tabs button:hover{color:#fff}
+  .tabs button[aria-selected="true"]{background:var(--paper);color:var(--ink)}
+  .acts{display:flex;gap:8px;align-items:center}
+  .acts .ghost{color:#fff;box-shadow:inset 0 0 0 1.5px var(--ink3)}
+  .acts .ghost:hover{background:var(--ink2)}
+  .eli5btn{background:var(--saff);color:var(--ink);display:flex;align-items:center;gap:8px;padding:9px 16px;border-radius:12px}
+  .eli5btn:hover{background:#ECB352}
+  .eli5btn .bulb{width:18px;height:18px}
+
+  /* ---------- time bar */
+  .timebar{background:#fff;border-bottom:1px solid var(--line);padding:10px 28px 12px}
+  .tb{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .play{width:44px;height:44px;border-radius:50%;padding:0;display:grid;place-items:center;background:var(--ink);color:#fff;flex:none}
+  .play:hover{background:var(--ink2)}
+  .play svg{width:18px;height:18px}
+  .sm{padding:7px 12px;font-size:13.5px}
+  .wkbox{min-width:92px;line-height:1.15}
+  .wkbox b{font-family:var(--disp);font-size:20px;display:block}
+  .wkbox span{font-size:12px;color:var(--muted)}
+  .scrub{flex:1;min-width:260px;position:relative;padding:4px 0 22px}
+  .scrub input{width:100%;margin:0;-webkit-appearance:none;appearance:none;height:8px;border-radius:8px;background:linear-gradient(90deg,var(--saff) var(--p,0%),var(--tint) var(--p,0%));cursor:pointer}
+  .scrub input::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 0 0 1.5px var(--ink);transition:transform .15s}
+  .scrub input::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--ink);border:3px solid #fff;box-shadow:0 0 0 1.5px var(--ink)}
+  .scrub input:active::-webkit-slider-thumb{transform:scale(1.2)}
+  .marks{position:absolute;left:10px;right:10px;top:18px;height:20px}
+  .mark{position:absolute;left:calc(var(--f)*100%);transform:translateX(-50%);background:none;padding:2px 4px;font-size:11.5px;font-weight:600;color:var(--muted);white-space:nowrap;border-radius:6px}
+  .mark::before{content:"";display:block;width:2px;height:6px;background:var(--line);margin:0 auto 1px}
+  .mark:hover,.mark.on{color:var(--ink)}
+  .mark.on::before{background:var(--saff)}
+  .mark:first-child{transform:none;left:-6px}.mark:last-child{transform:translateX(-100%);left:calc(100% + 6px)}
+  .mark:first-child::before{margin-left:4px}.mark:last-child::before{margin-right:4px}
+  .switch{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);cursor:pointer;user-select:none}
+  .switch input{position:absolute;opacity:0;width:1px;height:1px}
+  .switch span{width:34px;height:20px;border-radius:20px;background:var(--line);position:relative;transition:background .2s}
+  .switch span::after{content:"";position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .2s var(--ease)}
+  .switch input:checked+span{background:var(--ink)}
+  .switch input:checked+span::after{transform:translateX(14px)}
+  .switch input:focus-visible+span{outline:3px solid var(--saff);outline-offset:2px}
+  .narr{margin:8px 0 0;padding:9px 14px;border-radius:12px;background:var(--paper);font-size:14px;border-left:4px solid var(--line);min-height:40px}
+  .narr.learn{border-color:var(--saff);background:#FDF4E3}
+  .narr.bad{border-color:var(--red);background:#FBEDEA}
+  .narr.good{border-color:var(--green);background:#EAF4EE}
+  .narr .nw{font-family:var(--disp);margin-right:6px}
+  .narr .more{color:var(--muted);font-size:12.5px;white-space:nowrap}
+  .narr.swap{animation:swap .45s var(--ease)}
+  @keyframes swap{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+  /* ---------- shared */
+  .view.enter{animation:enter .4s var(--ease)}
+  @keyframes enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:none}}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(227,163,59,.6)}100%{box-shadow:0 0 0 12px rgba(227,163,59,0)}}
+  .meta{font-size:12.5px;color:var(--muted)}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px 18px;position:relative}
+  .panel>h2,.ph{font-size:17px;display:flex;align-items:center;gap:8px;margin:0 0 10px}
+  .info{margin-left:auto;width:28px;height:28px;padding:0;border-radius:50%;font-weight:700;font-size:13px;flex:none;background:var(--tint)}
+  .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+  .OK{background:#E1F0E8;color:var(--green)} .ASK{background:#FBEACB;color:#7A4E0E} .SLOW{background:#F6DCC6;color:#8E4A12}
+  .STOP{background:#F3D3CC;color:#9A3A28} .CLOSED{background:var(--red);color:#fff} .BLOCKED{background:#3a1d18;color:#fff} .NEW{background:var(--tint);color:var(--muted)}
+  .truth{font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;margin-left:6px;vertical-align:1px}
+  .tr-honest{background:#E1F0E8;color:var(--green)} .tr-renter{background:#FBEACB;color:#7A4E0E} .tr-mixer{background:#F6DCC6;color:#8E4A12} .tr-front,.tr-stealth{background:#F3D3CC;color:#9A3A28}
+
+  /* ---------- scoreboard */
+  .score{display:grid;grid-template-columns:3fr 2fr;gap:14px;padding:18px 28px 0}
+  .grp{background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 18px 14px}
+  .grp h3{font-family:var(--body);font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+  .grp.calm{background:#EAF4EE;border-color:#CFE5D8}
+  .ms{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:14px}
+  .m b{display:block;font-family:var(--disp);font-size:28px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+  .m>span{font-size:12.5px;color:var(--muted);display:block;max-width:24ch}
+  .m.bump b{animation:bump .5s var(--ease)}
+  @keyframes bump{40%{color:var(--orange)}}
+
+  /* ---------- dashboard */
+  main.dash{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px;padding:14px 28px 28px}
+  .tablebox{overflow-x:auto;margin:0 -6px}
   table{width:100%;border-collapse:collapse}
-  th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);text-align:left;padding:6px;border-bottom:1px solid var(--line)}
-  td{padding:6px;border-bottom:1px solid #EEF2F0;vertical-align:middle}
-  tr.row{cursor:pointer} tr.row:hover{background:#F7FAF9} tr.sel{background:#FFF6E6 !important}
+  th{font-size:12px;font-weight:600;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+  td{padding:7px 8px;border-bottom:1px solid #EEF3F1;vertical-align:middle}
+  tr.row{cursor:pointer;transition:background .15s}
+  tr.row:hover{background:#F6FAF9}
+  tr.sel{background:#FFF7E8 !important;box-shadow:inset 4px 0 0 var(--saff)}
   .mbtn{background:none;padding:2px 0;text-align:left;font-weight:600;border-radius:4px}
-  .meta{font-size:11.5px;color:var(--muted)}
+  .mbtn:hover{text-decoration:underline;text-underline-offset:3px}
   .lvl{display:inline-flex;gap:2px;align-items:flex-end;height:16px;vertical-align:middle}
-  .lvl i{display:block;width:6px;background:var(--line);border-radius:1px}
+  .lvl i{display:block;width:6px;background:var(--line);border-radius:2px}
   .lvl i.on{background:var(--ink2)} .lvl i.top{background:var(--saff)}
-  .t{display:inline-block;min-width:20px;height:20px;border-radius:10px;font-size:10.5px;font-weight:700;line-height:20px;text-align:center;margin-right:3px;background:#EEF2F0;color:#7B8B88;padding:0 4px}
+  .t{display:inline-block;min-width:22px;height:22px;border-radius:11px;font-size:11px;font-weight:700;line-height:22px;text-align:center;margin-right:3px;background:#EEF3F1;color:#8A9895;padding:0 5px;transition:background .25s,color .25s}
   .t.on{background:var(--ink);color:#fff} .t.r{background:var(--orange);color:#fff}
-  .pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
-  .OK{background:#E3F1EA;color:var(--green)} .ASK{background:#FBEBCD;color:#7A4E0E} .SLOW{background:#F6DCC6;color:#8E4A12}
-  .STOP{background:#F3D3CC;color:#9A3A28} .CLOSED{background:var(--red);color:#fff} .BLOCKED{background:#3a1d18;color:#fff} .NEW{background:#EEF2F0;color:var(--muted)}
-  .truth{font-size:10.5px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px}
-  .tr-honest{background:#E3F1EA;color:var(--green)} .tr-renter{background:#FBEBCD;color:#7A4E0E} .tr-mixer{background:#F6DCC6;color:#8E4A12} .tr-front,.tr-stealth{background:#F3D3CC;color:#9A3A28}
-  .right{display:flex;flex-direction:column;gap:18px}
-  .why{font-size:13px;color:var(--ink2);line-height:1.45;padding-left:18px}
+  .num{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .legend{font-size:12px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;align-items:center}
+  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+  .panel{min-width:0} main.dash>*{min-width:0}
+  .side{display:flex;flex-direction:column;gap:14px;min-width:0}
+  .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 10px}
+  .kv div{background:var(--paper);border-radius:12px;padding:8px 10px}
+  .kv b{display:block;font-family:var(--disp);font-size:18px}
+  .kv span{font-size:11.5px;color:var(--muted)}
+  .why{font-size:13.5px;color:var(--ink2);line-height:1.5;padding-left:18px;margin:10px 0 0}
   .why li{margin-bottom:4px}
-  .kv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}
-  .kv div{background:var(--tint);border-radius:8px;padding:8px}
-  .kv b{display:block;font-size:15px} .kv span{font-size:11px;color:var(--muted)}
-  .log{max-height:300px;overflow:auto;font-size:12.5px;line-height:1.45}
-  .log p{margin:0 0 7px;padding-left:10px;border-left:3px solid var(--line)}
+  .log{max-height:290px;overflow:auto;font-size:13px;line-height:1.5;padding-right:4px}
+  .log p{margin:0 0 8px;padding:2px 0 2px 12px;border-left:3px solid var(--line)}
   .log p.learn{border-color:var(--saff)} .log p.bad{border-color:var(--red)} .log p.good{border-color:var(--green)}
-  .legend{font-size:11.5px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
-  .legend i{display:inline-block;width:14px;height:3px;vertical-align:middle;margin-right:5px}
-  .note{font-size:12px;color:var(--muted);padding:0 28px 24px}
-  .two{display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:24px;padding:22px 28px;align-items:start}
-  .phone{width:100%;max-width:380px;border:10px solid var(--ink);border-radius:36px;padding:18px 16px 22px;background:#fff;min-height:640px;animation:pop .35s ease}
-  .phone .bar{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:10px}
-  .card{background:var(--tint);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+  .log p.now{background:var(--paper);border-radius:0 8px 8px 0}
+  svg .dot{transition:r .25s var(--ease)}
+
+  /* ---------- merchant app */
+  .two{display:grid;grid-template-columns:minmax(300px,400px) minmax(0,1fr);gap:28px;padding:22px 28px 28px;align-items:start}
+  .pick{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+  .pick select{font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink);flex:1}
+  .phone{width:100%;max-width:380px;border:10px solid var(--ink);border-radius:40px;padding:16px 14px 22px;background:#fff;min-height:640px;position:relative}
+  .phone::before{content:"";display:block;width:90px;height:6px;border-radius:6px;background:var(--line);margin:0 auto 12px}
+  .phone .bar{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:6px}
+  .phone .shopname{font-family:var(--disp);font-size:18px;margin-bottom:10px}
+  .card{background:var(--paper);border-radius:16px;padding:12px 14px;margin-bottom:10px;animation:pop .35s var(--ease) both}
+  .card:nth-of-type(2){animation-delay:.05s}.card:nth-of-type(3){animation-delay:.1s}.card:nth-of-type(4){animation-delay:.15s}
   .card.dark{background:var(--ink);color:#fff}
-  .card.warn{background:#FBEBCD}
+  .card.warn{background:#FBEACB}
   .card.bad{background:#F3D3CC}
-  .card h3{margin:0 0 6px;font-size:16px}
-  .prog{height:10px;background:#fff;border-radius:6px;overflow:hidden;margin:6px 0}
-  .prog i{display:block;height:100%;background:var(--saff);transition:width .5s ease}
+  .card h3{margin:0 0 6px;font-size:17px}
+  .prog{height:10px;background:#fff;border-radius:6px;overflow:hidden;margin:8px 0 6px}
+  .prog i{display:block;height:100%;background:var(--saff);border-radius:6px;transition:width .7s var(--ease)}
   .steps{display:flex;gap:4px;margin:8px 0}
   .steps span{flex:1;text-align:center;font-size:11px;padding:6px 2px;border-radius:8px;background:#fff;color:var(--muted);font-weight:700}
-  .steps span.on{background:var(--ink2);color:#fff} .steps span.cur{background:var(--saff);color:var(--ink);animation:pulse 1.6s infinite}
-  .explain{font-size:14px;line-height:1.55}
-  .explain h2{font-size:20px;margin:0 0 8px}
-  .tl{border-left:3px solid var(--line);margin:10px 0;padding-left:14px}
-  .tl div{position:relative;margin-bottom:12px}
-  .tl div::before{content:"";position:absolute;left:-21px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--line)}
-  .tl div.done::before{background:var(--green)} .tl div.now::before{background:var(--saff);animation:pulse 1.6s infinite}
+  .steps span.on{background:var(--ink2);color:#fff} .steps span.cur{background:var(--saff);color:var(--ink);animation:pulse 1.8s infinite}
+  .task{display:flex;gap:8px;align-items:flex-start;margin:6px 0}
+  .task i{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--line);margin-top:1px;display:grid;place-items:center;font-style:normal;font-size:11px;color:#fff}
+  .task.done i{background:var(--green);border-color:var(--green)}
+  .explain{font-size:15px;line-height:1.6;max-width:68ch}
+  .explain h2{font-size:24px;margin:0 0 8px}
+  .explain h3{font-size:18px;margin:18px 0 8px}
+  .tl{border-left:3px solid var(--line);margin:12px 0 12px 6px;padding-left:18px}
+  .tl div{position:relative;margin-bottom:14px}
+  .tl div::before{content:"";position:absolute;left:-26px;top:5px;width:13px;height:13px;border-radius:50%;background:var(--line);border:2px solid var(--paper)}
+  .tl div.done::before{background:var(--green)} .tl div.now::before{background:var(--saff);animation:pulse 1.8s infinite}
   .tl div.future{color:var(--muted)}
-  .chk{display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:10px;background:var(--tint);margin-bottom:6px;animation:fadeup .4s ease}
-  .chk.newp{background:#FBEBCD}
-  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:22px 28px}
-  .how{border-radius:14px;padding:16px;background:var(--tint);animation:fadeup .4s ease both}
-  .how:nth-child(2){animation-delay:.08s}.how:nth-child(3){animation-delay:.16s}.how:nth-child(4){animation-delay:.24s}
-  .how h3{margin:4px 0 8px;font-size:18px}
-  .how .n{font-weight:700;color:var(--orange);font-size:12px;letter-spacing:.1em}
-  .pop{position:absolute;z-index:20;max-width:320px;background:var(--ink);color:#fff;padding:12px 14px;border-radius:12px;font-size:13px;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.2);animation:pop .2s ease}
-  .pop button{margin-top:8px;background:var(--saff);color:var(--ink);padding:4px 10px}
-  .scrim{position:fixed;inset:0;background:rgba(18,48,44,.45);z-index:30;display:flex;align-items:center;justify-content:center;padding:20px}
-  .dialog{background:#fff;border-radius:18px;max-width:520px;width:100%;padding:24px 26px;animation:pop .3s ease}
-  .dialog h2{margin:0 0 8px;font-size:22px}
-  .dialog p{font-size:15px;line-height:1.55;margin:0 0 12px}
-  .dialog .dots{display:flex;gap:6px;margin:6px 0 14px}
-  .dialog .dots i{width:8px;height:8px;border-radius:50%;background:var(--line)} .dialog .dots i.on{background:var(--saff)}
-  .dialog .row{display:flex;gap:8px;justify-content:flex-end}
-  .hl{outline:4px solid var(--saff);outline-offset:4px;border-radius:12px;transition:outline-color .3s}
-  @media(max-width:1100px){main,.two{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.grid4{grid-template-columns:1fr 1fr}}
-  @media(max-width:640px){.grid4{grid-template-columns:1fr}header{padding:14px 16px}main,.two,.grid4{padding:14px 16px}.metrics{padding:12px 16px}}
-  @media(prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+  .try{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .try button{margin:6px 6px 0 0;font-size:13px;padding:6px 10px}
+  .chk{display:flex;gap:10px;align-items:flex-start;padding:9px 12px;border-radius:12px;background:#fff;border:1px solid var(--line);margin-bottom:6px}
+  .chk.newp{background:#FDF4E3;border-color:var(--saff2);animation:pop .45s var(--ease) both}
+
+  /* ---------- explained tab */
+  .exp{padding:22px 28px 28px;display:grid;gap:18px}
+  .chapcards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .chapcard{text-align:left;background:var(--ink);color:#fff;border-radius:20px;padding:22px;display:grid;grid-template-columns:1fr auto;gap:6px 16px;align-items:center}
+  .chapcard:hover{background:var(--ink2)}
+  .chapcard h2{font-size:24px}
+  .chapcard p{margin:0;color:var(--soft);font-weight:400;grid-column:1}
+  .chapcard .go{grid-row:1/3;grid-column:2;width:48px;height:48px;border-radius:50%;background:var(--saff);color:var(--ink);display:grid;place-items:center;font-size:20px}
+  .chapcard.light{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+  .chapcard.light:hover{background:var(--tint)}
+  .chapcard.light p{color:var(--muted)}
+  ol.four{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;counter-reset:s}
+  ol.four li{background:#fff;border:1px solid var(--line);border-radius:18px;padding:16px;counter-increment:s}
+  ol.four li::before{content:counter(s);display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--saff);font-family:var(--disp);font-weight:800;margin-bottom:10px}
+  ol.four h3{font-size:18px;margin-bottom:6px}
+  ol.four p{margin:0;line-height:1.55}
+
+  /* ---------- pop-ups, dialogs, tour */
+  .pop{position:absolute;z-index:20;max-width:330px;background:var(--ink);color:#fff;padding:14px 16px;border-radius:14px;font-size:13.5px;line-height:1.5;box-shadow:0 14px 40px rgba(18,48,44,.3);animation:pop .2s var(--ease);font-weight:400;font-family:var(--body)}
+  .pop button{margin-top:10px;background:var(--saff);color:var(--ink);padding:5px 12px;display:block}
+  .scrim{position:fixed;inset:0;background:rgba(18,48,44,.5);z-index:40;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0}}
+  .dialog{background:#fff;border-radius:22px;max-width:540px;width:100%;padding:26px 28px;animation:pop .3s var(--ease);box-shadow:0 30px 80px rgba(18,48,44,.35)}
+  .dialog h2{margin:0 0 8px;font-size:24px}
+  .dialog p{font-size:15px;line-height:1.6;margin:0 0 12px}
+  .dialog .dots{display:flex;gap:6px;margin:6px 0 16px}
+  .dialog .dots i{width:8px;height:8px;border-radius:50%;background:var(--line);transition:width .25s}
+  .dialog .dots i.on{background:var(--saff);width:22px;border-radius:4px}
+  .dialog .row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+  .choices{display:grid;gap:8px;margin-top:14px}
+  .choices button{text-align:left;padding:14px 16px;border-radius:14px;display:grid;grid-template-columns:1fr auto;align-items:center}
+  .choices button small{grid-column:1;font-weight:400;color:var(--muted);font-size:13px}
+  .choices button.primary small{color:var(--ink2)}
+  .hl{position:relative;z-index:41;box-shadow:0 0 0 4px var(--saff),0 0 0 9999px rgba(18,48,44,.0);border-radius:18px;transition:box-shadow .3s}
+  .resume{position:fixed;right:20px;bottom:20px;z-index:30;background:var(--ink);color:#fff;border-radius:999px;padding:12px 18px;box-shadow:0 12px 30px rgba(18,48,44,.35);animation:pop .3s var(--ease);display:flex;gap:10px;align-items:center}
+  .resume:hover{background:var(--ink2)}
+  .resume span{color:var(--saff)}
+  .resume-wrap{position:fixed;right:20px;bottom:20px;z-index:30;display:flex;gap:6px;align-items:center}
+  .resume-wrap .resume{position:static}
+  .resume-x{width:36px;height:36px;border-radius:50%;padding:0;background:#fff;box-shadow:0 8px 20px rgba(18,48,44,.25)}
+
+  /* ---------- ELI5 explainer */
+  .eli-scrim{position:fixed;inset:0;z-index:50;background:rgba(18,48,44,.6);display:flex;align-items:center;justify-content:center;padding:18px;animation:fade .25s ease}
+  .eli{background:#fff;border-radius:26px;width:min(1040px,100%);max-height:calc(100vh - 36px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.35);animation:pop .35s var(--ease)}
+  .eli-top{display:flex;align-items:center;gap:10px;padding:14px 16px 10px 20px}
+  .chaps{display:flex;gap:4px;background:var(--paper);padding:4px;border-radius:14px}
+  .chaps button{background:transparent;color:var(--muted);padding:8px 14px;border-radius:10px}
+  .chaps button[aria-selected="true"]{background:var(--ink);color:#fff}
+  .eli .x{margin-left:auto;width:40px;height:40px;border-radius:50%;padding:0;font-size:22px;line-height:1}
+  .eli-bar{height:4px;background:var(--tint);margin:0 20px}
+  .eli-bar i{display:block;height:100%;background:var(--saff);border-radius:4px;transition:width .5s var(--ease)}
+  .eli-stage{display:grid;grid-template-columns:1.05fr 1fr;gap:28px;padding:24px 32px 10px;align-items:center;overflow:auto;flex:1}
+  .eli-art{background:var(--paper);border-radius:22px;aspect-ratio:4/3;display:grid;place-items:center;overflow:hidden}
+  .eli-art svg{width:100%;height:100%}
+  .eli-art text{font-family:var(--body)}
+  .eli-n{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:600}
+  .eli-text h2{font-size:clamp(26px,3.2vw,38px);font-weight:800;line-height:1.08;margin:0 0 12px;letter-spacing:-.02em}
+  .eli-b{font-size:16.5px;line-height:1.6;margin:0 0 14px;max-width:46ch}
+  .eli-like{margin:0 0 16px;padding:10px 14px;background:#FDF4E3;border-radius:12px;font-size:15px;max-width:46ch}
+  .eli-like::before{content:"Think of it like this: ";font-weight:700}
+  .eli-foot{display:flex;align-items:center;gap:10px;padding:12px 20px 18px}
+  .eli-foot .eli-count{margin:0 auto;color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums}
+  .eli-foot button{min-width:110px;padding:11px 18px}
+  .eli-stage.fwd .eli-text>*{animation:slidein .45s var(--ease) both}
+  .eli-stage.back .eli-text>*{animation:slideback .45s var(--ease) both}
+  .eli-text>*:nth-child(2){animation-delay:.04s!important}.eli-text>*:nth-child(3){animation-delay:.08s!important}.eli-text>*:nth-child(4){animation-delay:.12s!important}.eli-text>*:nth-child(5){animation-delay:.16s!important}
+  @keyframes slidein{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+  @keyframes slideback{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+  /* illustration motion: one orchestrated build per step */
+  .eli-art .a{animation:rise .55s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:center}
+  .eli-art .p{animation:popin .45s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:center}
+  .eli-art .f{animation:fly .7s var(--ease) both;animation-delay:var(--d,0s)}
+  .eli-art .g{animation:glow 1.8s ease-in-out infinite;animation-delay:var(--d,0s)}
+  .eli-art .grow{animation:growx .6s var(--ease) both;animation-delay:var(--d,0s);transform-box:fill-box;transform-origin:left center}
+  .eli-art .climb{animation:climb 3.2s var(--ease) both;animation-delay:.3s}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes popin{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+  @keyframes fly{from{opacity:0;transform:translate(90px,-20px)}to{opacity:1;transform:none}}
+  @keyframes glow{50%{opacity:.45}}
+  @keyframes growx{from{transform:scaleX(0)}to{transform:none}}
+  @keyframes climb{0%{transform:translateY(0)}25%{transform:translateY(0)}40%{transform:translateY(-60px)}55%{transform:translateY(-60px)}70%{transform:translateY(-120px)}82%{transform:translateY(-120px)}100%{transform:translateY(-180px)}}
+
+  .note{font-size:12.5px;color:var(--muted);padding:0 28px 28px;max-width:100ch}
+
+  @media(max-width:1180px){.tabs{order:3;margin:0;width:100%;overflow-x:auto}.acts{margin-left:auto}main.dash,.two{grid-template-columns:1fr}ol.four{grid-template-columns:1fr 1fr}}
+  @media(max-width:860px){.score{grid-template-columns:1fr}.chapcards{grid-template-columns:1fr}.eli-stage{grid-template-columns:1fr;padding:16px 18px 6px;gap:16px}.eli-art{aspect-ratio:16/10}.mark span{display:none}.mark:first-child,.mark:last-child{transform:translateX(-50%);left:calc(var(--f)*100%)}}
+  @media(max-width:700px){.chrome{position:static}.top,.timebar{padding-left:16px;padding-right:16px}.score,main.dash,.two,.exp{padding-left:16px;padding-right:16px}.note{padding:0 16px 20px}.ms{grid-auto-flow:row}.kv{grid-template-columns:1fr 1fr}ol.four{grid-template-columns:1fr}.eli5btn .lbl-long{display:none}.brand p{display:none}}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Earned Trust · Trust Ladder console</h1>
-    <div class="sub">Team Voltaire · Follow the Money 2026 · prototype on <b>simulated</b> shops (Hyderabad &amp; Mumbai, Jul–Oct)</div>
-  </div>
-  <div class="controls">
-    <button id="tour">? Guided tour</button>
-    <button id="reset">⟲ Reset</button>
-    <button id="step">Next week ›</button>
-    <button id="play" class="primary">▶ Play the story</button>
-    <input type="range" id="week" min="1" max="18" value="1" aria-label="Week of the simulation">
-    <span class="wk" id="wklabel" aria-live="polite"></span>
-    <label class="tog"><input type="checkbox" id="truth"> Show answer key</label>
-  </div>
-</header>
-<nav class="tabs" role="tablist" aria-label="Views">
-  <button role="tab" id="tab-dash" aria-selected="true" aria-controls="view">PayU monitoring</button>
-  <button role="tab" id="tab-app" aria-selected="false" aria-controls="view">Merchant app</button>
-  <button role="tab" id="tab-immune" aria-selected="false" aria-controls="view">Immune system</button>
-  <button role="tab" id="tab-how" aria-selected="false" aria-controls="view">How it works</button>
-</nav>
-<div id="view" role="tabpanel"></div>
-<p class="note">All shops, payers and amounts are simulated to show how the system behaves. Nothing here is real data. Rules are deliberately simple; a real version would learn them from verified merchants.</p>
-
+<a class="skip" href="#view">Skip to the demo</a>
+<div class="chrome">
+  <header class="top">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="7" y="3" width="3" height="28" rx="1.5" fill="#B9CFC9"/><rect x="24" y="3" width="3" height="28" rx="1.5" fill="#B9CFC9"/><rect x="7" y="25" width="20" height="3" rx="1.5" fill="#B9CFC9"/><rect x="7" y="18" width="20" height="3" rx="1.5" fill="#B9CFC9"/><rect x="7" y="11" width="20" height="3" rx="1.5" fill="#E3A33B"/><rect x="7" y="4" width="20" height="3" rx="1.5" fill="#E3A33B" opacity=".5"/></svg>
+      <div><h1>Earned Trust</h1><p>Team Voltaire, Follow the Money 2026</p></div>
+    </div>
+    <nav class="tabs" role="tablist" aria-label="Views">
+      <button role="tab" id="tab-dash" aria-controls="view">PayU monitoring</button>
+      <button role="tab" id="tab-app" aria-controls="view">Merchant app</button>
+      <button role="tab" id="tab-immune" aria-controls="view">Immune system</button>
+      <button role="tab" id="tab-how" aria-controls="view">Explained</button>
+    </nav>
+    <div class="acts">
+      <button id="tour" class="ghost sm">Tour</button>
+      <button id="eli5" class="eli5btn"><svg class="bulb" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-4 12.7V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.3A7 7 0 0 0 12 2Z" fill="#12302C"/><rect x="9" y="19.5" width="6" height="2.5" rx="1" fill="#12302C"/></svg><span><span class="lbl-long">Explain like I'm 5</span><span class="lbl-short" hidden>ELI5</span></span></button>
+    </div>
+  </header>
+  <section class="timebar" aria-label="Simulation controls">
+    <div class="tb">
+      <button id="play" class="play" aria-label="Play the story"></button>
+      <div class="wkbox"><b id="wknum">Week 1</b><span id="wkdate"></span></div>
+      <div class="scrub">
+        <input type="range" id="week" min="1" max="18" value="1" aria-label="Week of the simulation">
+        <div class="marks" id="marks"></div>
+      </div>
+      <button id="step" class="ghost sm">Next week</button>
+      <button id="reset" class="ghost sm">Restart</button>
+      <label class="switch"><input type="checkbox" id="truth"><span aria-hidden="true"></span>Answer key</label>
+    </div>
+    <p class="narr" id="narr" aria-live="polite"></p>
+  </section>
+</div>
+<div id="view" role="tabpanel" tabindex="-1"></div>
+<p class="note">All shops, payers and amounts are simulated to show how the system behaves. Nothing here is real data. The rules are deliberately simple; a real version would learn them from verified merchants.</p>
 <script>
 // ---------- seeded random
 function rng(seed){return function(){seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const WEEKS=18, START=new Date(2026,6,1), LEARN_WEEK=13;
-const wkLabel=w=>{const d=new Date(START);d.setDate(d.getDate()+(w-1)*7);return "Week "+w+" · "+d.toLocaleDateString("en-IN",{day:"numeric",month:"short"})};
+const wkLabel=w=>{const d=new Date(START);d.setDate(d.getDate()+(w-1)*7);return d.toLocaleDateString("en-IN",{day:"numeric",month:"short"})};
 const FESTIVE=w=>w>=15&&w<=17;
 const CAT={bakery:{sales:60000,ticket:140,input:0.45},kirana:{sales:90000,ticket:260,input:0.75},mobile:{sales:70000,ticket:420,input:0.70}};
 const LEVELS=["","Starter","Proven","Verified","Trusted"];
@@ -346,57 +522,108 @@ function run(upto){
 }
 const fmt=n=>{n=Math.round(n);if(n>=100000)return(n/100000).toFixed(1)+"L";if(n>=1000)return Math.round(n/1000)+"k";return String(n)};
 
-// ---------- UI
-let WEEK=1, SEL=1, TAB="dash", timer=null, TOUR=-1;
+// ================= UI =================
+let WEEK=1, SEL=1, TAB="dash", timer=null, TOUR=-1, LASTTAB=null;
+const RM=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+const PREV={};
 const $=id=>document.getElementById(id);
 const showTruth=()=>$("truth").checked;
-function truth(m){return showTruth()?`<span class="truth tr-${m.type}">${{honest:"honest",renter:"renter",mixer:"mixer",front:"front",stealth:"new trick"}[m.type]}</span>`:""}
+const CITY=m=>`${m.cat[0].toUpperCase()+m.cat.slice(1)} in ${m.city}`;
+function truth(m){return showTruth()?`<span class="truth tr-${m.type}">${{honest:"honest",renter:"rented out",mixer:"mixing bets",front:"betting front",stealth:"new trick"}[m.type]}</span>`:""}
 function info(text){return `<button class="info" aria-label="What is this?" data-info="${text.replace(/"/g,'&quot;')}">?</button>`}
+const ICON={play:'<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3.5v13l11-6.5z" fill="currentColor"/></svg>',pause:'<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="4" y="3" width="4.5" height="14" rx="1" fill="currentColor"/><rect x="11.5" y="3" width="4.5" height="14" rx="1" fill="currentColor"/></svg>'};
+const EVENTS=[[1,"Everyone on Level 1"],[10,"New trick appears"],[13,"System learns"],[15,"Festive season"],[18,"Results"]];
 
 function render(){
   const R=run(WEEK);
-  $("week").value=WEEK; $("wklabel").textContent=wkLabel(WEEK);
-  ["dash","app","immune","how"].forEach(t=>$("tab-"+t).setAttribute("aria-selected",String(t===TAB)));
-  $("view").innerHTML=`<div class="panel-wrap">${{dash:dash,app:app,immune:immune,how:how}[TAB](R)}</div>`;
-  bindView();
+  const w=$("week"); w.value=WEEK; w.style.setProperty("--p",((WEEK-1)/(WEEKS-1)*100)+"%");
+  $("wknum").textContent="Week "+WEEK; $("wkdate").textContent=wkLabel(WEEK)+" 2026";
+  document.querySelectorAll(".mark").forEach(b=>b.classList.toggle("on",+b.dataset.w<=WEEK));
+  ["dash","app","immune","how"].forEach(t=>{const b=$("tab-"+t);b.setAttribute("aria-selected",String(t===TAB));b.tabIndex=t===TAB?0:-1});
+  const enter=LASTTAB!==TAB; LASTTAB=TAB;
+  $("view").innerHTML=`<div class="view${enter?" enter":""}">${{dash,app,immune,how}[TAB](R)}</div>`;
+  narrate(R); bindView(); animateNums(); animateBars();
 }
+// ---------- narration line under the time bar
+function narrate(R){
+  const pr={learn:0,bad:1,good:2};
+  const here=R.log.filter(l=>l.w==WEEK).sort((a,b)=>pr[a.c]-pr[b.c]);
+  let html,cls;
+  if(here.length){html=here[0].t;cls=here[0].c}
+  else{
+    const hs=M.map(m=>R.st[m.id].hist[WEEK-1]).filter(Boolean), n=a=>hs.filter(h=>h.action==a).length;
+    const parts=[]; if(n("ASK")) parts.push(`${n("ASK")} shop${n("ASK")>1?"s":""} asked a question`); if(n("SLOW")) parts.push(`${n("SLOW")} slowed`); if(n("STOP")) parts.push(`${n("STOP")} paused for review`);
+    html=parts.length?`${parts.join(", ")}. Everyone else is paid as normal.`:"A quiet week. Every open shop is paid as normal, and steady weeks count towards the next level.";
+    cls="calm";
+  }
+  const more=here.length>1?` <span class="more">and ${here.length-1} more in the log</span>`:"";
+  const el=$("narr"), key=WEEK+"|"+html;
+  if(el.dataset.k===key) return;
+  el.dataset.k=key; el.className="narr "+cls; el.innerHTML=`<b class="nw">Week ${WEEK}</b>${html}${more}`;
+  if(!RM){el.classList.remove("swap");void el.offsetWidth;el.classList.add("swap")}
+}
+// ---------- smooth numbers and bars between weeks
+function animateNums(){
+  document.querySelectorAll("[data-c]").forEach(el=>{
+    const k=el.dataset.c, to=+el.dataset.v, from=(k in PREV)?PREV[k]:to; PREV[k]=to;
+    const f=el.dataset.k==="rs"?v=>"₹"+fmt(v):v=>String(Math.round(v));
+    if(RM||from===to){el.textContent=f(to);return}
+    const box=el.parentElement; box.classList.remove("bump"); void box.offsetWidth; box.classList.add("bump");
+    const t0=performance.now(), D=650;
+    const tick=now=>{if(!el.isConnected) return;const p=Math.min(1,(now-t0)/D),e=1-Math.pow(1-p,3);el.textContent=f(from+(to-from)*e);if(p<1) requestAnimationFrame(tick)};
+    el.textContent=f(from); requestAnimationFrame(tick);
+  });
+}
+function animateBars(){
+  document.querySelectorAll("[data-bar]").forEach(el=>{
+    const k=el.dataset.bar, to=+el.dataset.to, from=(k in PREV)?PREV[k]:to; PREV[k]=to;
+    if(RM||from===to){el.style.width=to+"%";return}
+    el.style.transition="none"; el.style.width=from+"%"; void el.offsetWidth; el.style.transition=""; el.style.width=to+"%";
+  });
+}
+const num=(id,v,kind)=>`<b data-c="${id}" data-v="${Math.round(v)}" data-k="${kind}">${kind=="rs"?"₹"+fmt(v):Math.round(v)}</b>`;
+
+// ---------- PayU monitoring
 function metricsHTML(R){
   const met=R.met, bad=M.filter(isBad).length;
-  return `<section class="metrics" id="metrics" aria-label="Key numbers">${[
-    [`₹${fmt(met.betHeld)}`,`of ₹${fmt(met.betTotal)} betting money held or stopped`],
-    [`${met.stopped} / ${bad}`,`bad accounts stopped so far`],
-    [met.honestAsked.size,`honest shops asked a question`],
-    [`₹${fmt(met.honestDelayed)}`,`delayed at honest shops (never frozen)`],
-    [`₹${fmt(met.mixedShopHeld)}`,`real sales held at shops caught taking bets, by design`]
-  ].map(x=>`<div class="m"><b>${x[0]}</b><span>${x[1]}</span></div>`).join("")}</section>`;
+  return `<section class="score" id="metrics" aria-label="Key numbers">
+   <div class="grp"><h3>Catching betting money</h3><div class="ms">
+     <div class="m">${num("bh",met.betHeld,"rs")}<span>of ₹${fmt(met.betTotal)} betting money held or stopped</span></div>
+     <div class="m"><b><span data-c="st" data-v="${met.stopped}" data-k="n">${met.stopped}</span> of ${bad}</b><span>bad accounts stopped</span></div>
+     <div class="m">${num("mx",met.mixedShopHeld,"rs")}<span>real sales held at shops caught mixing in bets, by design</span></div>
+   </div></div>
+   <div class="grp calm"><h3>Cost to honest shops</h3><div class="ms">
+     <div class="m">${num("hd",met.honestDelayed,"rs")}<span>delayed at honest shops, never frozen</span></div>
+     <div class="m">${num("ha",met.honestAsked.size,"n")}<span>honest shop${met.honestAsked.size==1?"":"s"} asked a question</span></div>
+   </div></div></section>`;
 }
 function ladder(lv){return `<span class="lvl" aria-label="Level ${lv}">${[1,2,3,4].map(i=>`<i class="${i<=lv?(i==4?"on top":"on"):""}" style="height:${4+i*3}px"></i>`).join("")}</span> <span class="meta">L${lv}</span>`}
 function dash(R){
   const rows=M.map(m=>{const h=R.st[m.id].hist[WEEK-1], sel=m.id==SEL;
-    const nameCell=`<button class="mbtn" data-sel="${m.id}" aria-pressed="${sel}">${m.name}</button>${truth(m)}<div class="meta">${m.cat} · ${m.city}</div>`;
-    if(!h) return `<tr class="row${sel?" sel":""}" data-id="${m.id}"><td>${nameCell}</td><td colspan="4" class="meta">Not signed up yet</td><td><span class="pill NEW">—</span></td></tr>`;
+    const nameCell=`<button class="mbtn" data-sel="${m.id}" aria-pressed="${sel}">${m.name}</button>${truth(m)}<div class="meta">${CITY(m)}</div>`;
+    if(!h) return `<tr class="row${sel?" sel":""}" data-id="${m.id}"><td>${nameCell}</td><td colspan="4" class="meta">Not signed up yet</td><td><span class="pill NEW">Not open</span></td></tr>`;
     const gone=h.action=="CLOSED"||h.action=="BLOCKED";
     const tests=["S","C","N"].map(t=>`<span class="t ${h.tests.includes(t)?"on":""}" title="${{S:"Shape",C:"Control",N:"Network"}[t]}">${t}</span>`).join("")+(h.extra?`<span class="t r" title="Unanswered question">+${h.extra}</span>`:"");
-    return `<tr class="row${sel?" sel":""}" data-id="${m.id}"><td>${nameCell}</td><td>${gone?"<span class='meta'>removed</span>":ladder(h.level)}</td><td>${gone?"":tests}</td><td>${gone?"—":h.score}</td>
-      <td class="meta">₹${fmt(h.paid)} / <b style="color:${h.held>0?"#8E4A12":"inherit"}">₹${fmt(h.held)}</b></td><td><span class="pill ${h.action}">${h.action}</span></td></tr>`}).join("");
-  return metricsHTML(R)+`<main>
+    return `<tr class="row${sel?" sel":""}" data-id="${m.id}"><td>${nameCell}</td><td>${gone?"<span class='meta'>Removed</span>":ladder(h.level)}</td><td>${gone?"":tests}</td><td class="num">${gone?"":h.score}</td>
+      <td class="meta num">₹${fmt(h.paid)} / <b style="color:${h.held>0?"#8E4A12":"inherit"}">₹${fmt(h.held)}</b></td><td><span class="pill ${h.action}">${h.action}</span></td></tr>`}).join("");
+  return metricsHTML(R)+`<main class="dash">
   <div class="panel" id="p-table"><h2>Shops this week ${info("Every shop PayU serves, scored every week. S, C and N are the three questions: Shape (does the money look like this kind of shop?), Control (is the real owner running it?), Network (does it share customers with shops it shouldn't?). An orange +1 means a question went unanswered. 1 yes = ASK, 2 = SLOW, 3 = STOP.")}</h2>
-   <div class="tablebox"><table><thead><tr><th>Shop</th><th>Trust level</th><th>Questions</th><th>Score</th><th>Paid now / held</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>
-   <div class="legend"><span><span class="t on">S</span>Shape</span><span><span class="t on">C</span>Control</span><span><span class="t on">N</span>Network</span><span><span class="t r">+1</span>unanswered</span><span>1 yes → ASK · 2 → SLOW · 3 → STOP</span></div></div>
-  <div class="right">
+   <div class="tablebox"><table><thead><tr><th>Shop</th><th>Trust level</th><th>Questions</th><th>Score</th><th>Paid / held</th><th>Action</th></tr></thead><tbody>${rows}</tbody></table></div>
+   <div class="legend"><span><span class="t on">S</span>Shape</span><span><span class="t on">C</span>Control</span><span><span class="t on">N</span>Network</span><span><span class="t r">+1</span>Unanswered</span><span>1 yes: ASK, 2: SLOW, 3: STOP</span></div></div>
+  <div class="side">
    <div class="panel" id="p-detail">${detail(R)}</div>
-   <div class="panel" id="p-net"><h2>Who shares customers ${info("Each dot is a shop. A line means two shops shared 8+ payers this week. Real shops have local customers, so they sit alone. Betting fronts share the same gamblers.")}</h2><svg viewBox="0 0 520 300" width="100%" role="img" aria-label="Network of shops sharing customers">${network(R)}</svg>
-    <div class="legend"><span>Hyderabad left, Mumbai right. Red lines cross cities; orange lines stay in one city.</span></div></div>
-   <div class="panel" id="p-log"><h2>What the system did and learned ${info("A running log of every decision: questions asked, money slowed, accounts stopped, and every new thing the system learned.")}</h2><div class="log">${R.log.slice().reverse().map(l=>`<p class="${l.c}"><span class="meta">W${l.w}</span> ${l.t}</p>`).join("")}</div></div>
+   <div class="panel" id="p-net"><h2>Who shares customers ${info("Each dot is a shop. A line means two shops shared 8 or more payers this week. Real shops have local customers, so they sit alone. Betting fronts share the same gamblers.")}</h2><svg viewBox="0 0 520 300" width="100%" role="img" aria-label="Network of shops sharing customers">${network(R)}</svg>
+    <div class="legend"><span><i style="background:#B5432F"></i>Shared across cities</span><span><i style="background:#E3A33B"></i>Shared in one city</span><span>Click a dot to open that shop</span></div></div>
+   <div class="panel" id="p-log"><h2>What the system did and learned ${info("A running log of every decision: questions asked, money slowed, accounts stopped, and every new thing the system learned. This week's entries are shaded.")}</h2><div class="log">${R.log.slice().reverse().map(l=>`<p class="${l.c}${l.w==WEEK?" now":""}"><span class="meta">W${l.w}</span> ${l.t}</p>`).join("")}</div></div>
   </div></main>`;
 }
 function detail(R){
   const m=M[SEL], H=R.st[m.id].hist.slice(0,WEEK), h=H[WEEK-1];
-  let html=`<h2>${m.name} <span class="meta" style="font-family:Inter,sans-serif;font-weight:400">· ${m.cat} · ${m.city}</span>${truth(m)} ${info("Sales (dark line) against sales backed by stock the shop bought (green), and what similar shops sell (grey dashes). Orange bars are money held back. Below: the reasons for this week's action.")}</h2>`;
-  if(!h) return html+`<p class="meta">Not signed up yet. Move forward in time.</p>`;
+  let html=`<div class="ph"><div><h2 style="font-size:19px">${m.name}${truth(m)}</h2><div class="meta">${CITY(m)}</div></div> ${info("Sales (dark line) against sales backed by stock the shop bought (green), and what similar shops sell (grey dashes). Orange bars are money held back. Below: the reasons for this week's action.")}</div>`;
+  if(!h) return html+`<p class="meta">Not signed up yet. It opens in week ${m.at}.</p>`;
   html+=`<div class="kv"><div><b>₹${fmt(h.sales)}</b><span>sales this week</span></div><div><b>₹${fmt(h.proofSales)}</b><span>backed by stock bought</span></div><div><b>₹${fmt(h.held)}</b><span>held back</span></div><div><b><span class="pill ${h.action}">${h.action}</span></b><span>action</span></div></div>`;
   html+=chart(H);
-  html+=`<div class="legend"><span><i style="background:#12302C"></i>Sales</span><span><i style="background:#2E7D5B"></i>Backed by stock bought</span><span><i style="background:#BFD3CE"></i>Similar shops</span><span><i style="background:#C9772B;height:8px"></i>Held</span></div>`;
+  html+=`<div class="legend"><span><i style="background:#12302C"></i>Sales</span><span><i style="background:#2E7D5B"></i>Backed by stock</span><span><i style="background:#B9CFC9"></i>Similar shops</span><span><i style="background:#C9772B;height:8px"></i>Held</span></div>`;
   html+=`<ul class="why">${(h.why&&h.why.length?h.why:["Money and behaviour match a real "+m.cat+". Nothing to do."]).map(x=>"<li>"+x+"</li>").join("")}</ul>`;
   return html;
 }
@@ -404,140 +631,303 @@ function chart(H){
   const W=520,Ht=170,p=30, vals=H.filter(Boolean);
   const max=Math.max(...vals.map(h=>Math.max(h.sales,h.peer||0,h.proofSales||0)),1)*1.1;
   const x=i=>p+i*(W-p-8)/(WEEKS-1), y=v=>Ht-20-(v/max)*(Ht-34);
-  const line=(f,col,dash)=>{let d="";H.forEach((h,i)=>{if(!h||!f(h))return;d+=(d?"L":"M")+x(i)+","+y(f(h))});return d?`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" ${dash?'stroke-dasharray="5 4"':""}/>`:""};
-  const bars=H.map((h,i)=>h&&h.held>0?`<rect x="${x(i)-5}" y="${y(h.held)}" width="10" height="${Ht-20-y(h.held)}" fill="#C9772B" opacity=".75"/>`:"").join("");
-  const ticks=[1,5,9,13,17].map(w=>`<text x="${x(w-1)}" y="${Ht-4}" font-size="10" fill="#5E6E6B" text-anchor="middle">W${w}</text>`).join("");
-  const fest=`<rect x="${x(14)-6}" y="6" width="${x(16)-x(14)+12}" height="${Ht-26}" fill="#FBEBCD" opacity=".5"/><text x="${x(15)}" y="16" font-size="10" fill="#7A4E0E" text-anchor="middle">festive</text>`;
-  return `<svg viewBox="0 0 ${W} ${Ht}" width="100%" role="img" aria-label="Weekly sales, proof and held money for this shop">${fest}<text x="2" y="14" font-size="10" fill="#5E6E6B">₹${fmt(max/1.1)}</text>${bars}${line(h=>h.peer,"#BFD3CE",true)}${line(h=>h.proofSales,"#2E7D5B")}${line(h=>h.sales,"#12302C")}${ticks}</svg>`;
+  const line=(f,col,dash)=>{let d="";H.forEach((h,i)=>{if(!h||!f(h))return;d+=(d?"L":"M")+x(i).toFixed(1)+","+y(f(h)).toFixed(1)});return d?`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round" ${dash?'stroke-dasharray="5 5"':""}/>`:""};
+  const bars=H.map((h,i)=>h&&h.held>0?`<rect x="${x(i)-5}" y="${y(h.held)}" width="10" height="${Ht-20-y(h.held)}" rx="2" fill="#C9772B" opacity=".75"/>`:"").join("");
+  const ticks=[1,5,9,13,17].map(w=>`<text x="${x(w-1)}" y="${Ht-4}" font-size="10" fill="#596966" text-anchor="middle">W${w}</text>`).join("");
+  const fest=`<rect x="${x(14)-6}" y="6" width="${x(16)-x(14)+12}" height="${Ht-26}" rx="6" fill="#FBEACB" opacity=".55"/><text x="${x(15)}" y="17" font-size="10" fill="#7A4E0E" text-anchor="middle">Festive</text>`;
+  const now=`<line x1="${x(WEEK-1)}" x2="${x(WEEK-1)}" y1="6" y2="${Ht-20}" stroke="#E3A33B" stroke-width="1.5" stroke-dasharray="2 3"/>`;
+  return `<svg viewBox="0 0 ${W} ${Ht}" width="100%" role="img" aria-label="Weekly sales, proof and held money for this shop">${fest}${now}<text x="2" y="14" font-size="10" fill="#596966">₹${fmt(max/1.1)}</text>${bars}${line(h=>h.peer,"#B9CFC9",true)}${line(h=>h.proofSales,"#2E7D5B")}${line(h=>h.sales,"#12302C")}${ticks}</svg>`;
 }
 function network(R){
   const pos={}, hy=M.filter(m=>m.city=="Hyderabad"), mu=M.filter(m=>m.city=="Mumbai");
-  hy.forEach((m,i)=>pos[m.id]=[120+Math.cos(i/hy.length*Math.PI*2)*95,150+Math.sin(i/hy.length*Math.PI*2)*120]);
-  mu.forEach((m,i)=>pos[m.id]=[400+Math.cos(i/mu.length*Math.PI*2)*85,150+Math.sin(i/mu.length*Math.PI*2)*115]);
+  hy.forEach((m,i)=>pos[m.id]=[125+Math.cos(i/hy.length*Math.PI*2)*95,155+Math.sin(i/hy.length*Math.PI*2)*115]);
+  mu.forEach((m,i)=>pos[m.id]=[395+Math.cos(i/mu.length*Math.PI*2)*85,155+Math.sin(i/mu.length*Math.PI*2)*110]);
   const col={OK:"#2E7D5B",ASK:"#E3A33B",SLOW:"#C9772B",STOP:"#B5432F",CLOSED:"#5a2a22",BLOCKED:"#3a1d18"};
-  let s=`<text x="120" y="14" font-size="11" text-anchor="middle" fill="#5E6E6B" font-weight="700">HYDERABAD</text><text x="400" y="14" font-size="11" text-anchor="middle" fill="#5E6E6B" font-weight="700">MUMBAI</text>`;
-  (R.st.links||[]).forEach(l=>{const a=pos[l[0]],b=pos[l[1]];s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${l[3]?"#B5432F":"#E3A33B"}" stroke-width="${Math.min(4,1+l[2]/15)}" opacity=".5"/>`});
-  M.forEach(m=>{const h=R.st[m.id].hist[WEEK-1],p=pos[m.id];s+=`<circle cx="${p[0]}" cy="${p[1]}" r="${m.id==SEL?10:7}" fill="${h?col[h.action]:"#D3DEDA"}" stroke="${m.id==SEL?"#12302C":"#fff"}" stroke-width="2"><title>${m.name}</title></circle>`});
+  let s=`<circle cx="125" cy="155" r="132" fill="#F3F7F6"/><circle cx="395" cy="155" r="122" fill="#F3F7F6"/><text x="125" y="16" font-size="12" text-anchor="middle" fill="#596966" font-weight="600">Hyderabad</text><text x="395" y="16" font-size="12" text-anchor="middle" fill="#596966" font-weight="600">Mumbai</text>`;
+  (R.st.links||[]).forEach(l=>{const a=pos[l[0]],b=pos[l[1]];s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${l[3]?"#B5432F":"#E3A33B"}" stroke-width="${Math.min(4,1+l[2]/15)}" opacity=".55" stroke-linecap="round"/>`});
+  M.forEach(m=>{const h=R.st[m.id].hist[WEEK-1],p=pos[m.id],sel=m.id==SEL;s+=`<circle class="dot" data-sel="${m.id}" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${sel?11:7.5}" fill="${h?col[h.action]:"#D5E0DC"}" stroke="${sel?"#12302C":"#fff"}" stroke-width="${sel?3:2}" style="cursor:pointer"><title>${m.name}${h?": "+h.action:""}</title></circle>`});
   return s;
 }
 // ---------- merchant app (the shop's point of view)
 function app(R){
   const m=M[SEL], s=R.st[m.id], h=s.hist[WEEK-1];
-  const picker=`<label class="meta" for="pick">Shop:</label> <select id="pick" style="font:inherit;padding:6px;border-radius:8px">${M.map(x=>`<option value="${x.id}" ${x.id==SEL?"selected":""}>${x.name}</option>`).join("")}</select>`;
+  const picker=`<div class="pick"><label class="meta" for="pick">Shop</label><select id="pick">${M.map(x=>`<option value="${x.id}" ${x.id==SEL?"selected":""}>${x.name}</option>`).join("")}</select></div>`;
   let body="";
-  if(!h){body=`<div class="card"><h3>Not signed up yet</h3><p class="meta">This shop joins in week ${m.at}.</p></div>`}
-  else if(h.action=="BLOCKED"){body=`<div class="card bad"><h3>Sign-up couldn't be completed</h3><p>This phone is linked to an account that was closed for illegal betting collections.</p></div>`}
-  else if(h.action=="CLOSED"){body=`<div class="card bad"><h3>Account closed</h3><p>After review, this account was closed for collecting payments for illegal betting. A report has been filed as required by law.</p><p class="meta">If someone else was using your account, contact us: we'll help, and you won't face a case for reporting it.</p></div>`}
+  if(!h){body=`<div class="card"><h3>Not signed up yet</h3><p class="meta" style="margin:0">This shop joins in week ${m.at}.</p></div>`}
+  else if(h.action=="BLOCKED"){body=`<div class="card bad"><h3>Sign-up couldn't be completed</h3><p style="margin:0">This phone is linked to an account that was closed for illegal betting collections.</p></div>`}
+  else if(h.action=="CLOSED"){body=`<div class="card bad"><h3>Account closed</h3><p>After review, this account was closed for collecting payments for illegal betting. A report has been filed as required by law.</p><p class="meta" style="margin:0">If someone else was using your account, contact us: we'll help, and you won't face a case for reporting it.</p></div>`}
   else{
     const lv=h.level, need=lv<4?NEXT[lv]:null, prog=lv<4?Math.min(100,Math.round(h.good/need*100)):100;
     const firstWeek=(isNew(m)?m.at:1)==WEEK;
-    if(firstWeek) body+=`<div class="card dark"><h3>Welcome to PayU 👋</h3><p style="margin:0 0 6px">You start on <b>Level 1 · Starter</b>. Take payments right away, with payouts sized to similar shops near you.</p><p style="margin:0;color:var(--soft)">Climb by showing you're a real shop: faster money, a badge, and a loan offer.</p></div>`;
-    body+=`<div class="card"><div class="meta">Your trust level</div><h3>Level ${lv} · ${LEVELS[lv]}</h3><div class="steps">${[1,2,3,4].map(i=>`<span class="${i<lv?"on":i==lv?"cur":""}">${LEVELS[i]}</span>`).join("")}</div>${lv<4?`<div class="prog" aria-label="Progress to next level"><i style="width:${prog}%"></i></div><div class="meta">${h.good} of ${need} steady weeks to reach ${LEVELS[lv+1]}</div>`:`<div class="meta">Top level reached</div>`}</div>`;
-    body+=`<div class="card"><div class="meta">This week</div><h3>₹${fmt(h.paid)} paid ${lv==4?"instantly":"to your bank"}</h3>${h.held>0?`<p style="margin:0" class="meta">₹${fmt(h.held)} arrives in a few days. ${h.action=="SLOW"?"It's more than your usual business and we couldn't match it to your stock.":"It's above your current limit; climbing a level raises it."}</p>`:`<p style="margin:0" class="meta">Nothing held back.</p>`}</div>`;
-    if(h.action=="ASK"){body+=`<div class="card warn"><h3>Quick question</h3><p style="margin:0 0 8px">${h.catering?"We noticed an unusually large order this week. Started catering?":"We noticed something different this week. Can you tell us what changed?"}</p>${m.type=="honest"?`<p style="margin:0" class="meta">✓ You replied: "office catering order" + invoice. Thanks, all clear.</p>`:`<p style="margin:0" class="meta">No reply yet. Reply with a photo of your counter or a bill.</p>`}</div>`}
+    if(firstWeek) body+=`<div class="card dark"><h3>Welcome to PayU</h3><p style="margin:0 0 6px">You start on <b>Level 1, Starter</b>. Take payments right away, with payouts sized to similar shops near you.</p><p style="margin:0;color:var(--soft)">Climb by showing you're a real shop: faster money, a badge, and a loan offer.</p></div>`;
+    body+=`<div class="card"><div class="meta">Your trust level</div><h3>Level ${lv}: ${LEVELS[lv]}</h3><div class="steps">${[1,2,3,4].map(i=>`<span class="${i<lv?"on":i==lv?"cur":""}">${LEVELS[i]}</span>`).join("")}</div>${lv<4?`<div class="prog" role="progressbar" aria-label="Progress to the next level" aria-valuenow="${prog}" aria-valuemin="0" aria-valuemax="100"><i data-bar="prog${m.id}" data-to="${prog}" style="width:${prog}%"></i></div><div class="meta">${h.good} of ${need} steady weeks to reach ${LEVELS[lv+1]}</div>`:`<div class="meta">Top level reached</div>`}</div>`;
+    body+=`<div class="card"><div class="meta">This week</div><h3>₹${fmt(h.paid)} paid ${lv==4?"instantly":"to your bank"}</h3>${h.held>0?`<p style="margin:0" class="meta">₹${fmt(h.held)} arrives in a few days. ${h.action=="SLOW"?"It's more than your usual business and we couldn't match it to your stock.":h.action=="STOP"?"Payouts are paused while we review.":"It's above your current limit; climbing a level raises it."}</p>`:`<p style="margin:0" class="meta">Nothing held back.</p>`}</div>`;
+    if(h.action=="ASK"){body+=`<div class="card warn"><h3>Quick question</h3><p style="margin:0 0 8px">${h.catering?"We noticed an unusually large order this week. Started catering?":"We noticed something different this week. Can you tell us what changed?"}</p>${m.type=="honest"?`<p style="margin:0" class="meta">You replied: "office catering order", with the invoice. Thanks, all clear.</p>`:`<p style="margin:0" class="meta">No reply yet. Reply with a photo of your counter or a bill.</p>`}</div>`}
     if(h.action=="SLOW"||h.action=="STOP"){body+=`<div class="card bad"><h3>${h.action=="STOP"?"Payouts paused for review":"Warning"}</h3><p style="margin:0">${h.action=="STOP"?"Our team is reviewing recent payments on your account.":"Some payments don't match your shop. Renting out your QR or account is a crime, and you are responsible for every rupee. If someone else is using it, tell us and we'll close it with no case against you."}</p></div>`}
-    const tasks=[["Take your first payment",true],["Pay a supplier from your account, or share a one-tap bank summary",lv>=2],["Record a 20-second shop video",lv>=3],["Link GST or Udyam (if you have one)",lv>=3],["Keep it steady for a few months",lv>=4]];
-    body+=`<div class="card"><div class="meta">Climb the ladder</div>${tasks.map(t=>`<div style="margin:5px 0">${t[1]?"✅":"⬜"} ${t[0]}</div>`).join("")}</div>`;
-    if(lv>=3) body+=`<div class="card"><h3>🏅 Verified Shop</h3><p style="margin:0" class="meta">Customers see this badge when they scan your QR.</p></div>`;
+    const tasks=[["Take your first payment",true],["Pay a supplier from your account, or share a one-tap bank summary",lv>=2],["Record a 20-second shop video",lv>=3],["Link GST or Udyam, if you have one",lv>=3],["Keep it steady for a few months",lv>=4]];
+    body+=`<div class="card"><div class="meta" style="margin-bottom:4px">Climb the ladder</div>${tasks.map(t=>`<div class="task${t[1]?" done":""}"><i aria-hidden="true">${t[1]?"✓":""}</i><span>${t[0]}${t[1]?'<span class="meta"> (done)</span>':""}</span></div>`).join("")}</div>`;
+    if(lv>=3) body+=`<div class="card"><h3>Verified Shop badge</h3><p style="margin:0" class="meta">Customers see this badge when they scan your QR.</p></div>`;
     if(lv>=4) body+=`<div class="card dark"><h3>You're pre-approved</h3><p style="margin:0">A ₹50,000 working-capital loan, based on your payment history. No paperwork.</p></div>`;
   }
   return `<div class="two">
-    <div><div style="margin-bottom:10px">${picker}</div><div class="phone" aria-label="Merchant app for ${m.name}"><div class="bar"><span>PayU for Business</span><span>${wkLabel(WEEK)}</span></div><div class="meta" style="margin-bottom:8px">${m.name}</div>${body}</div></div>
+    <div>${picker}<div class="phone" aria-label="Merchant app for ${m.name}"><div class="bar"><span>PayU for Business</span><span>${wkLabel(WEEK)}</span></div><div class="shopname">${m.name}</div>${body}</div></div>
     <div class="explain"><h2>What the shop sees</h2>
-      <p>The merchant never sees "fraud scores". It sees a level, its money, and offers. Checks arrive as questions or as ways to unlock more.</p>
+      <p>The merchant never sees a "fraud score". It sees a level, its money and its offers. Checks arrive as questions, or as ways to unlock more.</p>
       <div class="tl">
         <div class="done"><b>Day 1: sign up.</b> Every shop starts on Level 1, with payouts sized to what similar shops nearby earn. No one starts as a suspect.</div>
-        <div class="done"><b>Weeks 1–6: just trade.</b> Steady weeks count towards Level 2. Proof is optional: a one-tap bank summary or paying a supplier through the app.</div>
+        <div class="${WEEK>=6?"done":"now"}"><b>Weeks 1 to 6: just trade.</b> Steady weeks count towards Level 2. Proof is optional: a one-tap bank summary, or paying a supplier through the app.</div>
         <div class="${WEEK>=10?"done":"future"}"><b>Level 3: a shop video, GST or Udyam.</b> Unlocks a badge customers can see.</div>
-        <div class="${WEEK>=14?"done":"future"}"><b>Level 4: Trusted.</b> Instant payouts, lowest fees, a loan offer.</div>
+        <div class="${WEEK>=14?"done":"future"}"><b>Level 4: Trusted.</b> Instant payouts, lowest fees and a loan offer.</div>
       </div>
-      <p><b>Try it:</b> pick <i>Banjara Bun Co.</i> in week 10 to see a friendly question, <i>Charminar Sweet Bakes</i> in week 10 to see a warning, or <i>Link Road Accessories</i> in week 13 to see a blocked sign-up.</p>
+      <div class="try"><b>Try one</b><div>
+        <button class="ghost" data-go="app,10,3">Banjara Bun Co., week 10: a friendly question</button>
+        <button class="ghost" data-go="app,10,5">Charminar Sweet Bakes, week 10: a warning</button>
+        <button class="ghost" data-go="app,13,24">Link Road Accessories, week 13: blocked at sign-up</button>
+        <button class="ghost" data-go="app,15,1">Ameerpet Oven House, week 15: Trusted, with a loan offer</button>
+      </div></div>
       <p class="meta">Not climbing is fine: a shop that shares nothing stays on Level 1 and trades normally.</p>
     </div></div>`;
 }
 // ---------- immune system view
 function immune(R){
   const stealth=M.filter(m=>m.type=="stealth");
-  const status=m=>{const h=R.st[m.id].hist[WEEK-1];if(!h) return ["Not open yet","NEW"];if(h.action=="CLOSED"||h.action=="BLOCKED") return ["Stopped","CLOSED"];if(h.action=="OK") return ["Invisible: 0 questions say yes","OK"];return [h.action+": "+h.why.filter(x=>!x.startsWith("Shape")).slice(0,1).join(""),h.action]};
+  const status=m=>{const h=R.st[m.id].hist[WEEK-1];if(!h) return ["Not open yet","NEW"];if(h.action=="CLOSED"||h.action=="BLOCKED") return ["Stopped","CLOSED"];if(h.action=="OK") return ["Invisible: none of the three questions says yes","OK"];return [h.why.filter(x=>!x.startsWith("Shape")).slice(0,1).join(""),h.action]};
   const step=(cond,now)=>cond?(now?"now":"done"):"future";
-  return `<div class="two" style="grid-template-columns:1fr 1fr">
+  return `<div class="two" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
   <div class="explain"><h2>A new trick the system had never seen</h2>
     <p>Fronts adapt. In week 10, three new shops copy real bakeries perfectly: normal amounts, daytime payments, local-looking customers, and owners who stay in control. All three questions say no.</p>
     <div class="tl">
-      <div class="${step(WEEK>=10,WEEK<13)}"><b>Weeks 10–12: infection.</b> The new fronts take bets unseen.</div>
+      <div class="${step(WEEK>=10,WEEK<13)}"><b>Weeks 10 to 12: infection.</b> The new fronts take bets unseen.</div>
       <div class="${step(WEEK>=13,WEEK==13)}"><b>Week 13: one case is found.</b> A cyber-crime report names Rose Cake Corner. An analyst confirms it.</div>
       <div class="${step(WEEK>=13,WEEK==13)}"><b>Week 13: the system learns.</b> It compares the confirmed case with honest bakeries and finds what's different: its payers keep hopping between shops in the same week. That becomes a new check.</div>
-      <div class="${step(WEEK>=14,WEEK>=14&&WEEK<16)}"><b>Weeks 13–15: the look-alikes are caught.</b> The new check flags the other two. They can't answer the question, so it escalates: ask, then slow, then stop.</div>
-      <div class="${step(WEEK>=16,WEEK>=16)}"><b>From then on:</b> every shop is checked for payer hopping, forever.</div>
+      <div class="${step(WEEK>=14,WEEK>=14&&WEEK<16)}"><b>Weeks 13 to 15: the look-alikes are caught.</b> The new check flags the other two. They can't answer the question, so it escalates: ask, then slow, then stop.</div>
+      <div class="${step(WEEK>=16,WEEK>=16)}"><b>From then on:</b> every shop is checked for payer hopping.</div>
     </div>
-    <h2 style="margin-top:16px">The three new shops this week</h2>
-    ${stealth.map(m=>{const [t,a]=status(m);return `<div class="chk"><span class="pill ${a}">${a=="NEW"?"—":a}</span><div><b>${m.name}</b>${truth(m)}<div class="meta">${t}</div></div></div>`}).join("")}
+    <div class="try"><b>Jump to</b><div><button class="ghost" data-go="immune,11">Week 11: unseen</button><button class="ghost" data-go="immune,13">Week 13: learns</button><button class="ghost" data-go="immune,15">Week 15: caught</button></div></div>
+    <h3>The three new shops this week</h3>
+    ${stealth.map(m=>{const [t,a]=status(m);return `<div class="chk"><span class="pill ${a}">${a=="NEW"?"Not open":a}</span><div><b>${m.name}</b>${truth(m)}<div class="meta">${t}</div></div></div>`}).join("")}
   </div>
-  <div class="explain"><h2>Checks the system runs (week ${WEEK})</h2>
-    <p class="meta">Like antibodies: each confirmed fraud can add a new check, and the list only grows.</p>
+  <div class="explain" id="checks"><h2>Checks the system runs</h2>
+    <p class="meta">Like antibodies: each confirmed fraud can add a new check, and the list only grows. Week ${WEEK}: <b>${R.checks.length}</b> checks.</p>
     ${R.checks.map(c=>`<div class="chk ${c.isNew?"newp":""}"><span class="pill ${c.isNew?"ASK":"OK"}">${c.isNew?"Learned W"+c.w:"Day 1"}</span><div><b>${c.q}</b><div>${c.t}</div></div></div>`).join("")}
-    <p style="margin-top:12px"><b>${R.memory.devices.size}</b> device fingerprints and <b>${R.memory.payers.size}</b> gambler IDs remembered.</p>
+    <p style="margin-top:12px"><b>${R.memory.devices.size}</b> device fingerprint${R.memory.devices.size==1?"":"s"} and <b>${R.memory.payers.size}</b> gambler IDs remembered.</p>
     <p class="meta">Honest shops never trip the new check: their customers are local and don't hop between shops.</p>
   </div></div>`;
 }
+// ---------- explained tab
 function how(){
-  const cards=[["1","The Trust Ladder","Every shop starts on Level 1 with normal limits. Real shops climb by showing light proof they already have, and get faster money, a badge and loans. Fake shops can't climb."],
-    ["2","Three questions","Shape: does the money look like similar shops? Control: is the real owner running it? Network: does it share customers with shops it shouldn't? All use data PayU already has."],
-    ["3","Ask, slow, stop","1 yes: a friendly question. 2: only the unexplained extra waits a few days. 3: a human reviews, then the account is closed and reported. One signal never punishes anyone."],
-    ["4","It learns","Normal is relearned every week. Every confirmed fraud is remembered (phones, gamblers) and can teach a brand-new check, like an immune system."]];
-  return `<div class="grid4">${cards.map(c=>`<div class="how"><div class="n">STEP ${c[0]}</div><h3>${c[1]}</h3><p style="margin:0;line-height:1.5">${c[2]}</p></div>`).join("")}</div>
-  <div style="padding:0 28px 20px"><button class="primary" id="startTour">Take the guided tour</button></div>`;
+  const cards=[["The Trust Ladder","Every shop starts on Level 1 with normal limits. Real shops climb by showing light proof they already have, and get faster money, a badge and loans. Fake shops can't climb."],
+    ["Three questions","Shape: does the money look like similar shops? Control: is the real owner running it? Network: does it share customers with shops it shouldn't? All use data PayU already has."],
+    ["Ask, slow, stop","1 yes: a friendly question. 2: only the unexplained extra waits a few days. 3: a person reviews, then the account is closed and reported. One signal alone never punishes anyone."],
+    ["It learns","Normal is relearned every week. Every confirmed fraud is remembered (phones, gamblers) and can teach a brand-new check, like an immune system."]];
+  return `<div class="exp">
+   <div class="chapcards">
+    <button class="chapcard" data-eli="0"><h2>How we figured it out</h2><p>From one strange bakery to the root cause, in 6 simple steps.</p><span class="go" aria-hidden="true">▶</span></button>
+    <button class="chapcard light" data-eli="1"><h2>How it works, step by step</h2><p>The ladder, the three questions, and how it learns, in 7 steps.</p><span class="go" aria-hidden="true">▶</span></button>
+   </div>
+   <ol class="four">${cards.map(c=>`<li><h3>${c[0]}</h3><p>${c[1]}</p></li>`).join("")}</ol>
+   <div><button class="ghost" id="startTour">Take the 1-minute tour of the console</button></div>
+  </div>`;
 }
+
+// ================= ELI5 explainer =================
+const S=(x,y,t,o={})=>`<text x="${x}" y="${y}" font-size="${o.s||14}" font-weight="${o.w||500}" fill="${o.c||"#12302C"}" text-anchor="${o.a||"middle"}">${t}</text>`;
+const house=(x,y,sc,fill,roof)=>`<g transform="translate(${x} ${y}) scale(${sc})"><path d="M-22 0V-26L0-42L22-26V0Z" fill="${fill}"/><path d="M-26-24L0-46L26-24" fill="none" stroke="${roof||"#12302C"}" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><rect x="-6" y="-16" width="12" height="16" rx="2" fill="#12302C" opacity=".8"/></g>`;
+const coin=(x,y,d)=>`<g class="f" style="--d:${d}s"><circle cx="${x}" cy="${y}" r="14" fill="#E3A33B" stroke="#B97A16" stroke-width="2"/>${S(x,y+5,"₹",{s:14,w:700,c:"#5a3a08"})}</g>`;
+const ladderSVG=(labels)=>{let s=`<rect x="120" y="30" width="8" height="240" rx="4" fill="#B9CFC9"/><rect x="232" y="30" width="8" height="240" rx="4" fill="#B9CFC9"/>`;
+  [0,1,2,3].forEach(i=>{const y=240-i*60;s+=`<rect class="a" style="--d:${.1+i*.08}s" x="120" y="${y}" width="120" height="8" rx="4" fill="${i==3?"#E3A33B":"#1E4A44"}"/>`+S(254,y+9,"Level "+(i+1)+": "+["Starter","Proven","Verified","Trusted"][i],{a:"start",s:13,w:600})+(labels&&labels[i]?S(254,y+27,labels[i],{a:"start",s:12,c:"#596966"}).replace("<text",`<text class="a" style="--d:${.5+i*.75}s"`):"")});return s};
+const ART={
+  bakery:()=>`<svg viewBox="0 0 400 300">
+    <circle cx="340" cy="56" r="20" fill="#E3A33B"/><circle cx="350" cy="49" r="18" fill="#F3F7F6"/>
+    <rect x="40" y="118" width="190" height="124" rx="8" fill="#fff" stroke="#12302C" stroke-width="3"/>
+    ${[0,1,2,3,4,5].map(i=>`<path d="M${40+i*32} 100h32v18a16 16 0 0 1-32 0Z" fill="${i%2?"#fff":"#E3A33B"}" stroke="#12302C" stroke-width="2"/>`).join("")}
+    <rect x="80" y="62" width="110" height="30" rx="8" fill="#12302C"/>${S(135,82,"Bakery",{c:"#fff",w:700,s:15})}
+    <rect x="58" y="150" width="56" height="44" rx="4" fill="#E8F0EE" stroke="#12302C" stroke-width="2"/>
+    <rect x="125" y="186" width="40" height="56" rx="3" fill="#1E4A44"/>
+    <g class="p" style="--d:.2s"><rect x="176" y="150" width="40" height="40" rx="4" fill="#fff" stroke="#12302C" stroke-width="2.5"/>${[[181,155],[201,155],[181,175]].map(([a,b])=>`<rect x="${a}" y="${b}" width="10" height="10" fill="#12302C"/>`).join("")}<rect x="196" y="171" width="5" height="5" fill="#12302C"/><rect x="204" y="178" width="7" height="7" fill="#12302C"/></g>
+    ${coin(300,110,.5)}${coin(340,140,.65)}${coin(290,170,.8)}${coin(350,195,.95)}${coin(300,225,1.1)}${coin(255,140,1.25)}
+    <g class="a" style="--d:1.5s">${S(200,270,"₹5 lakh a week, from strangers",{s:13,w:600})}${S(200,288,"in other states, late at night",{s:13,c:"#596966"})}</g></svg>`,
+  once:()=>`<svg viewBox="0 0 400 300">
+    <g class="a" style="--d:.1s"><rect x="24" y="80" width="150" height="100" rx="12" fill="#fff" stroke="#12302C" stroke-width="2.5"/><circle cx="58" cy="118" r="16" fill="#B9CFC9"/><rect x="84" y="106" width="70" height="8" rx="4" fill="#D5E0DC"/><rect x="84" y="122" width="50" height="8" rx="4" fill="#D5E0DC"/><rect x="40" y="148" width="114" height="8" rx="4" fill="#D5E0DC"/></g>
+    <g class="p" style="--d:.5s"><circle cx="150" cy="80" r="26" fill="#2E7D5B"/>${S(150,78,"KYC",{c:"#fff",w:700,s:12})}${S(150,94,"day 1",{c:"#fff",s:11})}</g>
+    ${S(99,210,"Checked once, on paper",{s:13,w:600})}
+    ${Array.from({length:12},(_,i)=>{const c=i%4,r=Math.floor(i/4),x=200+c*46,y=70+r*52;return `<g class="a" style="--d:${.8+i*.07}s"><rect x="${x}" y="${y}" width="40" height="42" rx="8" fill="${i==0?"#E1F0E8":"#fff"}" stroke="${i==0?"#2E7D5B":"#D5E0DC"}" stroke-width="2"/>${S(x+20,y+27,i==0?"✓":"?",{s:16,w:700,c:i==0?"#2E7D5B":"#B5432F"})}</g>`}).join("")}
+    <g class="a" style="--d:1.8s">${S(290,250,"Every week after: nobody looks",{s:13,w:600})}${S(290,268,"Rented out? Bets mixed in? Unseen.",{s:12.5,c:"#596966"})}</g></svg>`,
+  root:()=>`<svg viewBox="0 0 400 300">
+    <rect x="0" y="186" width="400" height="114" fill="#E8F0EE"/>
+    <rect x="188" y="96" width="24" height="94" rx="6" fill="#1E4A44"/>
+    <g class="p" style="--d:.1s"><circle cx="200" cy="80" r="62" fill="#2E7D5B" opacity=".9"/></g>
+    ${[["Rented accounts",90,40,.4],["Bets mixed in",310,40,.55],["Fake shops",70,130,.7],["Fresh fakes",330,130,.85]].map(([t,x,y,d])=>`<g class="p" style="--d:${d}s"><rect x="${x-62}" y="${y-16}" width="124" height="28" rx="14" fill="#fff" stroke="#B5432F" stroke-width="2"/>${S(x,y+3,t,{s:12.5,w:600,c:"#9A3A28"})}</g>`).join("")}
+    <g class="a" style="--d:1.1s"><path d="M200 190c0 30-60 30-90 60M200 190c0 30 60 30 90 60M200 190v70" fill="none" stroke="#E3A33B" stroke-width="7" stroke-linecap="round"/></g>
+    <g class="a" style="--d:1.4s"><rect x="40" y="252" width="320" height="38" rx="19" fill="#12302C"/>${S(200,276,"Root: trust is checked once, never earned again",{s:13,w:700,c:"#fff"})}</g>
+    </svg>`,
+  earn:()=>`<svg viewBox="0 0 400 300">
+    ${S(110,36,"Proof",{s:14,w:700})}${S(275,36,"Money you can receive",{s:14,w:700})}
+    ${[0,1,2,3,4].map(i=>{const y=240-i*44;return `<g class="p" style="--d:${.2+i*.35}s"><circle cx="110" cy="${y}" r="16" fill="#2E7D5B"/>${S(110,y+5,"✓",{c:"#fff",w:700,s:15})}</g>${S(70,y+5,["W1","W2","W3","W4","W5"][i],{s:11,c:"#596966",a:"end"})}<rect class="grow" style="--d:${.3+i*.35}s" x="190" y="${y-12}" width="${50+i*38}" height="24" rx="6" fill="#E3A33B"/>`}).join("")}
+    <g class="a" style="--d:2.2s"><rect x="40" y="262" width="320" height="30" rx="15" fill="#12302C"/>${S(200,282,"Money can't grow faster than proof",{s:13,w:700,c:"#fff"})}</g></svg>`,
+  honest:()=>`<svg viewBox="0 0 400 300">
+    ${house(80,230,1.6,"#E3A33B")}
+    <g class="p" style="--d:.3s"><rect x="150" y="40" width="226" height="64" rx="16" fill="#12302C"/><path d="M170 104l-12 16 26-16Z" fill="#12302C"/>${S(263,66,"Quick question: big order",{c:"#fff",s:13,w:600})}${S(263,86,"this week. What changed?",{c:"#fff",s:13})}</g>
+    <g class="p" style="--d:1s"><rect x="140" y="130" width="236" height="64" rx="16" fill="#E1F0E8" stroke="#2E7D5B" stroke-width="2"/><path d="M150 194l-14 16 30-16Z" fill="#E1F0E8"/>${S(258,156,"Office catering order.",{s:13,w:600,c:"#1d5a40"})}${S(258,176,"Invoice attached ✓",{s:13,c:"#1d5a40"})}</g>
+    <g class="a" style="--d:1.6s"><rect x="170" y="222" width="206" height="40" rx="20" fill="#fff" stroke="#D5E0DC" stroke-width="2"/>${S(273,247,"Cleared. Nothing frozen.",{s:13.5,w:700,c:"#2E7D5B"})}</g></svg>`,
+  germ:()=>`<svg viewBox="0 0 400 300">
+    <g class="p" style="--d:.1s">${Array.from({length:10},(_,i)=>{const a=i/10*Math.PI*2;return `<line x1="${90+Math.cos(a)*38}" y1="${130+Math.sin(a)*38}" x2="${90+Math.cos(a)*56}" y2="${130+Math.sin(a)*56}" stroke="#B5432F" stroke-width="5" stroke-linecap="round"/><circle cx="${90+Math.cos(a)*58}" cy="${130+Math.sin(a)*58}" r="6" fill="#B5432F"/>`}).join("")}<circle cx="90" cy="130" r="40" fill="#E9A79A"/><circle cx="78" cy="122" r="6" fill="#B5432F"/><circle cx="102" cy="138" r="8" fill="#B5432F"/></g>
+    ${S(90,222,"A trick it hasn't seen",{s:13,w:600})}
+    <path class="a" style="--d:.6s" d="M170 130h40m-12-12 12 12-12 12" fill="none" stroke="#12302C" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    ${["Shape","Control","Network"].map((t,i)=>`<g class="a" style="--d:${.8+i*.15}s"><rect x="230" y="${60+i*40}" width="150" height="32" rx="10" fill="#fff" stroke="#D5E0DC" stroke-width="2"/>${S(246,81+i*40,t,{a:"start",s:13,w:600})}</g>`).join("")}
+    <g class="p" style="--d:1.6s"><rect x="230" y="180" width="150" height="32" rx="10" fill="#FDF4E3" stroke="#E3A33B" stroke-width="2.5"/>${S(246,201,"+ new check",{a:"start",s:13,w:700,c:"#7A4E0E"})}</g>
+    ${S(305,240,"learned from one real case",{s:12.5,c:"#596966"})}</svg>`,
+  start:()=>`<svg viewBox="0 0 400 300">${ladderSVG()}${[0,1,2,3,4].map(i=>`<g class="p" style="--d:${.5+i*.12}s">${house(42+i*20-(i>2?0:0),246,.55,["#E3A33B","#2E7D5B","#B9CFC9","#E3A33B","#2E7D5B"][i])}</g>`).join("")}${S(84,282,"Every new shop",{s:12.5,w:600})}</svg>`,
+  climb:()=>`<svg viewBox="0 0 400 300">${ladderSVG(["","Higher payout limit","Verified badge","Instant pay, loan offer"])}<g class="climb"><g transform="translate(180 238)"><circle r="20" fill="#E3A33B" stroke="#fff" stroke-width="3"/><path d="M-9 8V-3L0-10L9-3V8Z" fill="#12302C"/></g></g></svg>`,
+  three:()=>`<svg viewBox="0 0 400 300">
+    ${[["S","Shape","Does the money look","like a bakery?"],["C","Control","Is the real owner","holding the phone?"],["N","Network","Does it share customers","with odd shops?"]].map(([k,t,a,b],i)=>{const x=16+i*128;return `<g class="a" style="--d:${.15+i*.25}s"><rect x="${x}" y="40" width="116" height="200" rx="18" fill="#fff" stroke="#D5E0DC" stroke-width="2"/><circle cx="${x+58}" cy="86" r="28" fill="#12302C"/>${S(x+58,94,k,{c:"#fff",w:800,s:22})}${S(x+58,142,t,{s:16,w:700})}${S(x+58,170,a,{s:11,c:"#596966"})}${S(x+58,186,b,{s:11,c:"#596966"})}</g>`}).join("")}
+    ${S(200,272,"Asked about every shop, every week",{s:13,w:600})}</svg>`,
+  lights:()=>`<svg viewBox="0 0 400 300">
+    ${[["0 yes","OK","Paid as normal","#2E7D5B","#E1F0E8"],["1 yes","ASK","A friendly question","#7A4E0E","#FBEACB"],["2 yes","SLOW","Only the extra waits","#8E4A12","#F6DCC6"],["3 yes","STOP","A person reviews it","#9A3A28","#F3D3CC"]].map(([n,a,t,c,bg],i)=>{const y=32+i*60;return `<g class="a" style="--d:${.15+i*.35}s"><rect x="30" y="${y}" width="340" height="50" rx="14" fill="${bg}"/><circle cx="60" cy="${y+25}" r="14" fill="${c}"/>${S(88,y+30,n,{a:"start",s:13,w:600,c})}<rect x="146" y="${y+12}" width="56" height="26" rx="13" fill="#fff"/>${S(174,y+30,a,{s:12.5,w:800,c})}${S(214,y+30,t,{a:"start",s:12.5,c:"#12302C"})}</g>`}).join("")}
+    ${S(200,290,"A question left unanswered counts as a yes",{s:12,c:"#596966"})}</svg>`,
+  memory:()=>`<svg viewBox="0 0 400 300">
+    <g class="a" style="--d:.1s">${house(60,150,1.2,"#F3D3CC","#B5432F")}<path d="M40 100l40 40M80 100l-40 40" stroke="#B5432F" stroke-width="5" stroke-linecap="round"/></g>${S(60,186,"Closed, reported",{s:12,w:600})}
+    <path class="a" style="--d:.5s" d="M110 120h30m-10-10 10 10-10 10" fill="none" stroke="#12302C" stroke-width="3.5" stroke-linecap="round"/>
+    <g class="p" style="--d:.7s"><rect x="150" y="70" width="110" height="100" rx="16" fill="#12302C"/>${S(205,96,"Remembered",{c:"#E3A33B",w:700,s:13})}${S(205,122,"phone D-7731",{c:"#fff",s:12})}${S(205,142,"its gamblers'",{c:"#fff",s:12})}${S(205,158,"UPI IDs",{c:"#fff",s:12})}</g>
+    <path class="a" style="--d:1.1s" d="M270 120h30m-10-10 10 10-10 10" fill="none" stroke="#12302C" stroke-width="3.5" stroke-linecap="round"/>
+    <g class="a" style="--d:1.3s">${house(345,150,1.2,"#E8F0EE")}</g>${S(345,186,"New sign-up,",{s:12,w:600})}${S(345,202,"same phone",{s:12,w:600})}
+    <g class="p" style="--d:1.8s"><rect x="290" y="216" width="110" height="34" rx="17" fill="#3a1d18"/>${S(345,238,"Blocked",{c:"#fff",w:700,s:14})}</g>
+    ${S(200,280,"Caught once, recognised forever",{s:13,w:600})}</svg>`,
+  immune:()=>`<svg viewBox="0 0 400 300">
+    ${S(200,28,"Checks the system runs",{s:14,w:700})}
+    ${Array.from({length:7},(_,i)=>`<rect class="a" style="--d:${.05+i*.06}s" x="40" y="${42+i*24}" width="${200+((i*37)%90)}" height="16" rx="8" fill="#D5E0DC"/>`).join("")}
+    ${["Payer hopping (week 13)","Remembered devices","Remembered gamblers"].map((t,i)=>`<g class="p" style="--d:${.9+i*.45}s" ><rect x="40" y="${214+i*26}" width="320" height="22" rx="11" fill="#FDF4E3" stroke="#E3A33B" stroke-width="2"/>${S(54,229+i*26,"+ "+t,{a:"start",s:12.5,w:700,c:"#7A4E0E"})}</g>`).join("")}</svg>`,
+  result:()=>`<svg viewBox="0 0 400 300">
+    ${[["12/12","bad accounts","stopped","#12302C"],["₹0","held at","honest shops","#2E7D5B"],["1","honest question,","answered same day","#B97A16"]].map(([n,a,b,c],i)=>{const x=70+i*130;return `<g class="p" style="--d:${.2+i*.35}s"><circle cx="${x}" cy="120" r="56" fill="#fff" stroke="${c}" stroke-width="4"/>${S(x,132,n,{s:30,w:800,c})}${S(x,206,a,{s:12.5,w:600})}${S(x,224,b,{s:12.5,c:"#596966"})}</g>`}).join("")}
+    ${S(200,270,"25 simulated shops, 18 weeks",{s:12.5,c:"#596966"})}</svg>`
+};
+const CH=[
+ {name:"How we figured it out",steps:[
+  {art:"bakery",t:"A bakery that takes bets",b:"Illegal betting apps need a way to collect money, so they borrow ordinary shops' payment accounts. A bakery's QR code suddenly takes ₹5 lakh a week from hundreds of strangers in other states, late at night. It isn't selling cake. It's collecting bets.",like:"a lemonade stand that is secretly someone else's piggy bank.",demo:{tab:"dash",w:12,s:5}},
+  {art:"once",t:"Today's checks look only once",b:"A shop shows its papers on day one (KYC) and is trusted from then on. Later the owner can rent the account out, start mixing bets with real sales, or a fake shop can pass with fake papers. Fixed rules like \"flag round amounts\" don't last either: fraudsters just change their amounts.",like:"a school that checks your ID on the first day and never takes attendance again."},
+  {art:"root",t:"We kept asking why",b:"We listed every way the money gets in, sorted the ideas into buckets, and had 20 points of view (bankers, shopkeepers, fraudsters, regulators) argue it out. Every bucket led to the same root: trust is checked once, on paper, and never earned again.",like:"fixing the leak in the roof instead of mopping the floor every day."},
+  {art:"earn",t:"So trust has to be earned, every week",b:"A shop's money limit should grow only as fast as its proof. Proof is what a real shop already has: steady weeks, paying suppliers, a bank summary. A real bakery builds that easily. A fake one can't.",like:"a bigger allowance as you show you can handle it."},
+  {art:"honest",t:"Never punish the honest shop",b:"Most shops are honest and live on daily cash. So sharing no proof is never treated as suspicion, the first step is always a friendly question, and only money that can't be explained ever waits.",like:"a teacher who asks \"what happened?\" before giving detention.",demo:{tab:"app",w:10,s:3}},
+  {art:"germ",t:"Fraud changes shape, so the system must learn",b:"Fraudsters copy whatever passes. So the system relearns what \"normal\" looks like every week, remembers every fraudster it catches, and turns each new trick it finds into a new check.",like:"your body: after one cold, it recognises that germ next time.",demo:{tab:"immune",w:13}}]},
+ {name:"How it works",steps:[
+  {art:"start",t:"Everyone starts on Level 1",b:"Every new shop can take payments from day one, with payouts sized to what similar shops nearby earn. Nobody starts as a suspect.",like:"the first rung of a ladder: you're on it, you just can't reach the top shelf yet.",demo:{tab:"app",w:1,s:1}},
+  {art:"climb",t:"Real shops climb",b:"Steady weeks and light proof move a shop up: Proven, Verified, Trusted. Each level unlocks something worth having: a higher limit, a badge customers can see, instant payouts and a loan offer.",like:"levels in a game: play fair and you unlock new powers.",demo:{tab:"app",w:15,s:1}},
+  {art:"three",t:"Three questions, every week",b:"Shape: does the money look like this kind of shop? Control: is the real owner running the account? Network: does it share customers with shops it shouldn't? All three use data PayU already has.",like:"checking three things: does it look right, is it really you, and who are you hanging out with?",demo:{tab:"dash",w:12,s:5}},
+  {art:"lights",t:"Count the yeses",b:"No yes: pay as normal. One: ask a friendly question. Two: pay the normal part and hold only the unexplained extra for a few days. Three: pause, and a person reviews it. A question left unanswered counts as a yes.",like:"traffic lights: green, amber, red. Never straight to red.",demo:{tab:"dash",w:10,s:3}},
+  {art:"memory",t:"Caught, reported, remembered",b:"When a person confirms a front, the account is closed and reported to FIU-IND. Its phone and its gamblers' payment IDs are remembered, so when the same phone tries to sign up as a new shop, it's blocked on day one.",like:"a shopkeeper who remembers a shoplifter's face.",demo:{tab:"dash",w:13,s:24}},
+  {art:"immune",t:"A new trick? It learns a new check",b:"In week 10, three fronts copy real bakeries perfectly and pass all three questions. In week 13, one is confirmed through a cyber-crime report. The system compares it with honest bakeries, spots what's different (its payers hop between shops) and adds that as a check. The copies are caught within two weeks.",like:"a vaccine: one case teaches the body to catch all the copies.",demo:{tab:"immune",w:15}},
+  {art:"result",t:"What happened in 18 weeks",b:"All 12 bad accounts were stopped. Nothing was held at honest shops. One honest bakery was asked one question, and answered it the same day.",like:"catch the bad shops and leave the good ones alone.",demo:{tab:"dash",w:18,s:1}}]}
+];
+const ELI={ch:0,i:0,dir:1,open:false};
+const ELI_TOTAL=CH[0].steps.length+CH[1].steps.length;
+function openELI(ch=0,i=0){stop();ELI.ch=ch;ELI.i=i;ELI.dir=1;ELI.open=true;hideResume();
+  let sc=$("eli-scrim"); if(!sc){sc=document.createElement("div");sc.id="eli-scrim";sc.className="eli-scrim";document.body.appendChild(sc);sc.addEventListener("click",e=>{if(e.target===sc) closeELI()})}
+  drawELI();}
+function closeELI(){ELI.open=false;const sc=$("eli-scrim");if(sc) sc.remove();$("eli5").focus()}
+function eliGo(d){const ch=CH[ELI.ch];ELI.dir=d;
+  if(d>0){if(ELI.i<ch.steps.length-1) ELI.i++; else if(ELI.ch==0){ELI.ch=1;ELI.i=0} else {closeELI();return}}
+  else{if(ELI.i>0) ELI.i--; else if(ELI.ch==1){ELI.ch=0;ELI.i=CH[0].steps.length-1} else return}
+  drawELI();}
+function drawELI(){
+  const ch=CH[ELI.ch], s=ch.steps[ELI.i], idx=(ELI.ch?CH[0].steps.length:0)+ELI.i+1, last=idx==ELI_TOTAL;
+  const sc=$("eli-scrim");
+  sc.innerHTML=`<div class="eli" role="dialog" aria-modal="true" aria-labelledby="eli-t">
+   <div class="eli-top"><div class="chaps" role="tablist" aria-label="Chapters">${CH.map((c,k)=>`<button role="tab" aria-selected="${k==ELI.ch}" data-ch="${k}">${c.name}</button>`).join("")}</div>
+    <button class="x" id="eli-x" aria-label="Close the explainer">×</button></div>
+   <div class="eli-bar"><i data-bar="eli" data-to="${(idx/ELI_TOTAL*100).toFixed(1)}"></i></div>
+   <div class="eli-stage ${ELI.dir>0?"fwd":"back"}">
+    <div class="eli-art" aria-hidden="true">${ART[s.art]()}</div>
+    <div class="eli-text" aria-live="polite"><p class="eli-n">Step ${ELI.i+1} of ${ch.steps.length}</p><h2 id="eli-t">${s.t}</h2><p class="eli-b">${s.b}</p><p class="eli-like">${s.like}</p>${s.demo?`<button class="ghost" id="eli-demo">See it in the demo</button>`:""}</div>
+   </div>
+   <div class="eli-foot"><button class="ghost" id="eli-back" ${idx==1?"disabled":""}>Back</button><span class="eli-count">${idx} of ${ELI_TOTAL}</span><button class="primary" id="eli-next">${last?"Back to the demo":ELI.i==ch.steps.length-1?"Next: how it works":"Next"}</button></div></div>`;
+  animateBars();
+  $("eli-x").onclick=closeELI; $("eli-next").onclick=()=>eliGo(1); $("eli-back").onclick=()=>eliGo(-1);
+  sc.querySelectorAll("[data-ch]").forEach(b=>b.onclick=()=>{const k=+b.dataset.ch;if(k==ELI.ch) return;ELI.dir=k>ELI.ch?1:-1;ELI.ch=k;ELI.i=0;drawELI()});
+  if($("eli-demo")) $("eli-demo").onclick=()=>{const d=s.demo;closeELI();goTo(d.tab,d.w,d.s);showResume()};
+  $("eli-next").focus({preventScroll:true});
+}
+function goTo(tab,w,s){stop();TAB=tab;WEEK=w;if(s!=null) SEL=s;render();window.scrollTo({top:0,behavior:RM?"auto":"smooth"})}
+function showResume(){hideResume();const w=document.createElement("div");w.className="resume-wrap";w.id="resume";w.innerHTML=`<button class="resume">Back to the explainer <span>step ${(ELI.ch?CH[0].steps.length:0)+ELI.i+1} of ${ELI_TOTAL}</span></button><button class="resume-x" aria-label="Dismiss">×</button>`;w.querySelector(".resume").onclick=()=>openELI(ELI.ch,ELI.i);w.querySelector(".resume-x").onclick=hideResume;document.body.appendChild(w)}
+function hideResume(){const r=$("resume");if(r) r.remove()}
+
 // ---------- events, pop-ups, tour
 function closePops(){document.querySelectorAll(".pop").forEach(p=>p.remove())}
 function bindView(){
-  document.querySelectorAll("tr.row").forEach(tr=>tr.onclick=e=>{SEL=+tr.dataset.id;render();const b=document.querySelector(`[data-sel="${SEL}"]`);if(b&&e.target.closest("button"))b.focus()});
+  document.querySelectorAll("tr.row").forEach(tr=>tr.onclick=e=>{SEL=+tr.dataset.id;render();const b=document.querySelector(`button[data-sel="${SEL}"]`);if(b&&e.target.closest("button"))b.focus()});
+  document.querySelectorAll("circle.dot").forEach(c=>c.onclick=()=>{SEL=+c.dataset.sel;render()});
   document.querySelectorAll(".info").forEach(b=>b.onclick=e=>{e.stopPropagation();const open=b.nextElementSibling&&b.nextElementSibling.classList.contains("pop");closePops();if(open)return;
-    const p=document.createElement("div");p.className="pop";p.setAttribute("role","dialog");p.setAttribute("aria-label","Explanation");p.innerHTML=b.dataset.info+`<br><button>Got it</button>`;
-    p.style.right="10px";p.style.top="44px";b.after(p);p.querySelector("button").onclick=()=>{p.remove();b.focus()};p.querySelector("button").focus()});
+    const p=document.createElement("div");p.className="pop";p.setAttribute("role","dialog");p.setAttribute("aria-label","Explanation");p.innerHTML=b.dataset.info+`<button>Got it</button>`;
+    p.style.right="10px";p.style.top="48px";b.after(p);p.querySelector("button").onclick=()=>{p.remove();b.focus()};p.querySelector("button").focus()});
   const pick=$("pick"); if(pick) pick.onchange=()=>{SEL=+pick.value;render();$("pick").focus()};
   const st=$("startTour"); if(st) st.onclick=()=>startTour();
+  document.querySelectorAll("[data-eli]").forEach(b=>b.onclick=()=>openELI(+b.dataset.eli,0));
+  document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{const [t,w,s]=b.dataset.go.split(",");goTo(t,+w,s!=null?+s:null)});
 }
 document.addEventListener("click",e=>{if(!e.target.closest(".pop")&&!e.target.classList.contains("info")) closePops()});
-document.addEventListener("keydown",e=>{if(e.key==="Escape"){closePops();if(TOUR>=0) endTour()}});
+document.addEventListener("keydown",e=>{
+  if(ELI.open){if(e.key==="Escape") closeELI(); else if(e.key==="ArrowRight"&&!e.target.closest(".chaps")) eliGo(1); else if(e.key==="ArrowLeft"&&!e.target.closest(".chaps")) eliGo(-1); return}
+  if(e.key==="Escape"){closePops();if(TOUR>=0) endTour();const wel=$("welcome");if(wel) closeWelcome()}
+});
 ["dash","app","immune","how"].forEach((t,i,arr)=>{const b=$("tab-"+t);b.onclick=()=>{TAB=t;render()};
   b.onkeydown=e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){const n=arr[(i+(e.key==="ArrowRight"?1:arr.length-1))%arr.length];TAB=n;render();$("tab-"+n).focus()}}});
+$("marks").innerHTML=EVENTS.map(([w,l])=>`<button class="mark" data-w="${w}" style="--f:${(w-1)/(WEEKS-1)}" title="Jump to week ${w}: ${l}"><span>${l}</span></button>`).join("");
+document.querySelectorAll(".mark").forEach(b=>{b.setAttribute("aria-label",`Jump to week ${b.dataset.w}: ${b.textContent}`);b.onclick=()=>{stop();WEEK=+b.dataset.w;render()}});
 $("week").oninput=e=>{WEEK=+e.target.value;render()};
 $("step").onclick=()=>{if(WEEK<WEEKS){WEEK++;render()}};
 $("reset").onclick=()=>{stop();WEEK=1;render()};
 $("truth").onchange=render;
-function stop(){clearInterval(timer);timer=null;$("play").textContent="▶ Play the story"}
+$("eli5").onclick=()=>openELI(ELI.open?ELI.ch:0,0);
+function setPlay(on){const p=$("play");p.innerHTML=on?ICON.pause:ICON.play;p.setAttribute("aria-label",on?"Pause":"Play the story")}
+function stop(){clearInterval(timer);timer=null;setPlay(false)}
 $("play").onclick=()=>{if(timer){stop();return}
   if(WEEK>=WEEKS){WEEK=1;render()}
-  $("play").textContent="❚❚ Pause";
+  setPlay(true);
   timer=setInterval(()=>{if(WEEK>=WEEKS){stop();return}WEEK++;
     if(TAB==="dash"){const R=run(WEEK);const f=M.filter(m=>{const h=R.st[m.id].hist[WEEK-1];return h&&["STOP","SLOW","BLOCKED","ASK"].includes(h.action)});if(f.length) SEL=f[0].id}
-    render()},2200)};
+    render()},2400)};
+setPlay(false);
 const TOUR_STEPS=[
   {tab:"dash",el:null,t:"Welcome to Earned Trust",b:"This console shows how PayU could spot betting fronts hiding as bakeries and kiranas, without hurting honest shops. Everything here is simulated: 25 shops over 18 weeks."},
-  {tab:"dash",el:"metrics",t:"The scoreboard",b:"Betting money held or stopped, bad accounts stopped, and, just as important, how many honest shops were bothered. The goal is to push the first numbers up and keep the honest ones near zero."},
-  {tab:"dash",el:"p-table",t:"Every shop, every week",b:"Each shop starts on Level 1. S, C and N are the three questions. 1 yes = ask, 2 = slow the extra money, 3 = stop for human review. Click or tab to any shop name to see why."},
+  {tab:"dash",el:"eli5",t:"New to the idea?",b:"Press Explain like I'm 5 any time for a simple, step-by-step story: how we found the problem, and how the system works."},
+  {tab:"dash",el:"metrics",t:"The scoreboard",b:"On the left, how much betting money is caught. On the right, the cost to honest shops. The goal is to push the left up and keep the right near zero."},
+  {tab:"dash",el:"p-table",t:"Every shop, every week",b:"Each shop starts on Level 1. S, C and N are the three questions. 1 yes = ask, 2 = slow the extra money, 3 = stop for review. Click any shop to see why."},
   {tab:"dash",el:"p-detail",t:"Why this decision",b:"Sales against proof (stock bought) and against similar shops, plus the plain-language reasons for this week's action."},
   {tab:"dash",el:"p-net",t:"Who shares customers",b:"Honest shops sit alone with local customers. Betting fronts share the same gamblers, so they light up as a web of lines."},
-  {tab:"app",el:null,t:"The shop's point of view",b:"The merchant app: a level, its money, a progress bar and offers. Checks arrive as friendly questions or ways to unlock more. Pick different shops to compare."},
-  {tab:"immune",el:null,t:"It learns like an immune system",b:"In week 10 a new trick fools all three questions. In week 13 one case is confirmed, the system learns a new check from it, and catches the look-alikes. Move the slider to weeks 10, 13 and 15."},
-  {tab:"dash",el:"play",t:"Now press Play",b:"Watch the whole story run: fronts stopped, an honest bakery asked once, a fraudster blocked at sign-up, a new trick learned, and Diwali passing with no honest shop held."}];
-function startTour(){TOUR=0;showTour()}
+  {tab:"app",el:null,t:"The shop's point of view",b:"The merchant app: a level, its money, a progress bar and offers. Checks arrive as friendly questions or ways to unlock more."},
+  {tab:"immune",el:null,t:"It learns like an immune system",b:"In week 10 a new trick fools all three questions. In week 13 one case is confirmed, the system learns a new check from it, and catches the look-alikes."},
+  {tab:"dash",el:"play",t:"Now press Play",b:"Watch the whole story run. The line under the timeline tells you what's happening each week."}];
+function startTour(){closeWelcome();TOUR=0;showTour()}
 function endTour(){TOUR=-1;document.querySelectorAll(".scrim").forEach(x=>x.remove());document.querySelectorAll(".hl").forEach(x=>x.classList.remove("hl"));try{localStorage.setItem("et-tour","seen")}catch(e){}$("tour").focus()}
 function showTour(){
   const s=TOUR_STEPS[TOUR]; if(TAB!==s.tab){TAB=s.tab;render()}
   document.querySelectorAll(".scrim").forEach(x=>x.remove());document.querySelectorAll(".hl").forEach(x=>x.classList.remove("hl"));
-  if(s.el&&$(s.el)){$(s.el).classList.add("hl");$(s.el).scrollIntoView({block:"center",behavior:"smooth"})}
-  const sc=document.createElement("div");sc.className="scrim";if(s.el) sc.style.background="rgba(18,48,44,.15)";if(s.el) sc.style.alignItems="flex-end";
-  sc.innerHTML=`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="tour-t"><div class="meta">Step ${TOUR+1} of ${TOUR_STEPS.length}</div><h2 id="tour-t">${s.t}</h2><p>${s.b}</p><div class="dots">${TOUR_STEPS.map((_,i)=>`<i class="${i==TOUR?"on":""}"></i>`).join("")}</div><div class="row"><button id="t-skip">Skip</button>${TOUR>0?'<button id="t-back">Back</button>':""}<button class="primary" id="t-next">${TOUR==TOUR_STEPS.length-1?"Finish":"Next"}</button></div></div>`;
+  if(s.el&&$(s.el)){$(s.el).classList.add("hl");$(s.el).scrollIntoView({block:"center",behavior:RM?"auto":"smooth"})}
+  const sc=document.createElement("div");sc.className="scrim";if(s.el){sc.style.background="rgba(18,48,44,.18)";sc.style.alignItems="flex-end"}
+  sc.innerHTML=`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="tour-t"><div class="meta">Step ${TOUR+1} of ${TOUR_STEPS.length}</div><h2 id="tour-t">${s.t}</h2><p>${s.b}</p><div class="dots">${TOUR_STEPS.map((_,i)=>`<i class="${i==TOUR?"on":""}"></i>`).join("")}</div><div class="row"><button class="ghost" id="t-skip">Skip</button>${TOUR>0?'<button class="ghost" id="t-back">Back</button>':""}<button class="primary" id="t-next">${TOUR==TOUR_STEPS.length-1?"Finish":"Next"}</button></div></div>`;
   document.body.appendChild(sc);
   $("t-skip").onclick=endTour; if($("t-back")) $("t-back").onclick=()=>{TOUR--;showTour()};
   $("t-next").onclick=()=>{if(TOUR==TOUR_STEPS.length-1){endTour();return}TOUR++;showTour()};
-  $("t-next").focus();
+  $("t-next").focus({preventScroll:true});
 }
 $("tour").onclick=startTour;
+function welcome(){
+  const sc=document.createElement("div");sc.className="scrim";sc.id="welcome";
+  sc.innerHTML=`<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="wel-t"><h2 id="wel-t">Welcome to Earned Trust</h2><p>How PayU could catch betting money hiding in ordinary shops, without hurting honest ones. Team Voltaire's prototype, on 25 simulated shops over 18 weeks.</p>
+   <div class="choices">
+    <button class="primary" id="w-eli">Explain like I'm 5<small>The simple story, step by step: how we figured it out and how it works</small></button>
+    <button class="ghost" id="w-tour">Take the 1-minute tour<small>A quick walk around this console</small></button>
+    <button class="ghost" id="w-skip">Go straight to the demo<small>Press play and watch 18 weeks run</small></button>
+   </div></div>`;
+  document.body.appendChild(sc);
+  const seen=()=>{try{localStorage.setItem("et-tour","seen")}catch(e){}};
+  $("w-eli").onclick=()=>{seen();closeWelcome();openELI(0,0)};
+  $("w-tour").onclick=()=>{seen();startTour()};
+  $("w-skip").onclick=()=>{seen();closeWelcome();$("play").focus()};
+  $("w-eli").focus();
+}
+function closeWelcome(){const w=$("welcome");if(w) w.remove()}
 render();
-try{if(!localStorage.getItem("et-tour")) startTour()}catch(e){}
+try{if(!localStorage.getItem("et-tour")) welcome()}catch(e){}
 </script>
 </body>
 </html>

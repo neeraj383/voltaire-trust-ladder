@@ -20,6 +20,15 @@ Don't police merchants into proving they're innocent. **Make being real worth pr
 - **Graduated response:** 1 yes → **ASK**, 2 → **SLOW** (only the unexplained extra waits), 3 → **STOP** (human review, report to FIU-IND). A question left unanswered counts as a yes and keeps counting.
 - **Immune-system learning:** "normal" is relearned every week. Every confirmed front is remembered (device, gamblers). A confirmed case of a new trick can add a brand-new check.
 
+## Explain like I'm 5
+
+The **Explain like I'm 5** button (top right, and offered on first visit) opens a 13-step illustrated explainer in two chapters:
+
+1. **How we figured it out:** the bakery that takes bets, why one-time KYC misses it, the root cause, why trust has to be earned, protecting honest shops, and why the system must learn.
+2. **How it works:** Level 1 for everyone, climbing the ladder, the three questions, counting the yeses, caught and remembered, learning a new check, and the results.
+
+Most steps have a **See it in the demo** button that jumps to the exact week and shop, with a button to come back to the explainer.
+
 ## The four views
 
 | Tab | What it shows |
@@ -27,7 +36,7 @@ Don't police merchants into proving they're innocent. **Make being real worth pr
 | PayU monitoring | Every shop, every week: trust level, the three questions, money paid or held, the action, why, and who shares customers |
 | Merchant app | The shop's point of view: onboarding on Level 1, progress up the ladder, payouts, friendly questions, warnings, badge and loan offer |
 | Immune system | A new trick nobody had seen, how one confirmed case teaches a new check, and the list of checks growing over time |
-| How it works | The idea in four cards, plus the guided tour |
+| Explained | Two simple step-by-step chapters (how we figured it out, how it works), the idea in four cards, and the tour |
 
 ## The story in the simulation (25 shops, 18 weeks)
 
@@ -53,8 +62,10 @@ Tick **Show answer key** to reveal which shops were honest, renters, mixers, fro
 - The week slider is labelled.
 - Pop-ups close with Esc.
 - Motion is reduced when the system asks for it.
+- The explainer works with the arrow keys and closes with Esc.
 
 ## Changelog
+- **v3 (26 Nov 2026):** redesigned interface; Explain like I'm 5 explainer; first-visit welcome; timeline with event markers and a narrated line for each week; numbers and progress bars animate between weeks; click a dot in the network to open a shop; works on phones.
 - **v2 (26 Nov 2026):**
   - Everyone starts on Level 1.
   - Missing proof no longer counts as suspicion.
