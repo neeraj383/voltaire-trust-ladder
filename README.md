@@ -1,53 +1,76 @@
 # Earned Trust: the Trust Ladder
 
-**Team Voltaire** · Neeraj Preenand, Achintya, Viyaan
+**Team Voltaire** · Neeraj Preenand, Achintya Iyer, Viyaan Prakash
 *Follow the Money: Innovation Challenge, IIM Bangalore CSITM × PayU, 2026. Problem: "The Bakery That Takes Bets".*
 
 A merchant opens a payment account with genuine documents, calls itself a bakery, and quietly collects money for illegal betting. This prototype shows how a payment provider can notice and respond, without punishing honest shops whose sales change for good reasons.
 
-**Open `index.html` in any browser** (no install, no server) and press **▶ Play the story**.
+**Live demo:** https://neeraj383.github.io/voltaire-trust-ladder/
+Or open `index.html` in any browser (no install, works offline). A guided tour starts on first visit; press **? Guided tour** to replay it.
 
 ## The idea in one line
 Don't police merchants into proving they're innocent. **Make being real worth proving.**
 
-- **Trust Ladder:** merchants climb four levels (Starter, Proven, Verified, Trusted) by showing proof a real shop already has: stock bought from suppliers, item-level bills, a shop video, GST/Udyam. Each level unlocks faster payouts, higher limits, a badge and credit. Fronts can't climb.
-- **One rule:** money can't grow faster than proof. Real shops even prove festive spikes in advance, because they buy stock *before* the rush.
-- **Three tests that must agree:**
-  - **Shape:** does the money behave like purchases at this kind of shop, compared with verified peers?
-  - **Control:** is the verified owner still the one running the account?
-  - **Network:** does it share customers with unrelated shops in other cities?
-- **Graduated response:** 1 test → **ASK** · 2 → **SLOW** (only the unexplained extra waits) · 3 → **STOP** (human review, STR to FIU-IND).
-- **Immune-system learning:**
-  - **Normal is learned weekly** from verified merchants.
-  - **Every confirmed front is remembered:** its gambler payers and its device fingerprint.
-  - **Every honest merchant that gets cleared** teaches the system what not to flag.
+- **Trust Ladder:** every shop starts on **Level 1 (Starter)**, with payouts sized to similar shops nearby. Real shops climb to Proven, Verified and Trusted by showing proof they already have, and unlock faster payouts, a badge and a loan offer. Fakes can't climb.
+- **Three questions** (data PayU already has):
+  - **Shape:** does the money look like similar shops?
+  - **Control:** is the real owner running it?
+  - **Network:** does it share customers with shops it shouldn't?
+- **Missing proof never counts as suspicion.** Proof only helps a shop climb.
+- **Graduated response:** 1 yes → **ASK**, 2 → **SLOW** (only the unexplained extra waits), 3 → **STOP** (human review, report to FIU-IND). A question left unanswered counts as a yes and keeps counting.
+- **Immune-system learning:** "normal" is relearned every week. Every confirmed front is remembered (device, gamblers). A confirmed case of a new trick can add a brand-new check.
 
-## What you'll see in the demo (22 simulated merchants, 18 weeks)
+## The four views
 
-| Week | What happens |
+| Tab | What it shows |
 |---|---|
-| 5–7 | Three rented accounts and a new "cake studio" start collecting bets. All three tests fire. An analyst confirms them, and the system learns their gambler payers and a device fingerprint. |
-| 9–12 | Two real shops start taking bets on the side ("mixers"). Their money outgrows their proof. They get three strikes, lose benefits, and are then removed. |
-| 10 | An honest bakery takes a big catering order. It gets **one** friendly question, replies with an invoice, is cleared the same day, and is never asked again. |
-| 13 | A new front tries to sign up with a remembered device and is **blocked before its first payout**. |
-| 15–17 | Festive season. Every honest bakery spikes together, so the peer baseline rises with them. No honest shop is asked, slowed or frozen. |
+| PayU monitoring | Every shop, every week: trust level, the three questions, money paid or held, the action, why, and who shares customers |
+| Merchant app | The shop's point of view: onboarding on Level 1, progress up the ladder, payouts, friendly questions, warnings, badge and loan offer |
+| Immune system | A new trick nobody had seen, how one confirmed case teaches a new check, and the list of checks growing over time |
+| How it works | The idea in four cards, plus the guided tour |
 
-Tick **Show answer key** to reveal which merchants were really honest, renters, mixers or fronts.
+## The story in the simulation (25 shops, 18 weeks)
 
-## Files
-- `index.html`: the whole prototype (vanilla JS, no dependencies)
-- `README.md`: this file
+| Weeks | Event | Response |
+|---|---|---|
+| 1 | Every shop starts on Level 1 | Honest shops climb steadily to Level 4 by week 14 |
+| 5–9 | Rented accounts and fake shops start collecting bets | All three questions fire; stopped, confirmed, remembered |
+| 9–13 | Two real shops take bets on the side | Two signals agree; three strikes; removed |
+| 10 | An honest bakery takes a big catering order | Asked once, replies with an invoice, never asked again |
+| 10–12 | **A new trick:** three shops copy real bakeries perfectly | Invisible to all three questions |
+| 13 | A cyber-crime report names one of them | Confirmed; the system learns a new check, **payer hopping** (65% of its payers also paid another shop; honest shops 0%) |
+| 13–16 | The two look-alikes | Flagged by the new check, can't answer: ask → slow → stop |
+| 13 | A remembered device tries to sign up again | Blocked before its first payout |
+| 15–17 | Festive season | Bakeries spike together; no honest shop held |
 
-All data is **simulated** for demonstration. The rules are deliberately simple and readable. In production, baselines and thresholds would be learned from PayU's verified merchants and from confirmed cases.
+**Results:** 12 of 12 bad accounts stopped, ₹0 delayed at honest shops, 1 honest shop asked one question. The dashboard also shows the real sales held at shops caught taking bets (by design, a mixer loses fast payouts on all its sales).
+
+Tick **Show answer key** to reveal which shops were honest, renters, mixers, fronts or the new trick.
+
+## Accessibility
+- Shops can be selected with the keyboard: Tab to a shop name, then press Enter.
+- The tabs work with the arrow keys.
+- The week slider is labelled.
+- Pop-ups close with Esc.
+- Motion is reduced when the system asks for it.
+
+## Changelog
+- **v2 (26 Nov 2026):**
+  - Everyone starts on Level 1.
+  - Missing proof no longer counts as suspicion.
+  - Added the Merchant app, Immune system and How it works views, the guided tour and the info pop-ups.
+  - Added the new-trick scenario, with learned checks.
+  - Unanswered questions now escalate.
+  - Clarified the money metrics. Honest-shop delays and real sales held at caught shops are now shown separately.
+  - Keyboard selection and a labelled slider.
+  - Replay restarts at week 1.
+- **v1 (12 Nov 2026):** first prototype submitted.
+
+All data is **simulated**. Rules are deliberately simple and readable; in production, baselines and thresholds would be learned from PayU's verified merchants and confirmed cases.
 
 ## References
 - Unstop, *Follow The Money: Innovation Challenge*, problem statement and rules (2026)
-- Enforcement Directorate, press release on Parimatch searches, 14 Aug 2025
-- Business Standard, *ED freezes Parimatch accounts worth ₹110 cr* (Aug 2025)
-- Gambling.com, *ED alleges Parimatch moved nearly ₹3,000 crore abroad via layered network*
-- Storyboard18, *Cryptos, shell firms and fake FDI: ED report exposes India's betting syndicates*
-- Infinity Compliance, on mule UPI accounts and merchant category codes
-- MediaNama / Cashfree, *Addressing merchant fraud and the KYC challenge*
-- Decentro, *Merchant monitoring for banks, PSPs and aggregators*
-- Moneylife, *Fraud alert: illegal payment gateways and mule bank accounts*
-- Claude (Anthropic): research, root-cause debate (20 AI-simulated stakeholder perspectives) and prototype assistance, 12 Nov 2026
+- Enforcement Directorate, press release on Parimatch searches, 14 Aug 2025; Business Standard, *ED freezes Parimatch accounts worth ₹110 cr*
+- Gambling.com; Storyboard18; Infinity Compliance; MediaNama / Cashfree; Decentro; Moneylife (merchant fraud, mule accounts)
+- RBI, *Regulation of Payment Aggregators Directions*, 2025; *Promotion and Regulation of Online Gaming Act*, 2025
+- Claude (Anthropic): research, root-cause debate (20 AI-simulated stakeholder perspectives) and prototype assistance, Nov 2026
